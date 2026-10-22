@@ -1,5 +1,5 @@
-import {digest} from './source-document.js';
-import {metricLabels} from '../../../public/metric-labels.js';
+import {digest} from './source-document.js?v=8e1e00bb1d41da9f';
+import {metricLabels} from '../../../public/metric-labels.js?v=8e1e00bb1d41da9f';
 const safeUrl=value=>{try{const u=new URL(value);return /^https?:$/.test(u.protocol)&&!u.username&&!u.password?u.href:'';}catch{return '';}};
 const text=value=>typeof value==='string'?value:'';
 function actionFor(subject,reason){
