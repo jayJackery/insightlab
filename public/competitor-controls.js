@@ -63,7 +63,7 @@ export function setupComparisonActions({api,getTask}){
       let selection=await api('/api/competitors/recommend',{method:'POST',body:JSON.stringify({taskId:task.id,input,candidates:current})});
       if(number!==sequence||document.querySelector('#comparison-results')!==results)return;
       if(mode==='recommend'&&selection.applies){
-        const next=[...new Set([...(selection.explicitNames||[]),...(selection.recommendations||[]).map(row=>row.name)])];
+        const next=[...new Set((selection.recommendations||[]).map(row=>row.name))];
         if(!next.length)throw Error('当前范围没有自动推荐，可扩大偏差，或从规格库自行选择。');
         await editNames(next,{task,refreshAfter:false});
         selection=await api('/api/competitors/recommend',{method:'POST',body:JSON.stringify({taskId:task.id,input,candidates:names(document.querySelector('#plan-competitors').value)})});
