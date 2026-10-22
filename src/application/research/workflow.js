@@ -25,6 +25,9 @@ import {mapConcurrent} from './concurrency.js';
 import {reviseReportSections} from '../../reporting/report-revision.js';
 import {resolveReportDepth,focusedQueries,focusedCriteria} from '../../../public/report-depth.js';
 import {discoverBaseline} from './baseline-discovery.js';
+import {PLAN_ARRAYS,validatePlanShape} from '../../infrastructure/ai/model-probe.js';
+import {researchInput} from '../../../public/baseline-context.js';
+import {comparisonInput} from '../../domain/research/competitor-selection.js';
 export function createResearchWorkflow({getTask,update,model,search,consultSpecs,recommendCompetitors,fetchOfficial,runtime,snapshotSources=async(sources)=>sources.map(enrichSource)}) {
 async function reviewSources(sources, input) {
   return model([
@@ -46,15 +49,15 @@ async function assessCoverage(sources, input, plan) {
 
 function prompt(input,focus=resolveResearchFocus(input)) {
   const scope = buildResearchContract(input,{questions:[]}).dateScope;
-  return ['研究日期：'+new Date().toISOString().slice(0,10),'分析侧重点：'+focusDescription(focus),'分析对象：'+input.subject,'自家产品/对比基准：'+(input.baselineProduct || '未提供'),'场景：'+(input.scenario || '未提供'),'问题：'+(input.questions || '识别核心研究与竞争问题'),'竞品：'+(input.competitors || '从公开资料识别'),'时间范围：'+(input.timeRange || '近三年，优先最新'),'后端确定的时间窗口：'+JSON.stringify(scope),'指标：'+(input.metrics || '依据研究侧重点选择'),'用途：'+(input.purpose || '洞察与产品规划')].join('\n');
+  return ['研究日期：'+new Date().toISOString().slice(0,10),'分析侧重点：'+focusDescription(focus),'分析对象：'+input.subject,'自家产品/对比基准：'+(input.baselineProduct || '未设置，不作相对基准排名')+(input.baselineRequest&&!input.baselineProduct?'；用户提及但未确认的产品：'+input.baselineRequest:''),'场景：'+(input.scenario || '未提供'),'问题：'+(input.questions || '识别核心研究与竞争问题'),'竞品：'+(input.competitors || '从公开资料识别'),'时间范围：'+(input.timeRange || '近三年，优先最新'),'后端确定的时间窗口：'+JSON.stringify(scope),'指标：'+(input.metrics || '依据研究侧重点选择'),'用途：'+(input.purpose || '洞察与产品规划')].join('\n');
 }
 async function preparePlan(id) {
   const task = getTask(id); if (!task) return;
   try {
     update(id, { status: "running", phaseIndex: 0, phaseStatus: "running", error: null });
     const delivery=resolveReportDepth(task.input);
-    let selection=delivery.route==='answer'?null:recommendCompetitors?await recommendCompetitors(task.input,{baselineRecords:task.research?.baselineDiscovery?.records||[]}):null;
-    if(selection?.status==='needs_reference'&&task.input.baselineProduct){
+    let selection=recommendCompetitors?await recommendCompetitors(task.input,{baselineRecords:task.research?.baselineDiscovery?.records||[]}):null;
+    if(selection?.status==='unanchored'&&selection.canDiscover&&task.input.baselineProduct){
       update(id,{research:{...getTask(id).research,currentActivity:'正在自动查找基准型号的容量与额定连续功率'}});
       const discovery=await discoverBaseline({input:task.input,previous:task.research?.baselineDiscovery,search,model:(messages,options)=>model(messages,{...options,taskId:id}),snapshotSources,persist:async value=>update(id,{research:{...getTask(id).research,baselineDiscovery:value}})});
       selection=await recommendCompetitors(task.input,{baselineRecords:discovery.records});
@@ -62,10 +65,12 @@ async function preparePlan(id) {
     }
     const focusedPlan={questions:(task.input.questions||task.input.subject).split(/[；;？?\n]+/u).map(question=>question.trim()).filter(Boolean),queries:focusedQueries(task.input,focusedCriteria(task.input)),criteria:focusedCriteria(task.input),competitors:[],assumptions:['明确单点问题采用精准问答，不扩展行业综述；所有地区资料保留出处与版本。'],sourceStrategy:['优先原始官方资料与部门规格库；只回答原始问题，关键事实与答案分别核验。']};
     let planCatalog=[];try{const lookup=await consultSpecs(task.input,{competitors:[...(selection?.explicitNames||[]),...(selection?.recommendations||[]).map(r=>r.name)],comparisonScope:selection?.reference?.region?{region:selection.reference.region}:undefined});planCatalog=lookup.sources||[];}catch{}
-    const rawPlan = delivery.route==='answer'?focusedPlan:await model([{ role: "system", content: "你是研发技术情报分析师。先制定供用户确认的计划，不开始写结论。把需求拆为3至6个研究问题，给出5至8条精准查询。每条查询包含具体型号或技术主题，不超过100字符。遵循本次侧重点：产品侧重优先规格场景和功能；技术侧重增加拆解、论文、专利及标准。竞品自动选择必须服从随附同档筛选结果，不能混入容量或额定连续功率差异很大的型号；明确指定的跨档产品只作参考。基准容量和额定连续功率由系统自动查找，范围默认所有地区，不要求用户填写数值或选择地区；多地区版本保留，不暗设美国。确实无法识别时只提示核对准确型号，不猜参数。不得把AC200L与AC200PL、不同Gen/v代际合并。competitors给带品牌的准确型号字符串，不含候选前缀。规格库已有字段直接引用，不重复查询官网；criteria只能是短指标名，阈值说明放assumptions。未知技术实现仍需查拆解、专利和技术文档。不得更换基准或编造参数。当前时间以研究日期为准。按本次篇幅预算规划，不能给中等/简洁任务套用丰富报告的主题和查询数量。仅返回JSON，assumptions、competitors、questions、queries、criteria、sourceStrategy均为字符串数组，禁止对象数组。" }, { role: "user", content: prompt(task.input)+'\n规格库同档筛选（记录值保留整理来源与日期）：'+JSON.stringify(selection)+'\n篇幅与执行预算：'+JSON.stringify(delivery)+'\n已有规格库记录（同口径字段直接使用，不重复官网核验）：'+JSON.stringify(planCatalog.map(s=>s.catalogRecord)) }]);
-    if(selection?.applies){
-      if(selection.status==='ready')rawPlan.competitors=[...new Set([...(selection.explicitNames||[]),...(selection.automatic?selection.recommendations.map(item=>item.name):[])])];
-      else rawPlan.competitors=String(task.input.competitors||'').split(/[、，,；;\n]/u).filter(name=>/\d/.test(name));
+    const rawPlan = delivery.route==='answer'?focusedPlan:await model([{ role: "system", content: "你是研发技术情报分析师。先制定供用户确认的计划，不开始写结论。把需求拆为3至6个研究问题，给出5至8条精准查询。每条查询包含具体型号或技术主题，不超过100字符。遵循本次侧重点：产品侧重优先规格场景和功能；技术侧重增加拆解、论文、专利及标准。竞品自动选择必须服从随附同档筛选结果，不能混入容量或额定连续功率差异很大的型号；明确指定的跨档产品只作参考。基准容量和额定连续功率由系统自动查找，范围默认所有地区，不要求用户填写数值或选择地区；多地区版本保留，不暗设美国。基准选填，支持简称和近似名称发现候选；候选由用户确认后才绑定。没有基准或暂未确认也继续原问题研究，不作相对基准排名，不猜参数。不得把AC200L与AC200PL、不同Gen/v代际合并。competitors给带品牌的准确型号字符串，不含候选前缀。规格库已有字段直接引用，不重复查询官网；criteria只能是短指标名，阈值说明放assumptions。未知技术实现仍需查拆解、专利和技术文档。不得更换基准或编造参数。当前时间以研究日期为准。按本次篇幅预算规划，不能给中等/简洁任务套用丰富报告的主题和查询数量。仅返回JSON，assumptions、competitors、questions、queries、criteria、sourceStrategy均为字符串数组，禁止对象数组。" }, { role: "user", content: prompt(task.input)+'\n规格库同档筛选（记录值保留整理来源与日期）：'+JSON.stringify(selection)+'\n篇幅与执行预算：'+JSON.stringify(delivery)+'\n已有规格库记录（同口径字段直接使用，不重复官网核验）：'+JSON.stringify(planCatalog.map(s=>s.catalogRecord)) }],{stage:'需求拆解/计划生成',arrays:PLAN_ARRAYS,validate:validatePlanShape,maxTokens:8192,reasoning:'low'});
+    rawPlan.comparisonInput=comparisonInput(task.input);
+    rawPlan.competitorSelection=selection;
+    if(selection?.requested||selection?.applies){
+      if(selection.status==='ready'&&delivery.route!=='answer')rawPlan.competitors=[...new Set([...(selection.explicitNames||[]),...(selection.automatic?selection.recommendations.map(item=>item.name):[])])];
+      else if(selection.status!=='ready')rawPlan.assumptions=[...(rawPlan.assumptions||[]),'未设置可靠基准，按原问题研究；型号分别说明，不作同档或相对基准排名。'];
       rawPlan.competitorSelection=selection;
       if(selection.reference?.region&&selection.reference.region!=='unknown')rawPlan.comparisonScope={region:selection.reference.region,configuration:'bare_unit'};
       rawPlan.assumptions=[...(rawPlan.assumptions||[]),selection.status==='ready'?'同档推荐按容量±'+selection.policy.capacityTolerance+'%、额定连续功率±'+selection.policy.powerTolerance+'%；手工跨档型号必须单独确认。':selection.reason];
@@ -80,7 +85,8 @@ async function preparePlan(id) {
   }
 }
 async function run(id) {
-  const task = getTask(id); if (!task) return;
+  const originalTask=getTask(id);if(!originalTask)return;
+  let task=originalTask;
   const storedPlan = task.research?.plan;
   if (!storedPlan) return preparePlan(id);
   try {
@@ -100,10 +106,12 @@ async function run(id) {
       for(let offset=0;offset<missing.length;offset+=6)await reviewBatch(missing.slice(offset,offset+6));
       const latest=getTask(id)?.research||{};update(id,{research:{...latest,sourceRelevanceCache:cache,sourceReviewStats:{reused:Number(latest.sourceReviewStats?.reused||0)+sources.length-missing.length,reviewed:Number(latest.sourceReviewStats?.reviewed||0)+missing.length}}});return {decisions};
     };
-    if(plan.competitorSelection?.applies&&plan.competitorSelection.policy?.version!==2)throw Error('同档筛选已改为自动查基准、覆盖所有地区。请重新制定并确认研究计划，原报告和检查点保留。');
-    const targetInput={...task.input,...(plan.comparisonInput||{})};
-    if(recommendCompetitors&&plan.delivery?.route!=='answer'){const checked=await recommendCompetitors(targetInput,{candidates:plan.competitors,baselineRecords:task.research?.baselineDiscovery?.records||[]});if(checked.applies&&(checked.requiresConfirmation||checked.rows.some(row=>row.status!=='comparable')&&!plan.competitorSelection?.crossTierConfirmed))throw Error(checked.reason||'竞品同档范围尚未确认，请核对准确基准型号、允许偏差及跨档参考，无需手填参数或地区。');if(checked.applies)plan.competitorSelection={...checked,crossTierConfirmed:Boolean(plan.competitorSelection?.crossTierConfirmed)};}
-    const contract = buildResearchContract(task.input,plan);
+    if(plan.competitorSelection?.applies&&![2,3].includes(plan.competitorSelection.policy?.version))throw Error('型号识别规则已更新，请重新确认研究计划；基准可以不填，原报告和检查点保留。');
+    const targetInput={...originalTask.input,...(plan.comparisonInput||{})};
+    if(recommendCompetitors){const checked=await recommendCompetitors(targetInput,{candidates:plan.competitors,baselineRecords:task.research?.baselineDiscovery?.records||[]});if(checked.applies&&(checked.requiresConfirmation||checked.rows.some(row=>row.status!=='comparable')&&!plan.competitorSelection?.crossTierConfirmed))throw Error(checked.reason||'部分型号不在已确认的同档范围，请核对允许偏差及跨档参考。');plan.competitorSelection={...checked,crossTierConfirmed:checked.applies&&Boolean(plan.competitorSelection?.crossTierConfirmed)};}
+    task={...originalTask,input:researchInput(originalTask.input,plan)};
+    plan.competitors=normalizePlan(plan,originalTask.input).competitors;
+    const contract = buildResearchContract(originalTask.input,plan);
     const signature = contractFingerprint(contract);
     const resume = task.research?.runtime?.buildId === runtime.buildId && task.research?.contractSignature === signature && task.phaseIndex >= 2 && task.research?.sources?.length && ["passed", "limited"].includes(task.research?.searchQuality?.status);
     const revalidate = !resume && task.phaseIndex>=2 && task.research?.sources?.length && ['rd-research/6','rd-research/7','rd-research/8','rd-research/9','rd-research/10','rd-research/11','rd-research/12','rd-research/13'].includes(task.research?.runtime?.workflowVersion) && JSON.stringify(task.research?.contract?.originalInput)===JSON.stringify(task.input) && JSON.stringify(task.research?.contract?.questions?.map((q)=>q.question))===JSON.stringify(plan.questions) && ['passed','limited'].includes(task.research?.searchQuality?.status);

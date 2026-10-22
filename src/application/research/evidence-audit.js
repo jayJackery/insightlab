@@ -62,7 +62,9 @@ export async function auditEvidence({ evidence, sources, plan, model,checkpoint=
 }
 
 export async function auditAnswers({ report, contract, evidence, model }) {
+  // Unanchored research is valid; its claims must stay within the identified scope.
   const {technologyOverview,keyFindings,answerAudit,quality,...auditReport}=report;
+  auditReport.baselineBoundary=contract.baselineProduct?'只对已确认基准比较。':'没有已确认基准是有效研究范围，不要求补填；严查虚构自家差距、同档排名或把相似候选当同一型号。';
   auditReport.catalogBoundary='curated参数表示规格库已收录但部门整理来源，非官方独立验证，正文应引用并标明整理来源，不能写成没有参数或官方核验通过。三防结构或具体拓扑未知不能泛化成容量功率也未知。contract.competitorSelection中的跨档参考不参与同档排名；AC200L与AC200PL等后缀必须分开。';
   auditReport.reviewFocusNote='合理且不违背已知参数的通用机理、常识推断及条件式建议可作为明确标注的分析判断，不要求逐条竞品实证或人工复核；具体型号采用、测试数值、认证和关键排名仍须依据。按contract.focus及原始问题审查；产品侧重不要求固定技术占比或四个工程主题。逐项核对productMappings的准确型号、采用关系、摘录和比较意义。参考设计不能证明竞品已采用，泛泛讲原理而没有对应型号不得判为合格。';
   const review = await model([
