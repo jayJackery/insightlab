@@ -1,17 +1,17 @@
 import {Buffer} from '../browser/shims/buffer.js';
-import { deflateRawSync } from "../browser/shims/zlib.js";
-import {metricPresentation} from '../domain/evidence/metric-presentation.js';
-import {metricDefinition} from '../domain/evidence/metric-schema.js';
-import {visibleComparisonRows} from '../../public/comparison-visibility.js';
-import {sameProduct} from '../domain/evidence/product-registry.js';
-import {metricLabels} from '../../public/metric-labels.js';
-import {reviewChecklist} from '../domain/evidence/review-checklist.js';
-import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js';
-import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js';
-import {resolveExportSelection} from '../../public/report-sections.js';
-import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js';
-import {presentationProductsForTask} from '../domain/evidence/product-registry.js';
-import {qualifyStructuredContent} from '../../public/product-labels.js';
+import { deflateRawSync } from "../browser/shims/zlib.js?v=8e1e00bb1d41da9f";
+import {metricPresentation} from '../domain/evidence/metric-presentation.js?v=8e1e00bb1d41da9f';
+import {metricDefinition} from '../domain/evidence/metric-schema.js?v=8e1e00bb1d41da9f';
+import {visibleComparisonRows} from '../../public/comparison-visibility.js?v=8e1e00bb1d41da9f';
+import {sameProduct} from '../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {metricLabels} from '../../public/metric-labels.js?v=8e1e00bb1d41da9f';
+import {reviewChecklist} from '../domain/evidence/review-checklist.js?v=8e1e00bb1d41da9f';
+import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js?v=8e1e00bb1d41da9f';
+import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js?v=8e1e00bb1d41da9f';
+import {resolveExportSelection} from '../../public/report-sections.js?v=8e1e00bb1d41da9f';
+import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js?v=8e1e00bb1d41da9f';
+import {presentationProductsForTask} from '../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {qualifyStructuredContent} from '../../public/product-labels.js?v=8e1e00bb1d41da9f';
 
 const xml = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
 function plain(value) {
