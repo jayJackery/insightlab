@@ -1,9 +1,9 @@
-import { modelConfiguration } from '../settings/service-settings.js';
-import { parseModelResponse, decodeModelHttpBody, ModelOutputError } from './model-json.js';
-import {randomUUID} from '../../browser/shims/crypto.js';
-import {createResponseCache,requestDigest} from './response-cache.js';
-import {createRequestGate} from '../request-gate.js';
-import {modelRequestPolicy} from './model-request.js';
+import { modelConfiguration } from '../settings/service-settings.js?v=8e1e00bb1d41da9f';
+import { parseModelResponse, decodeModelHttpBody, ModelOutputError } from './model-json.js?v=8e1e00bb1d41da9f';
+import {randomUUID} from '../../browser/shims/crypto.js?v=8e1e00bb1d41da9f';
+import {createResponseCache,requestDigest} from './response-cache.js?v=8e1e00bb1d41da9f';
+import {createRequestGate} from '../request-gate.js?v=8e1e00bb1d41da9f';
+import {modelRequestPolicy} from './model-request.js?v=8e1e00bb1d41da9f';
 export function createModelClient({services,getTask,update,beforeRequest=()=>{},getContext=()=>({}),cacheDirectory,cacheVersion='uncached'}) {
 const cache=createResponseCache(cacheDirectory);
 const gate=createRequestGate(2);
