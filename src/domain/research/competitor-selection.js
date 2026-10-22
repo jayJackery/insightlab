@@ -37,6 +37,7 @@ export function selectCompetitors(products,input,selection={}){
   const anchors=matches.filter(product=>capacity(product)&&power(product)&&category(product)!=='accessory'),versions=anchors.map(version);
   const common=key=>versions.length&&versions.every(item=>item[key]===versions[0][key])?versions[0][key]:null;
   const reference={name:matches[0]?name(matches[0]):input.baselineProduct||'未设置基准',capacityWh:common('capacityWh'),ratedPowerW:common('ratedPowerW'),region:'all',category:anchors[0]?category(anchors[0]):'portable',catalogProductId:anchors.length===1?anchors[0].id:null,officialUrl:anchors[0]?.officialUrl||null,variants:versions,basis:versions.length?'自动匹配真实记录；所有地区版本分别保留，不混搭容量与连续功率':'尚无可靠的同档筛选参数'};
+  reference.ranges=versions.map(item=>({regions:item.regions,capacityMinWh:Math.max(0,item.capacityWh*(1-policy.capacityTolerance/100)),capacityMaxWh:item.capacityWh*(1+policy.capacityTolerance/100),powerMinW:Math.max(0,item.ratedPowerW*(1-policy.powerTolerance/100)),powerMaxW:item.ratedPowerW*(1+policy.powerTolerance/100)}));
   const baselineStatus=matches.length?'confirmed':!input.baselineProduct?'absent':baselineOptions.length?'needs_confirmation':'unresolved';
   const resolution={requested:true,baselineStatus,baselineOptions,requestedName:input.baselineProduct||''};
   if(!versions.length)return {...resolution,status:'unanchored',applies:false,requiresConfirmation:false,policy,reference,recommendations:[],rows:[],reason:baselineStatus==='absent'?'未设置基准，可直接开展技术、行业或产品调研；本次不作相对基准的同档排名。':baselineStatus==='needs_confirmation'?'找到以下可能的型号。可选择确认，也可暂不确认继续调研；确认前不把候选参数当作基准。':'暂未取得可靠的基准规格，可继续围绕原问题调研；不猜容量、功率或同档排名。',canDiscover:baselineStatus==='confirmed'||baselineOptions.length===0&&requested.exact};
@@ -58,6 +59,8 @@ export function selectCompetitors(products,input,selection={}){
   const withVersions=row=>({...row,versions:products.filter(product=>sameProduct(name(product),row.name)).map(version)});
   const recommendations=[],seen=new Set();
   for(const item of eligible){const identity=parseProductName(item.name),key=identity.brand||item.name;if(seen.has(key)||recommendations.some(row=>sameProduct(row.name,item.name)))continue;seen.add(key);recommendations.push(withVersions(item));if(recommendations.length===3)break;}
+  const matchingProducts=[],matchingNames=new Set();
+  for(const item of eligible){const product=parseProductName(item.name),key=(product.brand||'')+':'+product.model;if(matchingNames.has(key))continue;matchingNames.add(key);matchingProducts.push(withVersions(item));}
   const requestedCompetitors=[...new Set(Array.isArray(selection.candidates)?selection.candidates:explicit)].filter(value=>!sameProduct(value,reference.name));
   const rows=requestedCompetitors.map(value=>{
     const found=products.filter(product=>sameProduct(name(product),value));
@@ -65,5 +68,5 @@ export function selectCompetitors(products,input,selection={}){
     const target=found.map(classify).sort((a,b)=>(Boolean(a.status!=='comparable')-Boolean(b.status!=='comparable'))||a.distance-b.distance)[0];
     return {...withVersions(target),explicit:explicit.some(item=>sameProduct(item,value))};
   });
-  return {...resolution,status:'ready',applies:true,requiresConfirmation:false,policy,reference,recommendations,rows,explicitNames:explicit,automatic:!explicit.length||brands.length>0,reason:'自动读取基准参数，在所有地区内按容量与额定连续功率筛选；不使用峰值、输入功率或扩容套装容量。不同地区版本保留，不代表电压、认证与价格可直接横比。'};
+  return {...resolution,status:'ready',applies:true,requiresConfirmation:false,policy,reference,recommendations,matchingProducts,matchingCount:matchingProducts.length,rows,explicitNames:explicit,automatic:!explicit.length||brands.length>0,reason:'自动读取基准参数，在所有地区内按容量与额定连续功率筛选；不使用峰值、输入功率或扩容套装容量。不同地区版本保留，不代表电压、认证与价格可直接横比。'};
 }
