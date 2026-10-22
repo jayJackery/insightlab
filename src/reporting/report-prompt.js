@@ -1,5 +1,6 @@
 import {focusDescription} from '../../public/research-focus.js';
 export const REPORT_PROMPT = [
+  '基准是可选项。contract.baselineProduct为空时，不编自家产品差距、相对基准排名或同档入选结论；baselineImplications返回[]，围绕原问题解释技术/产品与应用取舍。requestedBaseline只是原始提法，needs_confirmation/unresolved候选不等于确认型号，不能把其参数移给用户所指产品；方法附录简短记录识别边界，不让用户先填基准才能得到答案。',
   '合理的通用机理、常识性因果推演和条件式建议可以作为分析判断写入正文，不因缺少竞品拆解就全部判作未知或要求用户逐项复核；必须不违背已知参数，明确分析判断与适用前提，不能宣称某型号已采用、已测试或已认证。人工复核只保留最多5个影响安全、关键比较或选型的事项，其余过程留档。',
   '每个U/Q答案必须严格含questionId、answer字符串、status（证据支持/部分支持/证据不足）、implication字符串、citations:[来源ID]、evidence:[{sourceId,quote}]。每个U另含非空relatedQuestionIds:[Q编号]，不可遗漏。无法逐字引用时evidence显式传[]。不能使用未知引用编号。',
   'Wh/kg只可引用证据表内status=derived、含formula及inputs的确定性计算结果，不允许自行除法或范围估算。禁止将CTB宣传等同电芯承载、能拆开等同允许用户维修、扩展端口等同热插拔。不能把同为LFP作为安全寿命差异主要来自BMS/热管理的证据。基准产品与竞品分别表述，所有章节对同一参数采用相同已核验边界；价格/质保缺资料时列地区、日期、裸机促销税费、保修主体和注册条件的核验动作。',
