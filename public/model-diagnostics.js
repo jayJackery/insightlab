@@ -3,7 +3,11 @@ const labels={MODEL_EMPTY:'最终正文为空',MODEL_REASONING_ONLY:'只有推�
 export function modelFailureHelp(task){
   if(task.status!=='failed')return '';
   const last=task.research?.modelDiagnostics?.at(-1);
-  if(last?.code==='MODEL_PROTOCOL_INVALID')return '本次模型服务已应答，但返回内容不是可用的研究答案；页面只保留了状态、响应类型与长度，没有保存正文或密钥。请在服务配置核对基础地址、模型路由，并查看服务商请求记录。';
+  if(last?.code==='MODEL_PROTOCOL_INVALID'){
+    const hasTransport=Number.isFinite(last.httpStatus)||typeof last.httpContentType==='string';
+    if(!hasTransport)return '这是旧版任务：当时未保存HTTP状态和响应类型，无法从记录还原服务商返回了什么。请刷新页面后重新输入本页密钥，再从已保存阶段重试；只会继续未完成阶段，但会重新调用模型并可能产生费用。新版会保存安全响应摘要，且协议错误不再原样重试。';
+    return '本次模型服务已应答，但返回内容不是可用的研究答案；页面只保留了状态、响应类型与长度，没有保存正文或密钥。请核对基础地址、模型路由与服务商请求记录。';
+  }
   const empty=['MODEL_EMPTY','MODEL_REASONING_ONLY','MODEL_RESPONSE_INVALID'].includes(last?.code)||/空内容|正文为空|没有最终JSON/.test(task.error||'');
   if(!empty)return '';
   return (task.phaseIndex===0?'本次停在研究计划，尚未开始资料搜索。':'当前阶段未得到有效的模型答案。')+'请在服务配置运行新版“结构化兼容检测”，通过后重试当前阶段；之前的短连接成功不代表这次研究请求成功。';
