@@ -51,7 +51,8 @@ export function evaluatePublication({ input = {}, research = {}, evidence = {}, 
   if ((evidence.claims || []).some((claim)=>claim.type === '公开事实' && claim.verification?.status !== 'supported') || (evidence.competitorRows || []).some((row)=>(row.metricValues || []).some((metric)=>metric.status === 'disclosed' && metric.verification?.status !== 'supported'))) add('FACT_UNVERIFIED','存在尚未核验通过的公开事实或产品参数。');
   if (!report.answerAudit || report.answerAudit.status !== 'passed') add('ANSWER_AUDIT', '答案与原始需求、证据和工程适用性的独立复核尚未通过。');
   if (routes.some((_,index)=>report.answerAudit?.technicalTopics?.find((item)=>item.topicIndex===index)?.status!=='deep')) add('SEMANTIC_DEPTH','至少一个技术主题未通过独立工程深度审查。');
-  if (input.baselineProduct && !(evidence.competitorRows || []).some((row) => sameProduct(row.competitor,input.baselineProduct))) add('BASELINE_MISSING', '缺少用户指定的基准产品。');
+  const baseline=research.contract.baselineProduct;
+  if (baseline && !(evidence.competitorRows || []).some((row) => sameProduct(row.competitor,baseline))) add('BASELINE_MISSING', '缺少已确认的基准产品。');
   return { status: issues.length ? 'needs_review' : 'passed', publishable: issues.length === 0, issues, contentBalance: balance, checkedAt: new Date().toISOString(), workflowVersion: WORKFLOW_VERSION };
 }
 
