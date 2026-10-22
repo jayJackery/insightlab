@@ -22,7 +22,7 @@ export function setupComparisonBrief(){
   const lookup=async()=>{const number=++sequence,node=document.querySelector('#brief-reference');if(!node)return;const product=baseline.value.trim();if(!product){node.innerHTML=referenceSummary();return;}node.textContent='正在匹配基准型号规格…';
     try{const response=await fetch('/api/competitors/recommend',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({input:{subject:document.querySelector('#subject').value||'便携储能竞品分析',baselineProduct:product,comparisonRegion:'all',referenceMode:'automatic'}})});const result=await response.json();if(number!==sequence)return;if(!response.ok)throw Error(result.error||'基准规格暂时无法读取，可继续调研。');node.innerHTML=referenceSummary(result)+candidates(result,'brief');node.closest('details').open=true;}catch(error){if(number===sequence)node.textContent=error.message;}
   };
-  baseline?.addEventListener('input',()=>{sequence++;clearTimeout(timer);timer=setTimeout(lookup,650);});baseline?.addEventListener('change',()=>{clearTimeout(timer);lookup();});
+  baseline?.addEventListener('input',()=>{sequence++;clearTimeout(timer);const node=document.querySelector('#brief-reference');if(node)node.innerHTML=baseline.value.trim()?'正在识别产品名称…':referenceSummary();timer=setTimeout(lookup,650);});baseline?.addEventListener('change',()=>{clearTimeout(timer);lookup();});
   document.addEventListener('click',event=>{const button=event.target.closest('[data-baseline-candidate][data-baseline-scope="brief"]');if(!button)return;baseline.value=button.dataset.baselineCandidate;baseline.dispatchEvent(new Event('change',{bubbles:true}));});
 }
 export function comparisonResults(selection){
