@@ -1,0 +1,483 @@
+{
+  "app": "insightlab-browser",
+  "buildId": "ddb1fb5fd7842dcf",
+  "workflowVersion": "rd-research/15",
+  "requirementsRevision": "RD-2026-10-21-v12",
+  "reportSchemaVersion": 5,
+  "createdAt": "2026-10-22T01:35:37.527Z",
+  "publicCatalogRetrievedAt": "2026-10-22T01:29:47.074Z",
+  "containsUserData": false,
+  "credentialStorage": "page-memory-only",
+  "files": [
+    {
+      "path": "src/browser/bootstrap.js",
+      "size": 5135,
+      "sha256": "f8fe454789da4644761d53a05085b5c33af7963eb1b3d72f8963550a5529bac5"
+    },
+    {
+      "path": "src/browser/storage.js",
+      "size": 3521,
+      "sha256": "8ecfddc3416a90c60fdc4b100cbe4e2a25fab07e81c2c07401cccc5cffce0318"
+    },
+    {
+      "path": "src/browser/runtime.js",
+      "size": 9958,
+      "sha256": "51fe731c0f19c392812549571695cb736c7a0d228bad3690cf790f2b0a83c8e7"
+    },
+    {
+      "path": "src/browser/shims/crypto.js",
+      "size": 346,
+      "sha256": "64b2c49345437e62f455fc8a2fbf9cde955bbeb101645b06a4346dd2443bd987"
+    },
+    {
+      "path": "vendor/hash.js",
+      "size": 31016,
+      "sha256": "7a0fe271935ff6eba1d71cd6ed60f0ff46b02060dbaa1fac18648dcae5e55050"
+    },
+    {
+      "path": "src/infrastructure/settings/service-settings.js",
+      "size": 4209,
+      "sha256": "d840ba8eba5a45d3ebd330ea4c978d31305e0288e7c88bae31f702189b090c62"
+    },
+    {
+      "path": "src/browser/shims/fs.js",
+      "size": 436,
+      "sha256": "05053d9494c7b06fb4bff5a3489435dd0b7f7117dde4a59c9338955507494b86"
+    },
+    {
+      "path": "src/infrastructure/ai/model-client.js",
+      "size": 6101,
+      "sha256": "963eb50dc99207bd6eb3e957a2fbc077aa9b100b6228f4b6feb0ecf414faaaa4"
+    },
+    {
+      "path": "src/infrastructure/ai/model-json.js",
+      "size": 2186,
+      "sha256": "a80898020cf34bc49369c53d59e386726d01b744c4112fd16ecd4e2ab2b234b5"
+    },
+    {
+      "path": "src/infrastructure/ai/response-cache.js",
+      "size": 1134,
+      "sha256": "9f3239754a3dd53b8c139a49a0348630f52345ef8f6f038221cbd723fee0f54c"
+    },
+    {
+      "path": "src/browser/shims/path.js",
+      "size": 139,
+      "sha256": "b97ede9f722371ee37d9f1f184e4f4a9b358c3fcb90e446822ae30c4f3e73125"
+    },
+    {
+      "path": "src/infrastructure/request-gate.js",
+      "size": 1208,
+      "sha256": "4dcd26ec4ac8d4c835d7aba10d870ebde103cd4c9917096d4275f72a1750edea"
+    },
+    {
+      "path": "src/infrastructure/persistence/source-store.js",
+      "size": 1070,
+      "sha256": "d1100dfae2ddc38673e79f2c96ffacba76750756b427abdfd0d2bda26f118821"
+    },
+    {
+      "path": "src/domain/evidence/source-document.js",
+      "size": 7429,
+      "sha256": "e1f4c29007a89a9e226303a15d0cddae5ed251a9be10321ac29d7cfabfbc8580"
+    },
+    {
+      "path": "src/application/research/workflow.js",
+      "size": 34773,
+      "sha256": "6f9acb07cabd254e8f472d1f876f7587e8c71e1757cf61ab00d14724eb1eb7c5"
+    },
+    {
+      "path": "public/product-labels.js",
+      "size": 4339,
+      "sha256": "eeb4b8e1ee0ad7585dcbf625730c7da61509346b9882f463b46b5ce03b48b416"
+    },
+    {
+      "path": "public/product-identity.js",
+      "size": 775,
+      "sha256": "068ff3d5485a062ba9d30ac8547687a1d664df2d59e44a9b0d88fd088ce79fb6"
+    },
+    {
+      "path": "src/domain/evidence/product-registry.js",
+      "size": 7730,
+      "sha256": "4ecf15eeaadf347203612fa74aab94bf90e0edd14ddc529bbba4eb25237c9048"
+    },
+    {
+      "path": "src/domain/research/catalog-policy.js",
+      "size": 2280,
+      "sha256": "593eecd840ecbcd3965ffb888b765e1c1c12b4c13646823c21e1952c218648c9"
+    },
+    {
+      "path": "src/domain/evidence/catalog-evidence.js",
+      "size": 4104,
+      "sha256": "bdaacf69a3cfa64097c0b7540873866bf231251c3feb9441bfe8a6836ef218d2"
+    },
+    {
+      "path": "src/domain/evidence/metric-schema.js",
+      "size": 6697,
+      "sha256": "a265dba435f1234b8b338faffdf1f9201811d3015fc194470c76a3bb8386f4c4"
+    },
+    {
+      "path": "public/plan-utils.js",
+      "size": 4925,
+      "sha256": "467bb1eb1dab38a109f18182b1967dd8269df779be2cc9e3b91cd3e1d115baf8"
+    },
+    {
+      "path": "public/metric-labels.js",
+      "size": 400,
+      "sha256": "6f4cdd8529cdf14f213eb88b2ca7ee54e8364234dd5ba5d878eab08a006ba232"
+    },
+    {
+      "path": "src/application/research/search-workflow.js",
+      "size": 14989,
+      "sha256": "994cffc542197ca5542541d38bfb72302cf0080ae3deefaeb6e3279b0113521e"
+    },
+    {
+      "path": "src/infrastructure/search/search.js",
+      "size": 4967,
+      "sha256": "5586e39a947600eec0a9bcac1cce421564f282d6fd290fb73f2a106be30a8a8f"
+    },
+    {
+      "path": "src/domain/research/engineering-policy.js",
+      "size": 5887,
+      "sha256": "a42cd584f67eb2ce7529fd1662f95b63834ec2ecefc6982d6c19b650fbd03115"
+    },
+    {
+      "path": "public/research-focus.js",
+      "size": 3795,
+      "sha256": "f6c883295ca5eb334f0b24d6f6acdd93b699bd0a181796e54bbf8ac184ee304c"
+    },
+    {
+      "path": "src/application/research/concurrency.js",
+      "size": 664,
+      "sha256": "e9d7c14507ce7e225f36cb2d76f7751c9e0be082b967feb0663f6325f5798c79"
+    },
+    {
+      "path": "src/domain/evidence/report-content.js",
+      "size": 11675,
+      "sha256": "758314a01aef8359fc00ef88d81ef2b5ff13305d795b2e4b31dd6a2747689b73"
+    },
+    {
+      "path": "src/domain/evidence/comparison-scope.js",
+      "size": 1084,
+      "sha256": "5a5587c6e3b74f2a8a145eee3b29f331ebdbd5dac7dcfca65ab82410864d01f9"
+    },
+    {
+      "path": "src/reporting/report-prompt.js",
+      "size": 6159,
+      "sha256": "52363734b40b6d35d0a7c75e35fe60da3c9f4b375cb420d969a27a8e55a7dfaf"
+    },
+    {
+      "path": "src/reporting/technical-writer.js",
+      "size": 9776,
+      "sha256": "95ddcc96fb84f651d2aff1b6fb5bf7adc12497435fde59edb293b0c52b05c0ba"
+    },
+    {
+      "path": "src/domain/research/engineering-detail.js",
+      "size": 3938,
+      "sha256": "bd8d984f26d34ff2bb5978644711f75cb9496d70733bd7434f78465185ce2a64"
+    },
+    {
+      "path": "src/browser/catalog.js",
+      "size": 2692,
+      "sha256": "fcc10ea67ccba1ae77b010751db0b34f77eeafcd790023918a9400569599870b"
+    },
+    {
+      "path": "src/infrastructure/search/catalog-records.js",
+      "size": 3748,
+      "sha256": "e00b0c44781c8a6f29757d83363598869fe17ba3fee7a8ada989545c4d8e823a"
+    },
+    {
+      "path": "src/domain/research/research-contract.js",
+      "size": 2529,
+      "sha256": "b98be95347cd3e73c4bc4ebee81dedc1ba59755c859207265359090796e93873"
+    },
+    {
+      "path": "src/domain/evidence/evidence-gaps.js",
+      "size": 3036,
+      "sha256": "4dd3c8ee7468c05977341a27e864512d5da450dbd8d5e5d76c8806d9df54217e"
+    },
+    {
+      "path": "src/domain/research/publication-gate.js",
+      "size": 7032,
+      "sha256": "7566139cd83939e5339541d9ec942687d2ecd2a1bfe5940e8de2f75fb267e236"
+    },
+    {
+      "path": "src/domain/research/report-validation.js",
+      "size": 3565,
+      "sha256": "a6072ace641b71c38828f2bfd17208fca7f1e96c6bc0cd4b3c3df26604742eae"
+    },
+    {
+      "path": "src/application/research/evidence-audit.js",
+      "size": 9969,
+      "sha256": "660447d3b467c7bda570cfa5ea044850cd1a5369fc12df0681400f0977ace5e4"
+    },
+    {
+      "path": "src/domain/evidence/metric-calculations.js",
+      "size": 2306,
+      "sha256": "7316a5c72907983a6a85cb3ee0dd4193d0b9000c40ad5959aabd59eaee5a3c10"
+    },
+    {
+      "path": "src/application/research/evidence-repair.js",
+      "size": 6950,
+      "sha256": "7fd3d8649b97734a3842cd752c16d85183817be59a753d6f78c8e256cd179842"
+    },
+    {
+      "path": "src/reporting/report-revision.js",
+      "size": 4236,
+      "sha256": "9044be4d13e39ca1681d12fd62c432b3f150980c66c13a5a243cc62312b2f124"
+    },
+    {
+      "path": "src/infrastructure/search/competitor-advisor.js",
+      "size": 744,
+      "sha256": "0859105f36e1c8f083f6c2b68badafdc07453f349ed4b7ed9b6d8dc98e1dffb0"
+    },
+    {
+      "path": "src/domain/research/competitor-selection.js",
+      "size": 7979,
+      "sha256": "755bb533ed39a79ac55c1e40d12d9861027100bc327f9097ca318815cdd89c23"
+    },
+    {
+      "path": "public/comparison-defaults.js",
+      "size": 76,
+      "sha256": "8690643d33ff120568948473cd0e5bec399c7d33ba286d8ebc6b0ef4817028d2"
+    },
+    {
+      "path": "src/infrastructure/search/catalog-spotlight.js",
+      "size": 2477,
+      "sha256": "60814116478fb79d20c9a45e1fe062962b5b893afb7b9d814ba68c8c9acdf571"
+    },
+    {
+      "path": "src/browser/repository.js",
+      "size": 1845,
+      "sha256": "4d78b6bc5ba273bd2c41ed67ddd4545b360041562c23d8758a50f41d274068a1"
+    },
+    {
+      "path": "src/domain/research/task-presentation.js",
+      "size": 2133,
+      "sha256": "ac98a410e0b7ccfe1401ec7b214032f9ba05e2cb2b51c5ef70985187d97f58ae"
+    },
+    {
+      "path": "src/domain/evidence/review-checklist.js",
+      "size": 13342,
+      "sha256": "9f117f83d816d3ef1383a732a6180f32f260a0234324fa957fdb786217751eb1"
+    },
+    {
+      "path": "src/domain/evidence/metric-presentation.js",
+      "size": 1756,
+      "sha256": "a30563ce989dca15b7c3ab4b2200082dc946ca734959bea77380d16b7f643368"
+    },
+    {
+      "path": "src/domain/evidence/boundary-presentation.js",
+      "size": 1158,
+      "sha256": "1f2211c52067cabc7ac97b367410208593e44dcc9f66ea59a1eb54b2c935d4fd"
+    },
+    {
+      "path": "src/domain/evidence/source-presentation.js",
+      "size": 518,
+      "sha256": "d6f528fd9e020ef8a3f0074aea28afa152124b60708751c9c3ea38b7db2bb7a2"
+    },
+    {
+      "path": "src/infrastructure/persistence/research-state.js",
+      "size": 1187,
+      "sha256": "46392f4204e0fbbf6470f445c732aeb33ebbbed64ea1fa27a6cec02790488094"
+    },
+    {
+      "path": "src/browser/task-actions.js",
+      "size": 4713,
+      "sha256": "196cd56d9bcd08ba38645f2d7b819b9ff3f0fd4681c30202e49248635cfcfaba"
+    },
+    {
+      "path": "src/application/research/review-feedback.js",
+      "size": 3265,
+      "sha256": "3cfe020a444f60bedfa52826a7c660626e8c54679a24f1554ff6eeb379e09792"
+    },
+    {
+      "path": "src/reporting/docx-export.js",
+      "size": 22852,
+      "sha256": "5c4b4e59d5fd3eaeaa19d20006ae7ec89e1ae948ddb29c1b1119bf88b15dc634"
+    },
+    {
+      "path": "src/browser/shims/zlib.js",
+      "size": 103,
+      "sha256": "97ca2c595ad44ccbd46d40b8249d2c96333865dfb28b95c72bc3e15e079971a4"
+    },
+    {
+      "path": "vendor/pako.js",
+      "size": 46070,
+      "sha256": "ed848534b0771de6d92aad666abced3b2b2383919683f336413574faa2296899"
+    },
+    {
+      "path": "public/comparison-visibility.js",
+      "size": 739,
+      "sha256": "01a776118d31f36b780ae0040da4a4de424e236942fa95351b7241dbf56155d7"
+    },
+    {
+      "path": "public/report-sections.js",
+      "size": 4146,
+      "sha256": "6cac6760ddaa06aecad9648243c7569e4aab03cb48695441bfc54304147bd9f5"
+    },
+    {
+      "path": "public/product-highlights.js",
+      "size": 1942,
+      "sha256": "b484274908781ed6cad491ecaf42bcfcf5895bc0cf4324a5ee9ad442c9fb1f48"
+    },
+    {
+      "path": "src/browser/shims/buffer.js",
+      "size": 621,
+      "sha256": "a990800c827ee8ce38e345b17281ac65470df3df050f3346e44c6c3560f50fd0"
+    },
+    {
+      "path": "src/browser/backup.js",
+      "size": 3544,
+      "sha256": "a136c5579c6e2d1e8abb695d04d2bdb1bc889934542020c47d485546034d0cc2"
+    },
+    {
+      "path": "public/app.js",
+      "size": 75512,
+      "sha256": "c2fef3848adbe9d240f6f3f5a1525657a6b514b3676c28392e8ac1fc5fce6c71"
+    },
+    {
+      "path": "public/api-usage.js",
+      "size": 2319,
+      "sha256": "33b42801ecd274f3dbee582bf28aef4078997ae00148252aee177f7db41910dd"
+    },
+    {
+      "path": "public/report-review.js",
+      "size": 5993,
+      "sha256": "8e6c5db31c476fb29f7afad9e7669362dd4f049a06c9fedba24fbe249d72df14"
+    },
+    {
+      "path": "public/product-comparison.js",
+      "size": 14170,
+      "sha256": "3aa8756688580f20f3319d4568de207af1ad8cd182b5aabf226f7e3fd85df7d9"
+    },
+    {
+      "path": "public/export-dialog.js",
+      "size": 5486,
+      "sha256": "72b0996f0fd6f4629e51cb31e699022e8189a668748427fac7d198cc4962601d"
+    },
+    {
+      "path": "public/access.js",
+      "size": 13162,
+      "sha256": "d2706d7779f1f742a2e90e299f77c7107ba6892dff3c447d40710f1f2a1af66f"
+    },
+    {
+      "path": "public/waiting-room.js",
+      "size": 15975,
+      "sha256": "ef6c83861d22fd9a42b62eab274ca6116e042c7f6f3ad29fbd98bb94e8783e24"
+    },
+    {
+      "path": "public/comparison-controls.js",
+      "size": 8033,
+      "sha256": "92f11a4a0fe28cbf165fd128d8a4dcb7fdfbac2df323ed727b136658b6ab7fcf"
+    },
+    {
+      "path": "public/catalog-status.js",
+      "size": 2225,
+      "sha256": "fc15c988b03b6e985acd9cc310afbfff6aac0826834082965e7568e89214c029"
+    },
+    {
+      "path": "public/task-feedback.js",
+      "size": 9306,
+      "sha256": "4b28f4f527e295b72b68dd59d67fd72c83493629f8f9ccfcfc966fe79a9b397c"
+    },
+    {
+      "path": "public/settings.js",
+      "size": 7078,
+      "sha256": "97eb9da1debbcd8c9dbdca7d9819f4b320bc3c0062f62fad030becba3b40b73f"
+    },
+    {
+      "path": "THIRD-PARTY.txt",
+      "size": 2687,
+      "sha256": "e40ef80892fd8ea616fd0c4e50b1ae1279b7c63c74fb2d0e9917f5b831b687e9"
+    },
+    {
+      "path": "assets/catalog-snapshot.json",
+      "size": 584720,
+      "sha256": "fb024fafa7af944aebcbc70bc2472e8583886c9b884c32f2d6aef77acaa2d514"
+    },
+    {
+      "path": "index.html",
+      "size": 13412,
+      "sha256": "a8ed6890995cc6845d250d27f5366489cfbc16b2627e93e5def3daa35e0e0d1a"
+    },
+    {
+      "path": "src/browser/browser.css",
+      "size": 894,
+      "sha256": "57a372558b29b8524cf3218318c9ba9177239efb9539e64ec7af8c48531e6852"
+    },
+    {
+      "path": "public/styles.css",
+      "size": 14235,
+      "sha256": "01082b66759b2b57790443e300f78f190afa241246de67c5972670f837f8c4bc"
+    },
+    {
+      "path": "public/overrides.css",
+      "size": 21875,
+      "sha256": "14656e6ce9c14c1a476777ab911ec1a508d0e7d92666160290dcac5f43375307"
+    },
+    {
+      "path": "public/report.css",
+      "size": 20204,
+      "sha256": "caf4f59f99144230c85b955324d0c18251f358fe1aa79db8cf1809116772159f"
+    },
+    {
+      "path": "public/settings.css",
+      "size": 4429,
+      "sha256": "410fe682fc676484584df1fa1099b986654fd606e6679f8a4f1b746b3c8c0c05"
+    },
+    {
+      "path": "public/reading-layout.css",
+      "size": 6609,
+      "sha256": "0a552b838ab6ee76bce375ad6f42150719e1e53f620a1685986266dc4961518b"
+    },
+    {
+      "path": "public/research-controls.css",
+      "size": 4516,
+      "sha256": "03059dc06fc4bc6739d2a47a74057e992ec45deb7d793120725fc0815f304ce6"
+    },
+    {
+      "path": "public/access.css",
+      "size": 7131,
+      "sha256": "03b35e79926c424c3090b76a9c207684a9330b6374af9a694b06153fe9d8ed7c"
+    },
+    {
+      "path": "public/waiting-room.css",
+      "size": 10976,
+      "sha256": "fb8a7456180d8f7eb00d347f62a4fe6fe7566f6444ad07a935259bcebf79050e"
+    },
+    {
+      "path": "public/task-feedback.css",
+      "size": 6944,
+      "sha256": "7408e0f9eba690dd4d052167e4e63cab0a652455de1a07cf25ed981aa2b4dd35"
+    },
+    {
+      "path": "public/product-comparison.css",
+      "size": 8685,
+      "sha256": "fb58ed711541b3e865b477595b31ac6e931ef7a3b04e8042d786192ba3cac642"
+    },
+    {
+      "path": "public/reading-polish.css",
+      "size": 3098,
+      "sha256": "f9fccb41f2d069cb00339f1a4d4060c5c67d6d9e1d5add5b0d0032d751f3581e"
+    },
+    {
+      "path": ".nojekyll",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "size": 581,
+      "sha256": "2f73ee38f6c3da22f4b4be62a15ce0d905d1315fb6e2b55226c94bf4f05b19cf"
+    },
+    {
+      "path": "README.md",
+      "size": 3311,
+      "sha256": "37ea343c9d0387d2fae11c268a6041150538a1370249ef7750025f18aecabfdb"
+    },
+    {
+      "path": "build.json",
+      "size": 353,
+      "sha256": "d30dfcefb4da8f912c8929c6b7c168560b75f1be896891e0c78d314273e2a657"
+    }
+  ]
+}

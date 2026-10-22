@@ -1,0 +1,62 @@
+/* A dedicated outline occupies the gutter; the article keeps a stable reading measure. */
+.has-report{max-width:1510px;padding:24px 24px 80px;margin-inline:auto}
+.report-layout{grid-template-columns:170px minmax(0,850px) 250px;gap:24px;justify-content:center}
+.report-outline{position:sticky;top:26px;align-self:start;max-height:calc(100vh - 52px);overflow:auto;scrollbar-width:thin;min-width:0;padding-top:13px}
+.report-outline .report-contents{margin:0;padding:0;border:0}
+.report-outline .report-contents>span{font-size:12px;font-weight:650;padding-left:12px;margin:0 0 16px;color:#74869a}
+.report-outline .report-contents>div{display:flex;flex-direction:column;gap:2px}
+.report-outline .report-contents a{display:block;padding:9px 10px 9px 12px;border-left:2px solid transparent;font-size:13px;line-height:1.65;color:#6d8093;text-decoration:none;overflow-wrap:anywhere}
+.report-outline .report-contents a span{display:none}
+.report-outline .report-contents a:hover{color:#254e70;background:#edf2f7;text-decoration:none}
+.report-outline .report-contents a.is-active{border-left-color:#386e98;color:#24587f;background:#eaf1f7;font-weight:650}
+.report-outline .report-contents a.outline-subchapter{font-size:11px;padding-left:23px;color:#8794a3}
+.report-main,.report-workspace,.report{min-width:0}
+.technical-balance{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0 18px;margin-bottom:18px;border-bottom:1px solid #e1e8ef}
+.technical-balance strong{display:inline-block;font-size:15px;color:#355c7b;margin-right:14px}
+.technical-balance span{font-size:12px;color:#7a6a52}.technical-balance.passed span{color:#4b7a66}
+.technical-balance small{display:block;margin-top:7px;font-size:11px;color:#8b98a7;line-height:1.7}
+.technical-balance button{flex-shrink:0;border:1px solid #d4e0e9;border-radius:5px;padding:8px 10px;color:#376587;background:#f7fafc;font-size:12px;cursor:pointer}
+.report .secondary-section>summary{display:flex;justify-content:space-between;align-items:center;gap:15px;cursor:pointer;color:#405a73;font-size:18px;font-weight:650;padding-bottom:12px}
+.secondary-section>summary small{font-size:12px;color:#8191a2;font-weight:400}.secondary-section[open]>summary{margin-bottom:14px}
+.technical-route{scroll-margin-top:78px}
+.report-source-sidebar{top:24px;max-height:calc(100vh - 48px)}
+@media(max-width:1450px){.has-report{padding-inline:20px}.report-layout{grid-template-columns:140px minmax(0,1fr) 225px;gap:18px}.report{padding-inline:28px}.report-outline .report-contents a{font-size:12px;padding-left:10px}}
+@media(max-width:1120px){.report-layout{grid-template-columns:140px minmax(0,1fr)}.report-source-sidebar{grid-column:2;position:static;max-height:450px}.report-source-sidebar .source-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.report-outline{grid-row:1 / span 2}}
+@media(max-width:780px){.has-report{padding-inline:12px}.report-layout{display:block}.report-outline{position:sticky;top:0;z-index:5;padding:8px 0;background:#f7f8fa;max-height:none;overflow:visible}.report-outline .report-contents>span{display:none}.report-outline .report-contents>div{flex-direction:row;overflow:auto;gap:5px;padding:0 0 5px}.report-outline .report-contents a{white-space:nowrap;flex-shrink:0;padding:7px 10px;border-left:0;border-bottom:2px solid transparent}.report-outline .report-contents a.is-active{border-bottom-color:#386e98}.report-outline .report-contents .outline-subchapter{display:none}.report-tabs{top:46px}.report-source-sidebar{margin-top:24px}.report{padding-inline:22px}.technical-balance{align-items:flex-start;flex-direction:column}}
+@media print{.report-outline,.technical-balance button{display:none}.report-layout{display:block}.report .secondary-section:not([open])>*:not(summary){display:block}.report-source-sidebar{max-height:none;overflow:visible}}
+/* Publication state is distinct from workflow completion. */
+.quality-notice { margin: 24px 0; padding: 18px 20px; border: 1px solid #decdaa; border-radius: 8px; background: #fffaf1; color: #654d24; font-size: 15px; line-height: 1.7; }
+.quality-notice strong { font-size: 17px; }
+.quality-notice p { margin: 8px 0; }
+.quality-notice summary { cursor: pointer; }
+
+.design-problem { padding: 14px 18px; background: #f1f5f9; border-left: 3px solid #355b7c; }
+.system-path { margin: 18px 0 24px; padding: 16px 20px; background: #eef4f8; border: 1px solid #dce5ee; border-radius: 8px; }
+.system-path strong { font-size: 14px; color: #496580; }
+.system-path p { margin: 8px 0 0; overflow-wrap: anywhere; }
+.system-path-flows { margin: 10px 0 0; padding-left: 20px; }
+.system-path-flows li { margin: 8px 0; line-height: 1.85; }
+.engineering-table-scroll { overflow-x: auto; margin: 14px 0 24px; }
+.engineering-table { width: 100%; border-collapse: collapse; font-size: 0.92em; line-height: 1.8; }
+.engineering-table th { background: #edf2f7; color: #263e55; text-align: left; }
+.engineering-table th, .engineering-table td { border: 1px solid #dfe6ee; padding: 13px 15px; vertical-align: top; min-width: 130px; white-space: pre-line; overflow-wrap: anywhere; }
+.engineering-table tr:nth-child(even) td { background: #fafbfd; }
+.route-question { margin: 16px 0; color: #617489; font-size: 14px; }
+.route-question summary { cursor: pointer; }
+.route-question[open] { padding-bottom: 12px; border-bottom: 1px solid #e1e8ef; }
+.main { container-type: inline-size; }
+@container (max-width: 900px) {
+  .report-layout { display: block; }
+  .report-outline { position: sticky; top: 0; z-index: 5; padding: 8px 0; background: #f7f8fa; max-height: none; overflow: visible; }
+  .report-outline .report-contents > span { display: none; }
+  .report-outline .report-contents > div { flex-direction: row; overflow: auto; gap: 6px; }
+  .report-outline .report-contents a { white-space: nowrap; flex-shrink: 0; padding: 8px 12px; border-left: 0; border-bottom: 2px solid transparent; }
+  .report-outline .report-contents a.is-active { border-bottom-color: #386e98; }
+  .report-outline .outline-subchapter { display: none; }
+  .report-source-sidebar { position: static; max-height: 450px; margin-top: 24px; }
+  .report { padding-inline: 24px; }
+  .report-outline .report-contents a.outline-subchapter { display: block; max-width: 190px; padding-left: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+.scope-variants { margin: 16px 0; padding: 14px 18px; background: #f5f8fb; border: 1px solid #e1e8ef; border-radius: 7px; font-size: 14px; line-height: 1.8; }
+.scope-variants summary { cursor: pointer; color: #315a7c; }
+.scope-variants ul { padding-left: 20px; }
