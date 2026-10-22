@@ -21,9 +21,11 @@ export function engineeringQueries(input,plan={}) {
 export function applyEngineeringPolicy(plan, input, {catalogSources=[]}={}) {
   const known=knownCatalogMetrics(catalogSources,input,plan);
   const focus=resolveResearchFocus({...input,analysisFocus:plan.analysisFocus ?? input.analysisFocus});
+  const delivery=plan.delivery||focus.delivery;
+  if(delivery?.route==='answer')return {...plan,queries:validateQueries(plan.queries),researchPolicy:{version:7,catalogPolicy:'reuse_known_fields',focus,delivery,technicalQueries:[],technicalQueryShare:0},sourceStrategy:[...(plan.sourceStrategy||[]),'精准问答：只搜索原问题，不扩展行业、竞品或工程主题。']};
   const proposed = planList(plan.queries, "queries", 10).filter(query=>!redundantCatalogQuery(query,known));
   const technical = proposed.filter((query) => engineeringTerms.test(query));
-  const total=10,target=Math.ceil(total*focus.queryShare);
+  const total=delivery?.queryLimit||10,target=Math.ceil(total*focus.queryShare);
   const selected = planList([...technical, ...engineeringQueries(input,plan)], "queries", target);
   const products=[input.baselineProduct,...(plan.competitors || [])].filter(Boolean);
   const productQueries=products.map(name=>short(name.replace(/[（(].*$/u,''),65)+' use cases load compatibility application review');

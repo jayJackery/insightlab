@@ -3,7 +3,7 @@ import {buildProductRegistry,sameProduct} from '../evidence/product-registry.js'
 import {metricDefinition,normalizeRegion} from '../evidence/metric-schema.js';
 export function knownCatalogMetrics(sources,input,plan={}){
  const region=normalizeRegion(plan.comparisonScope?.region||input.comparisonRegion||'unknown');
- return catalogEvidence(sources,buildProductRegistry(input,plan)).competitorRows.flatMap(row=>row.metricValues.filter(m=>m.status==='curated'&&(region==='unknown'||m.region===region)));
+ return catalogEvidence(sources,buildProductRegistry(input,plan)).competitorRows.flatMap(row=>row.metricValues.filter(m=>m.status==='curated'&&(region==='unknown'||region==='all'||m.region===region)));
 }
 export function catalogHas(known,product,metric){const id=metricDefinition(metric).id;return known.some(m=>sameProduct(m.product,product)&&(id!=='unknown'&&m.metricId===id||m.metric===metric));}
 export function excludeKnownSpecGaps(coverage,known){

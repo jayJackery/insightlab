@@ -14,7 +14,8 @@ async function model(messages, options = {}) {
   const base = config.baseUrl.replace(/\/$/, "");
   const supportsThinking=new URL(base).hostname==='api.deepseek.com' && /^deepseek-(?:flash|v4-pro)$/.test(config.model);
   let schemaFeedback='';
-  for (let attempt = 0; attempt < 2; attempt++) {
+  const attempts=options.maxAttempts===1?1:2;
+  for (let attempt = 0; attempt < attempts; attempt++) {
     const requestMessages = attempt ? messages.map((message, i) => i === 0 ? { ...message, content: message.content + "\n上次输出无法读取。请重新生成完整、严格的JSON对象，不要代码围栏或说明文字。缩短引文、避免重复句，保持所有必需字段和引用，不添加没有证据的事实。" + (schemaFeedback?'\n必须修正的结构问题：'+schemaFeedback:'') } : message) : messages;
     const thinking=supportsThinking ? options.reasoning==='low' && attempt===0 ? {thinking:{type:'enabled'},reasoning_effort:'low'} : {thinking:{type:'disabled'}} : {};
     const maxTokens=supportsThinking && thinking.thinking.type==='enabled' ? Math.max(16000,options.maxTokens || 8192) : options.maxTokens || 8192;
@@ -51,9 +52,9 @@ async function model(messages, options = {}) {
       if (!(error instanceof ModelOutputError)) throw error;
       if (taskId) {
         const research = getTask(taskId)?.research || {};
-        update(taskId, { research: { ...research, modelDiagnostics: [...(research.modelDiagnostics || []).slice(-19), { id:randomUUID(),stage: options.stage || "模型分析", code: error.code, ...error.diagnostic, attempt: attempt + 1, automaticRetry: attempt === 0, recordedAt: new Date().toISOString() }] } });
+        update(taskId, { research: { ...research, modelDiagnostics: [...(research.modelDiagnostics || []).slice(-19), { id:randomUUID(),stage: options.stage || "模型分析", code: error.code, ...error.diagnostic, attempt: attempt + 1, automaticRetry: attempt+1<attempts, recordedAt: new Date().toISOString() }] } });
       }
-      if (attempt === 1 || error.code === "MODEL_REFUSED") throw Error((options.stage || "模型分析") + "：" + error.message + "已保留阶段进度，可从中断处继续。");
+      if (attempt+1===attempts || error.code === "MODEL_REFUSED") {const failure=Error((options.stage || "模型分析") + "：" + error.message + "已保留阶段进度，可从中断处继续。");failure.code=error.code;throw failure;}
     }
   }
 }

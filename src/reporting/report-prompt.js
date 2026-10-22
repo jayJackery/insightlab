@@ -13,7 +13,8 @@ export const REPORT_PROMPT = [
   "仅返回JSON：executiveSummary、userQuestionAnswers数组、questionAnswers数组、scopeAndMethod对象数组、baselineImplications对象数组、productApplications对象数组、trends对象数组、opportunitiesAndRisks对象数组、recommendations对象数组、methodNotes字符串数组。",
   '正文中突出准确厂商/型号。产品和技术判断均须回答“相对基准差在哪、为什么、适用什么场景、证据是什么”。技术内容明确绑定具体型号，通用参考不写成竞品已采用。章节标题优先写具体对象和差异，不用泛泛品牌介绍。篇幅服从本次侧重点，不能套用固定的技术百分比。',
 ].join("\n");
-export function reportPromptForFocus(focus) {
+export function reportPromptForFocus(focus,delivery=focus.delivery) {
   const budget=focus.mode==='product'?'重点展开产品定位、目标用户、功能/性能矩阵、体验、价格质保、场景痛点和相对基准的优劣。每个产品相关章节2至4小节、每小节3至4点、每点60至100字；技术简述只解释关键产品差异，不压缩产品分析来凑技术占比。':focus.mode==='technical'?'重点放在已有技术主题。其他章节每章1至2小节、每小节2至3点，避免重复技术细节；逐问题答案仍须完整。':'技术与产品章节均围绕原始问题展开。产品相关章节每章2至3小节、每小节2至3点，避免一方挤占另一方。';
-  return REPORT_PROMPT+'\n本次确认侧重点：'+focusDescription(focus)+'\n'+budget+'\n不要重复输出已提供的technologyDeepDives，摘要先给对比判断。';
+  const depth=delivery?'\n本次篇幅：'+delivery.label+'，'+delivery.characters+'。'+(delivery.route==='answer'?'这是明确问题的直接回答，不是行业报告。摘要只给答案，最多100字；逐条U/Q答案各80–180字，必要条件和来源保留。scopeAndMethod、baselineImplications、productApplications、trends、opportunitiesAndRisks、recommendations、methodNotes没有原问题明确需要时全部返回空数组；不要为了结构完整写无关章节。':delivery.level==='medium'?'各非技术章节最多1个必要小节、2至3条要点；无需覆盖原问题之外的行业趋势或建议。':delivery.level==='concise'?'保留全部原问题和必要结论，每个相关章节最多2条要点，无关章节返回空数组，不写行业综述。':'完整展开用户问题，需要的技术和产品章节按本次重点分配。'):'';
+  return REPORT_PROMPT+'\n本次确认侧重点：'+focusDescription(focus)+'\n'+budget+'\n不要重复输出已提供的technologyDeepDives，摘要先给对比判断。'+depth;
 }

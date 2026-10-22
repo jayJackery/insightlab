@@ -49,7 +49,7 @@ export function mergeEvidence(batches,comparisonScope=null) {
         }
         else if (existing.status===metric.status && ['disclosed','curated'].includes(metric.status)) {
           existing.observations = [...(existing.observations || []),{...metric}];
-          const scopeConflict=scopeConflicts(existing,metric);
+          const scopeConflict=scopeConflicts(existing,metric).filter(field=>!(comparisonScope?.region==='all'&&field==='region'&&comparableValue(existing)===comparableValue(metric)));
           if (scopeConflict.length || comparableValue(existing)!==comparableValue(metric)) {
             const conflict = row.competitor + "的" + metric.metric + (scopeConflict.length?'口径不同（'+scopeConflict.join('、')+'）':'来源值不同')+"：" + existing.value + " " + (existing.unit || "") + " / " + metric.value + " " + (metric.unit || "");
             result.conflicts.push(conflict); existing.status = "not_comparable"; existing.note = conflict;
@@ -65,7 +65,8 @@ export function mergeEvidence(batches,comparisonScope=null) {
   }
   result.competitorRows = [...rows.values()];
   for(const row of result.competitorRows)for(const metric of row.metricValues)metric.catalogObservations=(metric.observations||[]).filter(item=>item.status==='curated');
-  if(comparisonScope) {
+  if(comparisonScope?.region==='all')result.comparisonScope=comparisonScope;
+  if(comparisonScope&&comparisonScope.region!=='all') {
     const scopedConflicts=[];
     for(const row of result.competitorRows)for(let index=0;index<row.metricValues.length;index++) {
       const original=row.metricValues[index],{eligible,variants}=scopeObservations(original,row,comparisonScope);

@@ -8,7 +8,8 @@ import {digest} from '../../domain/evidence/source-document.js';
 
 // Budget is persisted before each external request; retrying a task cannot reset its spend.
 export async function repairEvidence({input,plan,research,evidence,sources,search,review,snapshotSources,rebuild,persist}) {
-  const limits=EVIDENCE_REPAIR_LIMITS;
+  const delivery=plan.delivery;
+  const limits=delivery?{...EVIDENCE_REPAIR_LIMITS,rounds:delivery.repairRounds,totalQueries:delivery.repairQueries,queriesPerRound:Math.min(EVIDENCE_REPAIR_LIMITS.queriesPerRound,delivery.repairQueries),maxSources:delivery.maxSources+delivery.repairQueries*3}:EVIDENCE_REPAIR_LIMITS;
   research.queryRuns ||= [];research.searchRounds ||= [];research.searchWarnings ||= [];
   if(research.evidenceRepair?.contractSignature!==research.contractSignature)research.evidenceRepair={contractSignature:research.contractSignature,roundsUsed:0,queriesUsed:0,attempts:[],events:[],limits};
   const state=research.evidenceRepair;

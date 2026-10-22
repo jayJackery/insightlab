@@ -7,7 +7,14 @@ const setText=(node,value)=>{if(node&&node.textContent!==String(value))node.text
 function actionModel(task){
   const editable=task.permissions?.canEdit!==false;
   if(task.status==='plan_ready')return {kind:'attention',icon:'!',title:editable?'下一步：确认研究计划':'研究计划等待创建者确认',text:'请检查研究问题、基准型号、同档竞品与检索范围。确认后才会开始资料搜索。',label:'检查并确认计划',action:'plan'};
-  if(task.status==='failed')return {kind:'error',icon:'!',title:'研究已中断，需要处理后重试',text:String(task.error||'当前阶段未完成，已保存可用的阶段结果。'),label:'查看原因与重试入口',action:'error'};
+  if(task.status==='failed'){
+    let text=String(task.error||'当前阶段未完成，已保存可用的阶段结果。');
+    if(/来源.*审查/.test(text)&&/截断|长度上限/.test(text)){
+      const saved=Object.keys(task.research?.searchCheckpoint?.completedQueries||{}).length;
+      text+=' '+(saved?'已保存'+saved+'条查询结果；重试会继续未完成的审查，复用成功查询。':'此旧版本未保存原始搜索结果，不能仅凭来源数量恢复；重试可能重新检索。新版会逐查询、逐批保存。');
+    }
+    return {kind:'error',icon:'!',title:'研究已中断，需要处理后重试',text,label:'查看原因与重试入口',action:'error'};
+  }
   if(task.status==='needs_review'||(task.status==='completed'&&task.quality?.publishable===false))return {kind:'attention',icon:'!',title:task.quality?.status==='legacy_unverified'?'历史报告可阅读 · 尚未按当前规则验收':'报告已生成 · 草稿待核验',text:'可以先阅读与导出草稿；尚有证据或内容问题需要处理，完整原因保存在质量说明中。',label:'查看草稿与待核验项',action:'review'};
   if(task.status==='completed')return {kind:'success',icon:'✓',title:'报告已完成',text:'报告已保存到本机，可以阅读、核对来源或按章节导出 Word。',label:'查看报告',action:'report'};
   return null;

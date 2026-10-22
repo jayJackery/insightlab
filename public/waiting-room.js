@@ -7,7 +7,7 @@ export function stageModel(task){
   const research=task.research||{},phase=Math.max(0,Math.min(4,Number(task.phaseIndex)||0));
   let fraction=null,label='当前环节尚无可计数的子任务',activity='';
   if(task.status==='queued')return {phase,title:'任务已排队',description:'等待当前研究结束后依次执行，暂不估计开始时间。',activity:'已保存诉求，轮到本任务时自动开始',fraction:null,label:'等待执行',units:0};
-  if(phase===0)activity='正在制定研究计划，完成后需要你确认';
+  if(phase===0)activity=research.plan?.delivery?.autoStart?'正在整理精准查询，随后直接回答你的问题':'正在制定研究计划，复杂研究完成后需要你确认';
   if(phase===1){const live=research.searchProgress||{},runs=research.queryRuns||[],total=Number(live.totalQueries||runs.length||research.plan?.queries?.length||0),done=runs.length?runs.filter(row=>['completed','failed'].includes(row.status)).length:Number(live.completedQueries||0);if(total>0){fraction=Math.min(1,done/total);label='已处理查询 '+done+' / '+total;}activity=live.currentQueries?.length?'正在检索 '+live.currentQueries.length+' 个问题：'+live.currentQueries.join(' / '):live.currentQuery||'正在检索和审查公开来源';}
   if(phase===2){const progress=research.evidenceProgress||{},audit=research.auditProgress||{},done=Number(progress.completed||0),total=Number(progress.total||0);if(/独立事实核验/.test(research.currentActivity||'')&&audit.total){fraction=Math.min(1,audit.completed/audit.total);label='已核验事实 '+audit.completed+' / '+audit.total+(audit.reused?' · 复用 '+audit.reused+' 项':'');activity=research.currentActivity;}else if(total>0&&done<total){fraction=Math.min(1,done/total);label='已整理来源 '+done+' / '+total+(progress.reusedSources?' · 复用 '+progress.reusedSources+' 条':'');activity=research.currentActivity||'正在整理证据';}else {label=total?'来源提取已完成，正在核验或补查':'正在逐项核对证据';activity=research.currentActivity||'核对产品型号、参数条件与原文依据';}}
   if(phase===3){const checkpoint=research.technicalCheckpoint||{},done=(checkpoint.routes||[]).filter(Boolean).length,total=(checkpoint.outline||[]).length;if(total){fraction=Math.min(1,done/total);label='已保存主题 '+done+' / '+total;}activity=research.currentActivity||'正在分析产品差异和技术实现';}
@@ -24,7 +24,7 @@ let cycle=0,lastTick=Date.now(),lastPaint='',lastProduct='',tipIndex=0;
 const visits=new Map(),cycleMs=10000;
 function shuffle(items){const result=[...items];for(let n=result.length-1;n>0;n--){const j=Math.floor(Math.random()*(n+1));[result[n],result[j]]=[result[j],result[n]];}return result;}
 function secondsLabel(seconds){const n=Math.max(0,Math.floor(seconds));return n>=3600?String(Math.floor(n/3600)).padStart(2,'0')+':'+String(Math.floor(n/60)%60).padStart(2,'0')+':'+String(n%60).padStart(2,'0'):String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
-function select(step){if(!deck.length)return;index=(index+step+deck.length)%deck.length;cycle=0;paintProduct(true);}
+function select(step){if(!deck.length)return;index=(index+step+deck.length)%deck.length;cycle=0;lastTick=Date.now();paintProduct(true);}
 function paintProduct(force=false){
   if(!root)return;
   const box=root.querySelector('.showcase-content'),product=deck[index];
@@ -74,7 +74,7 @@ function tick(){
   const now=Date.now(),delta=Math.min(2000,now-lastTick);lastTick=now;
   if(!root?.isConnected||!visible||document.hidden)return;
   paint();
-  const focusInside=root.querySelector('.product-showcase').contains(document.activeElement);
+  const focusInside=root.querySelector('.showcase-content').contains(document.activeElement);
   if(deck.length&&!paused&&!hovered&&!focusInside){cycle+=delta;if(cycle>=cycleMs){select(1);tipIndex=(tipIndex+1)%tips.length;}}
   root.querySelector('.showcase-cycle span').style.transform='scaleX('+(cycle/cycleMs)+')';
 }
@@ -85,7 +85,7 @@ export function mountWaitingRoom(nextTask,{api:client,preserved}={}){
   const previous=root;root=preserved?.dataset.waitTask===nextTask.id?preserved:incoming;task=nextTask;api=client;online=true;lastPaint='';if(previous!==root)lastTick=Date.now();
   if(!root.querySelector('.wait-facts')){const facts=document.createElement('div');facts.className='wait-facts';facts.innerHTML='<div><strong data-wait-sources>0</strong><small>已收集来源</small></div><div><strong data-wait-queries>0 / 0</strong><small>检索查询</small></div><div><strong data-wait-round>初始检索</strong><small>补查轮次</small></div>';root.querySelector('.wait-now').before(facts);}
   if(!visits.has(task.id))visits.set(task.id,Date.now());
-  if(previous!==root){lastProduct='';hovered=false;const showcase=root.querySelector('.product-showcase');showcase.addEventListener('mouseenter',()=>{hovered=true;paintProduct();});showcase.addEventListener('mouseleave',()=>{hovered=false;paintProduct();});root.addEventListener('click',event=>{const action=event.target.closest('[data-wait-action]')?.dataset.waitAction;if(!action)return;if(action==='next')select(1);if(action==='previous')select(-1);if(action==='toggle'){paused=!paused;paintProduct();}if(action==='retry'){feedError='';root.querySelector('.showcase-content').innerHTML='<div class="showcase-placeholder">正在重新读取规格库…</div>';loadFeed();}});}
+  if(previous!==root){lastProduct='';hovered=false;const content=root.querySelector('.showcase-content');content.addEventListener('mouseenter',()=>{hovered=true;paintProduct();});content.addEventListener('mouseleave',()=>{hovered=false;lastTick=Date.now();paintProduct();});root.addEventListener('click',event=>{const action=event.target.closest('[data-wait-action]')?.dataset.waitAction;if(!action)return;if(action==='next')select(1);if(action==='previous')select(-1);if(action==='toggle'){paused=!paused;if(!paused){cycle=0;lastTick=Date.now();}paintProduct();}if(action==='retry'){feedError='';root.querySelector('.showcase-content').innerHTML='<div class="showcase-placeholder">正在重新读取规格库…</div>';loadFeed();}});}
   paint();paintProduct();loadFeed();
   if(!ticker)ticker=setInterval(tick,1000);
 }

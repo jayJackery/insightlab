@@ -1,5 +1,6 @@
 import {metricLabels} from './metric-labels.js';
 import {cleanProductLabel} from './product-identity.js';
+import {resolveReportDepth,REPORT_LENGTHS} from './report-depth.js';
 const fields = {
   queries: ["query", "searchQuery", "search_query", "searchTerms", "search_terms", "keywords", "keyword", "q", "text"],
   questions: ["question", "questionText", "question_text", "text", "description"],
@@ -65,6 +66,8 @@ export function fallbackQueries(input) {
 
 export function normalizePlan(raw, input = {}, { defaults = false } = {}) {
   const plan = {};
+  plan.reportLength=Object.hasOwn(REPORT_LENGTHS,raw?.reportLength)?raw.reportLength:input.reportLength||'auto';
+  plan.delivery=resolveReportDepth({...input,reportLength:plan.reportLength});
   for(const key of ['comparisonScope','competitorSelection','comparisonInput'])if(raw?.[key]&&typeof raw[key]==='object'&&!Array.isArray(raw[key]))plan[key]=structuredClone(raw[key]);
   plan.analysisFocus=['auto','technical','product','balanced'].includes(raw?.analysisFocus)?raw.analysisFocus:['auto','technical','product','balanced'].includes(input.analysisFocus)?input.analysisFocus:'auto';
   for (const field of Object.keys(fields)) plan[field] = planList(raw?.[field], field, field === "queries" ? 10 : 12);

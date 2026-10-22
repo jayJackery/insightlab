@@ -1,3 +1,4 @@
+import {resolveReportDepth,focusForDelivery} from './report-depth.js';
 const profiles={
   technical:{label:'技术原理与实现',minimumTopics:4,maximumTopics:6,queryShare:0.65,topicCharacters:650,minimumEngineeringDocuments:3},
   product:{label:'产品与竞品对比',minimumTopics:0,maximumTopics:2,queryShare:0.2,topicCharacters:350,minimumEngineeringDocuments:0},
@@ -28,7 +29,7 @@ export function resolveResearchFocus(input={}) {
     profile.technicalTarget=explicitTarget;profile.targetRange=profile.ratioKind==='minimum'?[explicitTarget,1]:profile.ratioKind==='maximum'?[0,explicitTarget]:[Math.max(0,explicitTarget-0.05),Math.min(1,explicitTarget+0.05)];
     profile.minimumTopics=explicitTarget===0?0:explicitTarget<0.4?1:profile.minimumTopics;profile.maximumTopics=explicitTarget===0?0:profile.maximumTopics;profile.queryShare=explicitTarget===0?0:Math.max(0.1,explicitTarget);
   }
-  return profile;
+  return focusForDelivery(profile,resolveReportDepth(input));
 }
 export function focusDescription(focus) {
   return focus.label+'；'+focus.reason+'。'+(focus.enforceShare?'技术正文'+({minimum:'至少',maximum:'至多',target:'目标'}[focus.ratioKind] || '目标')+Math.round(focus.technicalTarget*100)+'%（写作与验收区间'+Math.round(focus.targetRange[0]*100)+'%–'+Math.round(focus.targetRange[1]*100)+'%）。':'章节详略按问题覆盖分配，技术占比仅作阅读参考，不设固定比例门槛。');

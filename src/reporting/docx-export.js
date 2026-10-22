@@ -145,7 +145,7 @@ export function makeDocx(task,options={}) {
   const rows = visibleComparisonRows(evidence.competitorRows||[],row=>sameProduct(row.competitor,task.input.baselineProduct));
   if (selected.has('comparison')&&rows.length) {
     heading("产品与竞品指标矩阵");
-    if(evidence.comparisonScope)paragraph('当前比较口径 '+evidence.comparisonScope.region+'市场裸机。其他地区、套装、翻新和附件观察值单独保存，不与本组参数混用。','Caption');
+    if(evidence.comparisonScope)paragraph(evidence.comparisonScope.region==='all'?'比较范围：所有地区。地区、配置和测试条件保留；不同版本的真实数值差异单列，不混用峰值、输入功率或扩容套装容量。':'当前比较口径 '+evidence.comparisonScope.region+'市场裸机。其他地区、套装、翻新和附件观察值单独保存，不与本组参数混用。','Caption');
     const metrics = metricLabels(rows.flatMap(row=>(row.metricValues||[]).map(v=>v.metric)));
     for(const row of rows)if(row.comparisonEligibility?.status&&row.comparisonEligibility.status!=='comparable')paragraph(row.competitor+'：跨档或待核实参考，不参与同档排名；'+row.comparisonEligibility.reason,'Caption');
     if (metrics.length) {

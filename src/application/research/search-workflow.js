@@ -5,6 +5,7 @@ import { engineeringQueries } from "../../domain/research/engineering-policy.js"
 import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js';
 import {resolveResearchFocus} from '../../../public/research-focus.js';
 import {mapConcurrent} from './concurrency.js';
+import {createHash} from '../../browser/shims/crypto.js';
 
 const sourceTypes = new Set(["official", "standard", "paper", "patent", "media", "curated", "other"]);
 const primaryTypes = new Set(["official", "standard", "paper", "patent"]);
@@ -50,8 +51,8 @@ export async function inspectSources(candidates, input, review) {
   if (!toReview.length) return { accepted: catalog, rejected };
   const decisions = new Map();
   // Bound review context so later product queries do not get dropped by a token limit.
-  for (let offset = 0; offset < toReview.length; offset += 24) {
-    const reviewed = await review(toReview.slice(offset, offset + 24), input);
+  for (let offset = 0; offset < toReview.length; offset += 6) {
+    const reviewed = await review(toReview.slice(offset, offset + 6), input,{completed:offset,total:toReview.length});
     if (!Array.isArray(reviewed?.decisions)) throw new Error("来源相关性审查未返回有效结果，已停止撰写报告。请重试资料检索阶段。");
     for (const item of reviewed.decisions) if (item && typeof item.id === "string") decisions.set(item.id, item);
   }
@@ -70,14 +71,19 @@ export async function inspectSources(candidates, input, review) {
 
 // Search and source review finish before the evidence/report models see any material.
 // Engineering coverage can trigger two targeted rounds, at most four queries each.
-export async function executeSearchPlan({ input, plan, search, review, assessCoverage, lookupSpecs, fetchOfficial, onProgress = () => {}, now = () => new Date().toISOString() }) {
+export async function executeSearchPlan({ input, plan, search, review, assessCoverage, lookupSpecs, fetchOfficial, seedSources=[], checkpoint, onProgress = () => {}, now = () => new Date().toISOString() }) {
+  const delivery=plan.delivery,minimumDocuments=delivery?.minimumDocuments||2,maxSources=delivery?.maxSources||30;
   const focus=plan.researchPolicy?.focus || resolveResearchFocus({...input,analysisFocus:plan.analysisFocus ?? input.analysisFocus});
   const initial = validateQueries(plan.queries);
-  let candidates = [], inspected = { accepted: [], rejected: [] };
+  const signature=createHash('sha256').update(JSON.stringify({input,queries:initial,questions:plan.questions,competitors:plan.competitors,criteria:plan.criteria,delivery:plan.delivery,verifyCatalog:plan.verifyCatalog})).digest('hex');
+  const completedQueries=checkpoint?.version===1&&checkpoint.signature===signature?{...checkpoint.completedQueries}:{};
+  const checkpointValue=()=>({version:1,signature,completedQueries:{...completedQueries},savedAt:now()});
+  let candidates = deduplicateSources(seedSources), inspected = { accepted: [], rejected: [] };
   const queryRuns = [], warnings = [], searchRounds = [];
   let repairRounds = 0;
   let coverageReview = null, specCatalog = null,officialLookups=[];
   const progress = (currentQuery = "", status = "searching") => onProgress({
+    searchCheckpoint:checkpointValue(),
     queryRuns: queryRuns.map((item) => ({ ...item })),
     searchProgress: { currentQuery, currentQueries:queryRuns.filter(item=>item.status==='running').map(item=>item.query), concurrency:3, completedQueries: queryRuns.filter((item) => item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: status === "searching" ? candidates.length : inspected.accepted.length, independentDocumentCount:independentDocumentCount(inspected.accepted),candidateSourceCount: candidates.length },
     searchQuality: { status, candidateCount: candidates.length, acceptedCount: inspected.accepted.length, rejectedCount: inspected.rejected.length, repairRounds },
@@ -91,6 +97,8 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
     queryRuns.push(...batch);
     const beforeBatch=candidates.slice(),resultsByQuery=new Array(batch.length);
     await mapConcurrent(batch,3,async(item,index)=>{
+      const key=JSON.stringify([kind,repairRounds,item.query]),saved=completedQueries[key];
+      if(saved&&Array.isArray(saved.results)){resultsByQuery[index]=saved.results;candidates=deduplicateSources([...beforeBatch,...resultsByQuery.flat()]).slice(0,132);Object.assign(item,{status:'completed',reused:true,resultCount:saved.results.length,completedAt:saved.completedAt});await progress('复用已保存检索：'+item.query);return;}
       if(redundantCatalogQuery(item.query,knownCatalogMetrics(beforeBatch,input,plan))){item.status="completed";item.skipped=true;item.reason="准确型号/地区的请求字段已在规格库收录，直接复用，不重复官网检索";item.resultCount=0;await progress(item.reason);return;}
       item.status = "running";item.startedAt=now();await progress(item.query);
       try {
@@ -98,6 +106,7 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
         if (!Array.isArray(results)) throw new Error("搜索服务没有返回结果数组");
         item.resultCount = results.length;
         resultsByQuery[index]=results;
+        completedQueries[key]={results,completedAt:now()};
         // Completion order must not decide which sources survive the limit.
         candidates = deduplicateSources([...beforeBatch,...resultsByQuery.flat()]).slice(0,132);
         item.status = "completed";
@@ -111,15 +120,15 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
   };
   if(lookupSpecs){
     await progress('先匹配部门规格库中的基准和竞品型号','reviewing');
-    try{const lookup=await lookupSpecs(input,plan);const {sources:catalogSources=[],...details}=lookup;specCatalog=details;candidates=deduplicateSources(catalogSources);if(lookup.warning)warnings.push(lookup.warning);if(fetchOfficial&&plan.verifyCatalog===true){await progress('沿规格库的官网链接核对原始资料','reviewing');const fetched=await fetchOfficial(catalogSources,{onProgress:async checks=>{officialLookups=checks;await progress('官网链接读取 '+checks.length+' 项','reviewing');}});officialLookups=fetched.checks;candidates=deduplicateSources([...candidates,...fetched.sources]);}}
+    try{const lookup=await lookupSpecs(input,plan);const {sources:catalogSources=[],...details}=lookup;specCatalog=details;candidates=deduplicateSources([...candidates,...catalogSources]);if(lookup.warning)warnings.push(lookup.warning);if(fetchOfficial&&plan.verifyCatalog===true){await progress('沿规格库的官网链接核对原始资料','reviewing');const fetched=await fetchOfficial(catalogSources,{onProgress:async checks=>{officialLookups=checks;await progress('官网链接读取 '+checks.length+' 项','reviewing');}});officialLookups=fetched.checks;candidates=deduplicateSources([...candidates,...fetched.sources]);}}
     catch(error){specCatalog={status:'unavailable',reason:error.message};warnings.push(error.message);}
   }
   await runBatch(initial, "planned");
-  const needsMore = () => independentDocumentCount(inspected.accepted) < 2 || !inspected.accepted.some((s) => s.relevance === "direct") || !inspected.accepted.some((s) => primaryTypes.has(s.sourceType));
+  const needsMore = () => independentDocumentCount(inspected.accepted) < minimumDocuments || !inspected.accepted.some((s) => s.relevance === "direct") || !inspected.accepted.some((s) => primaryTypes.has(s.sourceType)||(delivery?.route==='answer'&&s.provider==='team_catalog'));
   const checkCoverage = async () => {
     if (assessCoverage && inspected.accepted.length) {
       await progress("检查研究问题、技术实现细节与规格参数的证据覆盖", "reviewing");
-      coverageReview = excludeKnownSpecGaps(await assessCoverage(selectEvidenceSources(inspected.accepted, queryRuns.map((run) => run.query), 36,focus.queryShare), input, plan),knownCatalogMetrics(inspected.accepted,input,plan));
+      coverageReview = excludeKnownSpecGaps(await assessCoverage(selectEvidenceSources(inspected.accepted, queryRuns.map((run) => run.query), Math.min(36,maxSources+6),focus.queryShare), input, plan),knownCatalogMetrics(inspected.accepted,input,plan));
       if (independentDocumentCount(inspected.accepted.filter((source) => source.engineeringRelevant)) < focus.minimumEngineeringDocuments) {
         coverageReview.technicalGaps = [...new Set([...(coverageReview.technicalGaps || []), '当前侧重需要至少'+focus.minimumEngineeringDocuments+'份原理/实现技术来源，需定向补查'] )];
       }
@@ -140,24 +149,26 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
       await checkCoverage();
     }
   }
-  const maximumRounds = assessCoverage ? 2 : 1;
+  const maximumRounds = delivery?.searchRounds??(assessCoverage ? 2 : 1);
   for (let round = 1; round <= maximumRounds; round++) {
     if (!needsMore() && !coverageReview?.technicalGaps?.length && !coverageReview?.questions?.some((q) => q.status !== "answered")) break;
     const used = new Set(queryRuns.map((item) => item.query.toLowerCase()));
-    const repairQueries = [...(coverageReview?.followupQueries || []), ...(focus.minimumTopics?engineeringQueries(input,plan):[]), ...fallbackQueries(input)].filter((query) => !used.has(query.toLowerCase())).filter((query, index, all) => all.indexOf(query) === index).slice(0, 4);
+    const repairQueries = [...(coverageReview?.followupQueries || []), ...(focus.minimumTopics?engineeringQueries(input,plan):[]), ...(delivery?.route==='answer'?[]:fallbackQueries(input))].filter((query) => !used.has(query.toLowerCase())).filter((query, index, all) => all.indexOf(query) === index).slice(0, delivery?.queriesPerFollowup||4);
     if (!repairQueries.length) break;
     repairRounds = round; await runBatch(repairQueries, coverageReview?.technicalGaps?.length ? "technical_followup" : "automatic_followup");
     await checkCoverage();
   }
-  const sources = selectEvidenceSources(inspected.accepted, queryRuns.map((run) => run.query),30,focus.queryShare).map((source, i) => ({ ...enrichSource(source),id: "S" + (i + 1), retrievedAt: source.retrievedAt || now() }));
+  const sources = selectEvidenceSources(inspected.accepted, queryRuns.map((run) => run.query),maxSources,focus.queryShare).map((source, i) => ({ ...enrichSource(source),id: "S" + (i + 1), retrievedAt: source.retrievedAt || now() }));
   const directCount = sources.filter((source) => source.relevance === "direct").length;
   const primaryCount = sources.filter((source) => primaryTypes.has(source.sourceType)).length;
   const independentCount=independentDocumentCount(sources);
-  const status = sources.length < 2 || independentCount < 2 || directCount === 0 ? "blocked" : primaryCount === 0 ? "limited" : "passed";
+  const trustedCatalog=delivery?.route==='answer'&&sources.some(source=>source.provider==='team_catalog'&&source.catalogRecord);
+  const status = sources.length < minimumDocuments || independentCount < minimumDocuments || directCount === 0 ? "blocked" : primaryCount === 0&&!trustedCatalog ? "limited" : "passed";
   const reason = status === "blocked" ? "检索结果不足：经过相关性审查和自动补查，仅保留" + sources.length + "条来源、" + independentCount + "份独立文档，其中" + directCount + "条直接相关。已停止报告生成，请调整检索词或检查搜索服务。" : status === "limited" ? "本轮未取得官方、论文、专利或标准等一手资料；产品规格和技术结论仍需核验。" : "已过滤无关结果；背景资料仅用于原理说明，不能证明具体产品参数。";
   if (status === "limited") warnings.push(reason);
   if (coverageReview?.technicalGaps?.length) warnings.push("补查后仍有技术证据缺口：" + coverageReview.technicalGaps.join("；") + "。报告必须说明已确认内容、工程推演与待验证项。");
   return {
+    searchCheckpoint:checkpointValue(),
     sources, rejectedSources: inspected.rejected, queryRuns, searchRounds, searchWarnings: warnings, coverageReview, specCatalog,officialLookups,
     searchQuality: { status, reason, candidateCount: candidates.length, relevantCount: inspected.accepted.length, acceptedCount: sources.length,independentDocumentCount:independentDocumentCount(sources), rejectedCount: inspected.rejected.length, directCount, primaryCount, repairRounds, checkedAt: now() },
     searchProgress: { currentQuery: status === "blocked" ? "可用来源不足，已停止" : "检索与相关性检查已完成", completedQueries: queryRuns.filter((item)=>item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: sources.length,independentDocumentCount:independentDocumentCount(sources), candidateSourceCount: candidates.length },

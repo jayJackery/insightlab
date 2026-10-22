@@ -3,7 +3,7 @@ import {normalizePlan,validateQueries} from '../../public/plan-utils.js';
 import {resolveResearchFocus} from '../../public/research-focus.js';
 import {comparisonInput} from '../domain/research/competitor-selection.js';
 import {createReviewRevision} from '../application/research/review-feedback.js';
-const fields=['subject','scenario','questions','baselineProduct','competitors','timeRange','metrics','purpose','analysisFocus','baselineCapacityWh','baselineRatedPowerW','comparisonRegion','capacityTolerance','powerTolerance'];
+const fields=['subject','scenario','questions','baselineProduct','competitors','timeRange','metrics','purpose','analysisFocus','reportLength','capacityTolerance','powerTolerance'];
 export function createTaskActions({repository,recommendCompetitors,enqueue,ready,writable}){
   const {createTask,update}=repository;
   async function create(input,research=null,title){
@@ -18,17 +18,18 @@ export function createTaskActions({repository,recommendCompetitors,enqueue,ready
     async recommend(body){
       if(typeof body.input?.subject!=='string')throw Error('请提供分析对象。');
       if(body.candidates!==undefined&&(!Array.isArray(body.candidates)||body.candidates.length>12||body.candidates.some(name=>typeof name!=='string'||name.length>200)))throw Error('最多选择12个准确竞品型号。');
-      return recommendCompetitors({...body.input,...comparisonInput(body.input)},{...(body.candidates?{candidates:body.candidates}:{})});
+      const task=body.taskId?repository.getTask(body.taskId):null;
+      return recommendCompetitors({...body.input,...comparisonInput(body.input)},{...(body.candidates?{candidates:body.candidates}:{}),baselineRecords:task?.research?.baselineDiscovery?.records||[]});
     },
     async start(task,body){
       ready();if(task.status!=='plan_ready')throw Error('计划尚未准备好或已开始执行。');
       const raw={...task.research?.plan,...body.plan};validateQueries(raw.queries);
       const normalized=normalizePlan(raw,task.input),plan={...normalized,researchPolicy:{...raw.researchPolicy,version:6,focus:resolveResearchFocus({...task.input,analysisFocus:normalized.analysisFocus})}};
-      const comparison=comparisonInput(body.comparison||plan.comparisonInput||task.input),selection=await recommendCompetitors({...task.input,...comparison},{candidates:plan.competitors});
+      const comparison=comparisonInput(body.comparison||plan.comparisonInput||task.input),selection=await recommendCompetitors({...task.input,...comparison},{candidates:plan.competitors,baselineRecords:task.research?.baselineDiscovery?.records||[]});
       if(selection.applies){
         if(selection.requiresConfirmation)throw Error(selection.reason);
         if(!selection.rows.length)throw Error('请先应用同档推荐，或填写准确竞品型号。');
-        if(selection.rows.some(row=>row.status!=='comparable')&&body.allowCrossTier!==true)throw Error('部分型号跨档、地区不符或未匹配，请调整竞品；确需保留时勾选跨档参考。');
+        if(selection.rows.some(row=>row.status!=='comparable')&&body.allowCrossTier!==true)throw Error('部分型号跨档或未匹配，请调整竞品；确需保留时勾选跨档参考。');
         plan.comparisonInput=comparison;plan.competitorSelection={...selection,crossTierConfirmed:body.allowCrossTier===true};plan.comparisonScope={region:selection.reference.region,configuration:'bare_unit'};
       }
       update(task.id,{research:{...task.research,plan},status:'queued',phaseIndex:0,phaseStatus:'pending',error:null});
