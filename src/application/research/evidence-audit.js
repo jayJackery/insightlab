@@ -1,8 +1,8 @@
-import { verifiedQuotes } from './search-workflow.js';
-import { sourceContext } from '../../domain/evidence/report-content.js';
-import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js';
-import {digest} from '../../domain/evidence/source-document.js';
-import {mapConcurrent} from './concurrency.js';
+import { verifiedQuotes } from './search-workflow.js?v=8e1e00bb1d41da9f';
+import { sourceContext } from '../../domain/evidence/report-content.js?v=8e1e00bb1d41da9f';
+import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {digest} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
+import {mapConcurrent} from './concurrency.js?v=8e1e00bb1d41da9f';
 
 // A source ID existing is insufficient: verify the value against the right entity and passage.
 export async function auditEvidence({ evidence, sources, plan, model,checkpoint={batches:{}},persist=()=>{} }) {
