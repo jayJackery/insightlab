@@ -48,6 +48,7 @@ export function setupComparisonActions({api,getTask}){
     const button=event.target.closest('[data-comparison-action]');if(!button)return;
     const results=document.querySelector('#comparison-results');button.disabled=true;
     try{const task=await getTask(),input={...task.input,...readComparisonControls()},current=names(document.querySelector('#plan-competitors').value);const selection=await api('/api/competitors/recommend',{method:'POST',body:JSON.stringify({taskId:task.id,input,candidates:current})});
+      const label=document.querySelector('[data-plan-baseline-label]'),name=document.querySelector('[data-plan-baseline-name]');if(label)label.textContent=selection.baselineStatus==='confirmed'?'已确认的对比基准':'原始产品名称 · 未确认，不作相对基准排名';if(name)name.textContent=selection.baselineStatus==='confirmed'?selection.reference.name:task.input.baselineProduct;
       if(button.dataset.comparisonAction==='recommend'&&selection.applies&&!selection.requiresConfirmation){
         const next=[...new Set([...(selection.explicitNames||[]),...(selection.recommendations||[]).map(row=>row.name)])];if(!next.length)throw Error('当前阈值内没有可推荐的异品牌型号。请调整范围或手工填写并检查，不会自动放宽。');
         document.querySelector('#plan-competitors').value=next.join('\n');

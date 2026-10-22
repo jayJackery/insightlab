@@ -125,7 +125,8 @@ function focusOptions(value='auto') {
 }
 function renderPlan(task) {
   const plan = normalizePlan(task.research.plan, task.input);
-  const baseline = task.input.baselineProduct ? '<div class="baseline-banner"><span>自家产品对比基准</span><strong>' + esc(task.input.baselineProduct) + "</strong></div>" : "";
+  const selection=plan.competitorSelection,confirmed=selection?.baselineStatus==='confirmed';
+  const baseline = task.input.baselineProduct ? '<div class="baseline-banner"><span data-plan-baseline-label>'+(confirmed?'已识别的对比基准':'原始产品名称 · 可确认型号，也可直接研究')+'</span><strong data-plan-baseline-name>' + esc(confirmed?selection.reference.name:task.input.baselineProduct) + "</strong></div>" : "";
   return '<section class="plan-review"><div class="plan-head"><div><small>RESEARCH PLAN · REVIEW BEFORE SEARCH</small><h2>先确认研究计划</h2><p>检查研究问题、竞品和检索范围；确认后才开始联网搜索。</p></div><span class="editable-mark">可编辑</span></div>' +
     baseline + '<p class="delivery-plan-note">'+esc(plan.delivery?.label||'Auto')+' · '+esc(plan.delivery?.reason||'按当前研究问题执行')+'</p>' + renderComparisonControls(task) + '<label class="plan-field">分析侧重点<select id="plan-focus" class="input">'+focusOptions(plan.analysisFocus)+'</select><small id="plan-focus-hint">'+esc(focusDescription(resolveResearchFocus({...task.input,analysisFocus:plan.analysisFocus})))+'</small></label><div class="plan-columns"><label>研究子问题<textarea id="plan-questions">' + esc((plan.questions || []).join("\n")) +
     '</textarea></label><label>竞品与对比对象<textarea id="plan-competitors">' + esc((plan.competitors || []).join("\n")) +
