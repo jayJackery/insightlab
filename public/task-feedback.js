@@ -1,4 +1,5 @@
 import {stageModel} from './waiting-room.js';
+import {modelFailureHelp} from './model-diagnostics.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const active=task=>['running','planning','queued'].includes(task?.status);
 const states=new Map();
@@ -9,6 +10,7 @@ function actionModel(task){
   if(task.status==='plan_ready')return {kind:'attention',icon:'!',title:editable?'下一步：确认研究计划':'研究计划等待创建者确认',text:'请检查研究问题、基准型号、同档竞品与检索范围。确认后才会开始资料搜索。',label:'检查并确认计划',action:'plan'};
   if(task.status==='failed'){
     let text=String(task.error||'当前阶段未完成，已保存可用的阶段结果。');
+    const help=modelFailureHelp(task);if(help)text+=' '+help;
     if(/来源.*审查/.test(text)&&/截断|长度上限/.test(text)){
       const saved=Object.keys(task.research?.searchCheckpoint?.completedQueries||{}).length;
       text+=' '+(saved?'已保存'+saved+'条查询结果；重试会继续未完成的审查，复用成功查询。':'此旧版本未保存原始搜索结果，不能仅凭来源数量恢复；重试可能重新检索。新版会逐查询、逐批保存。');

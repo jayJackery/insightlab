@@ -85,10 +85,10 @@ export function setupServiceSettings({ api, onConfig }) {
       saved = await api('/api/config', { method: 'POST', body: JSON.stringify(payload) });
       clearInputs(); onConfig(saved);
       if (check) {
-        feedback('配置已保存，正在分别连接模型与搜索服务…');
+        feedback('配置已保存，正在检查模型的非空JSON与研究计划字段，并检测搜索服务；推理模型可能需要更长时间…');
         const result = await api('/api/config/check', { method: 'POST', body: '{}' });
         const rows = [['模型', result.model], ['搜索', result.search]];
-        feedback(rows.map(([name, value]) => (value.ok ? '✓ ' : '✕ ') + name + '：' + value.message).join('\n') + '\n' + (rows.every(([, value]) => value.ok) ? '可以关闭窗口并开始调研。' : '配置已保存，请根据提示调整后再次检测。'), rows.every(([, value]) => value.ok) ? 'success' : 'error');
+        feedback(rows.map(([name, value]) => (value.ok ? '✓ ' : '✕ ') + name + '：' + value.message).join('\n') + '\n' + (rows.every(([, value]) => value.ok) ? '可以开始调研。检测仅验证小样本；长研究若失败会保存进度并说明具体原因。' : '配置已保存，但还未通过研究兼容检测，请根据提示调整后再次检测。'), rows.every(([, value]) => value.ok) ? 'success' : 'error');
       } else feedback(browser?'已应用到当前页面，密钥未持久保存。刷新后请重新填写；“应用并检测连接”可能产生少量API费用。':'配置已保存并立即生效。可点击“保存并检测连接”检查账号是否可用。', 'success');
     } catch (error) { feedback((saved ? '配置已保存。' : '') + error.message, 'error'); }
     finally {

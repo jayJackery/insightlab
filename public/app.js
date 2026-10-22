@@ -15,6 +15,7 @@ import {renderCatalogStatus} from './catalog-status.js';
 import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js';
 import {qualifyProductMentions} from './product-labels.js';
 import {setupDepthControls} from './depth-controls.js';
+import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js';
 setupDepthControls();
 const $ = (selector) => document.querySelector(selector);
 const state = { tasks: [], current: null, poll: null };
@@ -91,7 +92,7 @@ function renderProgress(task) {
     const mark = cls === "done" ? "✓" : cls === "failed" ? "!" : ("0" + (index + 1)).slice(-2);
     return '<div class="phase ' + cls + '"><i>' + mark + "</i><span>" + name + "</span></div>";
   }).join("");
-  const recovery = hasCorruptSearch(task) ? "请点击“重新制定研究计划”，修复后的检索词需要重新确认。" : task.research?.searchQuality?.status === "blocked" ? "请检查实际检索词、被排除的来源与原因，再调整计划重试。" : task.phaseIndex >= 2 ? "已保存检索来源及完成的证据批次、技术主题。点击继续可复用已通过审查的阶段成果。" : "请根据上面的具体错误处理后重试；缺少密钥时请打开服务配置。";
+  const recovery = modelFailureHelp(task)||(hasCorruptSearch(task) ? "请点击“重新制定研究计划”，修复后的检索词需要重新确认。" : task.research?.searchQuality?.status === "blocked" ? "请检查实际检索词、被排除的来源与原因，再调整计划重试。" : task.phaseIndex >= 2 ? "已保存检索来源及完成的证据批次、技术主题。点击继续可复用已通过审查的阶段成果。" : "请根据上面的具体错误处理后重试；缺少密钥时请打开服务配置。");
   const error = task.status === "failed" ? '<div class="error"><b>本阶段未能完成：</b>' + esc(task.error) + '<br>' + recovery + '</div>' : "";
   let note = "正在分阶段执行，阶段产物会保存到本机。完成后自动显示报告。";
   let title = "正在执行";
@@ -111,7 +112,7 @@ function renderProgress(task) {
   const currentQuery = task.phaseIndex >= 2 && task.status === 'running' ? (task.phaseIndex===4?(research.contentRevision?.status==='running'?'按独立复核修订报告（第1/1轮）':'整合报告并进行独立复核'):task.phaseIndex===2&&research.evidenceProgress?.completed<research.evidenceProgress?.total?'证据整理：'+research.evidenceProgress.completed+'/'+research.evidenceProgress.total+' 条来源':research.currentActivity || '正在整理证据与技术分析') : task.status==='needs_review'?'本轮已结束，草稿有待核验':live.currentQuery || (task.status === "completed" ? "本轮检索已完成" : task.status === "failed" ? "本阶段已停止，请查看失败原因" : "等待检索开始");
   const queryView = '<div class="progress-insights"><div class="progress-stat"><small>当前检索问题</small><strong class="query-current">' + esc(currentQuery) + '</strong></div><div class="progress-stat"><small>已检索来源</small><strong>' + sourceCount + ' <em>条</em></strong></div><div class="progress-stat"><small>补查轮次</small><strong>' + (autoRound ? "自动补查 " + autoRound + " 轮" : round ? "第 " + round + " 轮" : "初始检索") + '</strong></div><div class="progress-stat"><small>搜索查询</small><strong>' + completed + ' <em>/ ' + total + '</em></strong></div></div>';
   const queries = runs.length ? '<details class="query-log"><summary>查看检索问题与状态</summary><ol>' + runs.map((item) => '<li><span class="query-status ' + esc(item.status || "pending") + '">' + ({ completed: "已完成", failed: "失败", running: "进行中", pending: "待检索" }[item.status] || "待检索") + "</span><span>" + esc(item.query) + (item.error ? ' <small>' + esc(item.error) + "</small>" : "") + "</span></li>").join("") + "</ol></details>" : "";
-  return '<section class="progress"><div class="progress-title">研究工作流 · ' + title + '</div>'+renderWaitingRoom(task)+'<div class="phase-row">' + steps + "</div>" + queryView + queries + renderCatalogStatus(task) + renderSearchQuality(task) + error + '<div class="progress-note">' + note + "</div></section>";
+  return '<section class="progress"><div class="progress-title">研究工作流 · ' + title + '</div>'+renderWaitingRoom(task)+'<div class="phase-row">' + steps + "</div>" + queryView + queries + renderCatalogStatus(task) + renderSearchQuality(task) + error + renderModelDiagnostics(task) + '<div class="progress-note">' + note + "</div></section>";
 }
 function renderSearchQuality(task) {
   const quality = task.research?.searchQuality;
@@ -593,7 +594,7 @@ document.addEventListener("click", async (event) => {
   if (event.target.closest("#close-modal") || event.target.id === "modal") { $("#modal").classList.add("hidden"); return; }
   if (event.target.closest("#fill-example")) {
     $("#subject").value = "便携储能行业的 pack 方式、痛点解决及技术原理";
-    $("#baselineProduct").value = "我方便携储能产品（请替换为型号）";
+    $("#baselineProduct").value = "";$("#baselineProduct").dispatchEvent(new Event("change",{bubbles:true}));
     $("#scenario").value = "户外作业与家庭应急备电";
     $("#questions").value = "比较不同 pack 结构与电池路线如何影响能量密度、安全、寿命和可维护性；各竞品解决了哪些痛点；我方产品与竞品相比的主要差距和优先改进方向是什么？";
     $("#competitors").value = "正浩、Jackery、Anker";

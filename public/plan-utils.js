@@ -1,6 +1,7 @@
 import {metricLabels} from './metric-labels.js';
 import {cleanProductLabel} from './product-identity.js';
 import {resolveReportDepth,REPORT_LENGTHS} from './report-depth.js';
+import {researchInput} from './baseline-context.js';
 const fields = {
   queries: ["query", "searchQuery", "search_query", "searchTerms", "search_terms", "keywords", "keyword", "q", "text"],
   questions: ["question", "questionText", "question_text", "text", "description"],
@@ -77,7 +78,8 @@ export function normalizePlan(raw, input = {}, { defaults = false } = {}) {
   const allCriteria=planList([...requested,...plan.criteria], "criteria",24);
   plan.criteria=metricLabels(allCriteria).slice(0,16);
   plan.sourceStrategy=planList([...plan.sourceStrategy,...allCriteria.filter(value=>!plan.criteria.includes(value))],"sourceStrategy",24);
-  const baseline = planText(input.baselineProduct, "competitors");
+  const baseline = planText(researchInput(input,plan).baselineProduct, "competitors");
+  if(plan.competitorSelection?.requested&&baseline!==planText(input.baselineProduct,'competitors'))plan.competitors=plan.competitors.filter(name=>!(/自家产品|基准/u.test(name)&&cleanProductLabel(name)===cleanProductLabel(input.baselineProduct)));
   if (baseline) plan.competitors = [baseline + "（自家产品·对比基准）", ...plan.competitors.filter((name) => !name.includes(baseline))].slice(0, 12);
   if (defaults && !plan.sourceStrategy.length) plan.sourceStrategy = ["厂商官方规格与用户手册", "论文、专利及标准", "专业拆解与实测资料"];
   return plan;

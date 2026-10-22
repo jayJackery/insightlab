@@ -28,3 +28,6 @@
 @media(prefers-reduced-motion:reduce){.pinned-progress *,.pinned-progress *:after,.task-notice{animation:none!important;transition:none!important}}
 @media print{.pinned-progress,.task-next-action,.task-notifications{display:none!important}}
 .task-notice p:not(.notice-task-name){max-height:150px;overflow:auto}
+.model-diagnostic{margin:16px 0;padding:14px 18px;border:1px solid #dbe5ef;border-radius:8px;color:#405f78;font-size:13px;background:#f7fafc}
+.model-diagnostic summary{font-weight:600;cursor:pointer}.model-diagnostic p{font-size:12px;color:#73879a}
+.model-diagnostic-row{display:grid;gap:6px;padding:12px 0;border-top:1px solid #e1e8ef}.model-diagnostic-row small{font-size:12px;line-height:1.7}
