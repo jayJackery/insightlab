@@ -1,5 +1,5 @@
-import {parseProductName} from '../../domain/evidence/product-registry.js';
-import {catalogDisplayName} from '../../../public/product-identity.js';
+import {parseProductName} from '../../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=8e1e00bb1d41da9f';
 
 export const CATALOG_URL = "https://hellotech2.pages.dev/";
 export const CATALOG_DATA_URL = new URL("data.js", CATALOG_URL).href;
