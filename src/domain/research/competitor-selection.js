@@ -1,7 +1,7 @@
-import {parseProductName,sameProduct} from '../evidence/product-registry.js';
-import {COMPARISON_DEFAULTS} from '../../../public/comparison-defaults.js';
-import {catalogDisplayName} from '../../../public/product-identity.js';
-import {findProductCandidates} from './product-candidates.js';
+import {parseProductName,sameProduct} from '../evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {COMPARISON_DEFAULTS} from '../../../public/comparison-defaults.js?v=8e1e00bb1d41da9f';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=8e1e00bb1d41da9f';
+import {findProductCandidates} from './product-candidates.js?v=8e1e00bb1d41da9f';
 export {COMPARISON_DEFAULTS};
 export const comparisonApplies=input=>/储能|电池|户外电源|power station|battery|Jackery|EcoFlow|Anker|Bluetti|Zendure|DJI Power/i.test([input.subject,input.baselineProduct].join(' '))&&Boolean(input.baselineProduct||input.competitors||/对比|竞品|竞争|产品.*哪些|型号|市场潜力/.test([input.subject,input.questions].join(' ')));
 export function comparisonInput(value={}){

@@ -1,8 +1,8 @@
-import { contentBalance } from './engineering-policy.js';
-import { REPORT_SCHEMA_VERSION, WORKFLOW_VERSION, REQUIREMENTS_REVISION, contractFingerprint } from './research-contract.js';
-import {sameProduct} from '../evidence/product-registry.js';
-import {engineeringIssues} from './engineering-detail.js';
-import {unapprovedDerivedValues} from './report-validation.js';
+import { contentBalance } from './engineering-policy.js?v=8e1e00bb1d41da9f';
+import { REPORT_SCHEMA_VERSION, WORKFLOW_VERSION, REQUIREMENTS_REVISION, contractFingerprint } from './research-contract.js?v=8e1e00bb1d41da9f';
+import {sameProduct} from '../evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {engineeringIssues} from './engineering-detail.js?v=8e1e00bb1d41da9f';
+import {unapprovedDerivedValues} from './report-validation.js?v=8e1e00bb1d41da9f';
 
 export function evaluatePublication({ input = {}, research = {}, evidence = {}, report }) {
   const issues = [];
