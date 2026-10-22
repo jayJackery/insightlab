@@ -16,6 +16,7 @@ export function createBrowserRepository(){
     createTask({id,title,input,status,research=null,createdAt=new Date().toISOString()}){if(rows.has(id))throw Error('研究ID已存在。');saveTask({id,title,input:structuredClone(input),status,research,report:null,evidence:null,phaseIndex:0,phaseStatus:'pending',error:null,createdAt,updatedAt:createdAt});},
     listTasks:()=>[...rows.values()].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).map(row=>getTask(row.id)),
     rawTasks:()=>structuredClone([...rows.values()]),
+    activeTask:()=>{const row=[...rows.values()].find(row=>['planning','queued','running'].includes(row.status));return row?{id:row.id,title:row.title,status:row.status,phaseIndex:row.phaseIndex}:null;},
     hasActive:()=>[...rows.values()].some(row=>['planning','queued','running'].includes(row.status)),
     recoverInterrupted(){for(const row of [...rows.values()])if(['planning','queued','running'].includes(row.status))update(row.id,{status:'failed',phaseStatus:'failed',error:'上次页面已中断；阶段检查点和查询预算已保留。请重新填写本页密钥，再从失败阶段重试。'});},
   };

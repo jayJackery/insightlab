@@ -17,6 +17,11 @@ export async function reloadTasks(){
   const tx=database.transaction('tasks','readonly'),store=tx.objectStore('tasks');
   const [keys,values]=await Promise.all([request(store.getAllKeys()),request(store.getAll())]);tasks.clear();keys.forEach((key,index)=>tasks.set(key,values[index]));
 }
+export async function reloadStorage(){
+  await flushStorage();await reloadTasks();
+  const tx=database.transaction('files','readonly'),store=tx.objectStore('files');
+  const [keys,values]=await Promise.all([request(store.getAllKeys()),request(store.getAll())]);files.clear();keys.forEach((key,index)=>files.set(key,values[index]));
+}
 function write(store,key,value,remove=false){
   const copy=structuredClone(value);
   pending=pending.then(()=>new Promise((resolve,reject)=>{
@@ -34,11 +39,20 @@ export function saveVirtualFile(path,value,options={}){if(options.flag==='wx'&&f
 export function removeVirtualFile(path){files.delete(path);write('files',path,null,true);}
 
 export async function acquireWorkspace(){
-  if(!navigator.locks)return {writable:false,reason:'此浏览器不支持工作区互斥锁，暂只提供阅读和导出。请使用新版Chrome或Edge。'};
-  return new Promise(resolve=>{
-    navigator.locks.request(storageName+':writer',{ifAvailable:true},lock=>{
-      if(!lock){resolve({writable:false,reason:'工作区已在另一个标签页打开。本页只读；关闭另一页后刷新此页即可研究。'});return;}
-      resolve({writable:true});return new Promise(()=>{});
-    }).catch(()=>resolve({writable:false,reason:'无法锁定工作区，请关闭其他工作台标签页后刷新。'}));
-  });
+  const state={writable:Boolean(navigator.locks),ownsLock:false,reason:'此浏览器不支持安全保存，请使用新版Chrome或Edge。'};
+  // Opening and reading never hold a lock. Keep the same name to protect work in older tabs.
+  state.run=(action,settled=async()=>{},onAcquire=()=>{})=>{
+    if(!state.writable)return Promise.reject(Error(state.reason));
+    if(state.ownsLock)return Promise.reject(Error('本页已有研究或保存操作正在处理，可以继续阅读；结束后即可开始下一项。'));
+    return new Promise((resolve,reject)=>{
+      navigator.locks.request(storageName+':writer',{ifAvailable:true},async lock=>{
+        if(!lock)throw Error('另一页面正在处理研究。本页可以直接查看进度；处理结束后即可在此开始，无需寻找或关闭标签页。');
+        state.ownsLock=true;
+        try{await reloadStorage();await onAcquire();resolve(await action());await settled();await flushStorage();}
+        catch(error){reject(error);}
+        finally{state.ownsLock=false;}
+      }).catch(reject);
+    });
+  };
+  return state;
 }

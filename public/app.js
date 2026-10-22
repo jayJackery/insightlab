@@ -510,7 +510,7 @@ function schedulePoll(id) {
     catch (error) { if(state.current===id){setWaitingRoomConnection(false);setTaskFeedbackConnection(false);schedulePoll(id);} }
   }, 1800);
 }
-async function openTask(id) {
+export async function openTask(id) {
   try { const task = await api("/api/tasks/" + id); renderTask(task); setView("task"); }
   catch (error) { toast(error.message); }
 }

@@ -1,28 +1,28 @@
 {
   "app": "insightlab-browser",
-  "buildId": "ddb1fb5fd7842dcf",
+  "buildId": "329ff401138c69a5",
   "workflowVersion": "rd-research/15",
   "requirementsRevision": "RD-2026-10-21-v12",
   "reportSchemaVersion": 5,
-  "createdAt": "2026-10-22T01:35:37.527Z",
+  "createdAt": "2026-10-22T02:05:31.861Z",
   "publicCatalogRetrievedAt": "2026-10-22T01:29:47.074Z",
   "containsUserData": false,
   "credentialStorage": "page-memory-only",
   "files": [
     {
       "path": "src/browser/bootstrap.js",
-      "size": 5135,
-      "sha256": "f8fe454789da4644761d53a05085b5c33af7963eb1b3d72f8963550a5529bac5"
+      "size": 6158,
+      "sha256": "5893e3a761ab440627b59d0de91094c0ee4c5e7bd6006af568f423ad1b36676e"
     },
     {
       "path": "src/browser/storage.js",
-      "size": 3521,
-      "sha256": "8ecfddc3416a90c60fdc4b100cbe4e2a25fab07e81c2c07401cccc5cffce0318"
+      "size": 4327,
+      "sha256": "8a122cb7b67b0885006e33493d6ce112370f27635511f7410a61d17811334f89"
     },
     {
       "path": "src/browser/runtime.js",
-      "size": 9958,
-      "sha256": "51fe731c0f19c392812549571695cb736c7a0d228bad3690cf790f2b0a83c8e7"
+      "size": 10526,
+      "sha256": "54f634e7a2281576daf4157f82d29d0585804ea09b3421ab54f6e9578a844c48"
     },
     {
       "path": "src/browser/shims/crypto.js",
@@ -246,8 +246,8 @@
     },
     {
       "path": "src/browser/repository.js",
-      "size": 1845,
-      "sha256": "4d78b6bc5ba273bd2c41ed67ddd4545b360041562c23d8758a50f41d274068a1"
+      "size": 2049,
+      "sha256": "b33e3aba89e2b4cd4d4d6b83f84048e36c80ca26f012869d5939ca649de72c79"
     },
     {
       "path": "src/domain/research/task-presentation.js",
@@ -331,8 +331,8 @@
     },
     {
       "path": "public/app.js",
-      "size": 75512,
-      "sha256": "c2fef3848adbe9d240f6f3f5a1525657a6b514b3676c28392e8ac1fc5fce6c71"
+      "size": 75519,
+      "sha256": "10139ff0026650b57577ec8001bfb5b9d18f3bca8239a53df24aaa1c5a9e7a5b"
     },
     {
       "path": "public/api-usage.js",
@@ -471,13 +471,13 @@
     },
     {
       "path": "README.md",
-      "size": 3311,
-      "sha256": "37ea343c9d0387d2fae11c268a6041150538a1370249ef7750025f18aecabfdb"
+      "size": 3984,
+      "sha256": "9cce9b6b257d0a8d1993ee1501a8903c49c20a69729d61211e38f39c4e4ba3f0"
     },
     {
       "path": "build.json",
       "size": 353,
-      "sha256": "d30dfcefb4da8f912c8929c6b7c168560b75f1be896891e0c78d314273e2a657"
+      "sha256": "249cf0ccd1772bae6a257f52d6e97d7c496e6ef32de6fe5065a835fbb025c664"
     }
   ]
 }
