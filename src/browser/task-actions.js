@@ -28,10 +28,12 @@ export function createTaskActions({repository,recommendCompetitors,enqueue,ready
       const comparison=comparisonInput(body.comparison||plan.comparisonInput||task.input),selection=await recommendCompetitors({...task.input,...comparison},{candidates:plan.competitors,baselineRecords:task.research?.baselineDiscovery?.records||[]});
       if(selection.applies){
         if(selection.requiresConfirmation)throw Error(selection.reason);
-        if(!selection.rows.length)throw Error('请先应用同档推荐，或填写准确竞品型号。');
         if(selection.rows.some(row=>row.status!=='comparable')&&body.allowCrossTier!==true)throw Error('部分型号跨档或未匹配，请调整竞品；确需保留时勾选跨档参考。');
         plan.comparisonInput=comparison;plan.competitorSelection={...selection,crossTierConfirmed:body.allowCrossTier===true};plan.comparisonScope={region:selection.reference.region,configuration:'bare_unit'};
       }
+      plan.comparisonInput=comparison;plan.competitorSelection={...selection,crossTierConfirmed:selection.applies&&body.allowCrossTier===true};
+      plan.comparisonScope={region:'all',configuration:'bare_unit'};
+      plan.competitors=normalizePlan(plan,task.input).competitors;
       update(task.id,{research:{...task.research,plan},status:'queued',phaseIndex:0,phaseStatus:'pending',error:null});
       await repository.flush();enqueue(task.id,'research');return {id:task.id};
     },

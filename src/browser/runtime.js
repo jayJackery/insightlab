@@ -1,6 +1,7 @@
 import {randomUUID} from './shims/crypto.js';
 import {createServiceSettings,modelConfiguration} from '../infrastructure/settings/service-settings.js';
 import {createModelClient} from '../infrastructure/ai/model-client.js';
+import {checkModelCompatibility} from '../infrastructure/ai/model-probe.js';
 import {createSourceStore} from '../infrastructure/persistence/source-store.js';
 import {createResearchWorkflow} from '../application/research/workflow.js';
 import {createCompetitorAdvisor} from '../infrastructure/search/competitor-advisor.js';
@@ -70,7 +71,7 @@ export async function createBrowserRuntime({build,workspace}){
         if(currentJob||jobs.length)throw Error('调研正在执行，请结束后再检测连接。');
         const config=modelConfiguration(services.env());
         const checks=await Promise.allSettled([
-          (async()=>{await beforeRequest();const response=await fetch(config.baseUrl.replace(/\/$/,'')+'/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+config.key},body:JSON.stringify({model:config.model,messages:[{role:'user',content:'Reply OK.'}],max_tokens:32,...(config.provider==='deepseek'?{thinking:{type:'disabled'}}:{})}),signal:AbortSignal.timeout(30000),credentials:'omit'});if(!response.ok)throw Error('模型接口返回HTTP '+response.status);const value=await response.json();if(!value.choices?.length)throw Error('模型响应格式不兼容');return '模型连接成功 · '+config.model;})(),
+          checkModelCompatibility(model,config.model),
           (async()=>{const result=await search('portable power station',{subject:'连接检查'});return '搜索连接成功 · '+result.length+'条结果';})(),
         ]);return json(Object.fromEntries(checks.map((item,index)=>[['model','search'][index],item.status==='fulfilled'?{ok:true,message:item.value}:{ok:false,message:services.redact(item.reason?.name==='TypeError'?'浏览器直连失败，请检查网络和接口跨域支持。':item.reason?.message)}])));
       }
