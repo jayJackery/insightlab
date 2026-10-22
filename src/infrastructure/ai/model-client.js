@@ -1,5 +1,5 @@
 import { modelConfiguration } from '../settings/service-settings.js';
-import { parseModelResponse, ModelOutputError } from './model-json.js';
+import { parseModelResponse, decodeModelHttpBody, ModelOutputError } from './model-json.js';
 import {randomUUID} from '../../browser/shims/crypto.js';
 import {createResponseCache,requestDigest} from './response-cache.js';
 import {createRequestGate} from '../request-gate.js';
@@ -21,28 +21,28 @@ async function model(messages, options = {}) {
     const cacheKey=requestDigest({taskId,cacheVersion,account:requestDigest(config.key),base,model:config.model,messages:requestMessages,thinking,maxTokens,stage:options.stage||'',arrays:options.arrays||[]});
     const cached=taskId?await cache.read(cacheKey):null;
     if(cached){try{if(options.arrays?.some(name=>!Array.isArray(cached[name])))throw Error();options.validate?.(cached);record({localReuse:true,usageKnown:false,model:config.model});return cached;}catch{}}
-    let res,result;
+    let res,result,transportDiagnostic;
     for(let transportAttempt=0;transportAttempt<2;transportAttempt++) {
-      ({res,result}=await gate.run(async timing=>{
+      ({res,result,transportDiagnostic}=await gate.run(async timing=>{
         await beforeRequest(options);
         const requestId=randomUUID(),started=Date.now();
         record({id:requestId,localReuse:false,model:config.model,attempt:attempt+1,transportAttempt:transportAttempt+1,usageKnown:false,status:'requesting',...timing});
         try {
           const res=await fetch(base+'/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+config.key},body:JSON.stringify({model:config.model,temperature:0.2,max_tokens:maxTokens,...thinking,response_format:{type:'json_object'},stream:false,messages:requestMessages}),signal:AbortSignal.timeout(120000)});
-          const result=await res.json().catch(()=>null);
+          const decoded=decodeModelHttpBody(await res.text().catch(()=>''),res.headers.get('content-type'),res.status),result=decoded.result;
           const usage=result?.usage||{},count=value=>Number.isFinite(value)&&value>=0?value:null;
           record({id:requestId,localReuse:false,status:'responded',model:config.model,httpStatus:res.status,attempt:attempt+1,transportAttempt:transportAttempt+1,...timing,durationMs:Date.now()-started,usageKnown:Number.isFinite(usage.prompt_tokens)&&Number.isFinite(usage.completion_tokens),promptTokens:count(usage.prompt_tokens),completionTokens:count(usage.completion_tokens),totalTokens:count(usage.total_tokens),cacheHitTokens:count(usage.prompt_cache_hit_tokens??usage.prompt_tokens_details?.cached_tokens),reasoningTokens:count(usage.completion_tokens_details?.reasoning_tokens)});
           if(res.status===429){const delayMs=gate.rateLimited(res.headers.get('retry-after'));return {res,result,delayMs};}
-          return {res,result};
+          return {res,result,transportDiagnostic:decoded.diagnostic};
         } catch(error) {
           record({id:requestId,localReuse:false,status:'failed',model:config.model,attempt:attempt+1,transportAttempt:transportAttempt+1,...timing,durationMs:Date.now()-started,usageKnown:false});throw error;
         }
       }).then(value=>{if(value.res.status===429&&value.delayMs>30000)throw Error('模型服务限流，已降为串行；服务要求较长等待，请稍后从检查点重试。');return value;}));
       if(res.status!==429)break;
     }
-    if (!res.ok) throw new Error(services.redact("模型服务返回 " + res.status + "：" + (result?.error?.message || "请求失败")));
+    if (!res.ok) throw new Error(services.redact("模型服务返回 " + res.status + "（"+(res.headers.get('content-type')||'响应类型未知')+"）：" + (result?.error?.message || "请检查服务商请求记录、基础地址与模型路由。")));
     try {
-      const parsed = parseModelResponse(result);
+      const parsed = parseModelResponse(result,transportDiagnostic);
       if (options.arrays?.some((name) => !Array.isArray(parsed.value[name]))) throw new ModelOutputError("MODEL_SCHEMA_INVALID", "模型缺少本阶段必需的结构化字段。", parsed.diagnostic);
       if(options.validate)try {options.validate(parsed.value);}catch(error){schemaFeedback=error.message;throw new ModelOutputError('MODEL_SCHEMA_INVALID',error.message,parsed.diagnostic);}
       if(taskId)await cache.write(cacheKey,parsed.value);
@@ -52,9 +52,9 @@ async function model(messages, options = {}) {
       previousFailure={code:error.code,maxTokens};
       if (taskId) {
         const research = getTask(taskId)?.research || {};
-        update(taskId, { research: { ...research, modelDiagnostics: [...(research.modelDiagnostics || []).slice(-19), { id:randomUUID(),stage: options.stage || "模型分析", code: error.code, ...error.diagnostic, maxTokens,attempt: attempt + 1, automaticRetry: attempt+1<attempts&&error.code!=='MODEL_PROVIDER_ERROR'&&error.code!=='MODEL_REFUSED', recordedAt: new Date().toISOString() }] } });
+        update(taskId, { research: { ...research, modelDiagnostics: [...(research.modelDiagnostics || []).slice(-19), { id:randomUUID(),stage: options.stage || "模型分析", code: error.code, ...error.diagnostic, maxTokens,attempt: attempt + 1, automaticRetry: attempt+1<attempts&&!['MODEL_PROVIDER_ERROR','MODEL_REFUSED','MODEL_PROTOCOL_INVALID'].includes(error.code), recordedAt: new Date().toISOString() }] } });
       }
-      if (attempt+1===attempts || ['MODEL_REFUSED','MODEL_PROVIDER_ERROR'].includes(error.code)) {const failure=Error((options.stage || "模型分析") + "：" + error.message + "已保留阶段进度，可从中断处继续。");failure.code=error.code;throw failure;}
+      if (attempt+1===attempts || ['MODEL_REFUSED','MODEL_PROVIDER_ERROR','MODEL_PROTOCOL_INVALID'].includes(error.code)) {const failure=Error((options.stage || "模型分析") + "：" + error.message + "已保留阶段进度，可从中断处继续。");failure.code=error.code;throw failure;}
     }
   }
 }
