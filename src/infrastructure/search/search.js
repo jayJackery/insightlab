@@ -1,6 +1,6 @@
-import { validateQueries } from "../../../public/plan-utils.js";
-import {enrichSource,canonicalSourceUrl} from '../../domain/evidence/source-document.js';
-import {createRequestGate} from '../request-gate.js';
+import { validateQueries } from "../../../public/plan-utils.js?v=8e1e00bb1d41da9f";
+import {enrichSource,canonicalSourceUrl} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
+import {createRequestGate} from '../request-gate.js?v=8e1e00bb1d41da9f';
 const searchGate=createRequestGate(3);
 
 const text = (value) => typeof value === "string" ? value.trim() : "";

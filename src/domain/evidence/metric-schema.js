@@ -1,4 +1,4 @@
-import {resolveProduct,sameProduct} from './product-registry.js';
+import {resolveProduct,sameProduct} from './product-registry.js?v=8e1e00bb1d41da9f';
 
 const definitions=[
  ['capacity_nominal','电池容量',['容量','capacity','battery capacity']],

@@ -1,4 +1,4 @@
-import {focusDescription} from '../../public/research-focus.js';
+import {focusDescription} from '../../public/research-focus.js?v=8e1e00bb1d41da9f';
 export const REPORT_PROMPT = [
   '基准是可选项。contract.baselineProduct为空时，不编自家产品差距、相对基准排名或同档入选结论；baselineImplications返回[]，围绕原问题解释技术/产品与应用取舍。requestedBaseline只是原始提法，needs_confirmation/unresolved候选不等于确认型号，不能把其参数移给用户所指产品；方法附录简短记录识别边界，不让用户先填基准才能得到答案。',
   '合理的通用机理、常识性因果推演和条件式建议可以作为分析判断写入正文，不因缺少竞品拆解就全部判作未知或要求用户逐项复核；必须不违背已知参数，明确分析判断与适用前提，不能宣称某型号已采用、已测试或已认证。人工复核只保留最多5个影响安全、关键比较或选型的事项，其余过程留档。',

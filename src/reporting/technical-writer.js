@@ -1,10 +1,10 @@
-import { createHash } from "../browser/shims/crypto.js";
-import { sourceContext } from "../domain/evidence/report-content.js";
-import { contentBalance } from "../domain/research/engineering-policy.js";
-import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js';
-import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js';
-import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js';
-import {mapConcurrent} from '../application/research/concurrency.js';
+import { createHash } from "../browser/shims/crypto.js?v=8e1e00bb1d41da9f";
+import { sourceContext } from "../domain/evidence/report-content.js?v=8e1e00bb1d41da9f";
+import { contentBalance } from "../domain/research/engineering-policy.js?v=8e1e00bb1d41da9f";
+import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=8e1e00bb1d41da9f';
+import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=8e1e00bb1d41da9f';
+import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
+import {mapConcurrent} from '../application/research/concurrency.js?v=8e1e00bb1d41da9f';
 
 const groups = ["principle", "architecture", "implementation", "tradeoffs", "validation"];
 export async function writeTechnicalRoutes({ inputText, plan, sources, evidence, research, persist, model }) {

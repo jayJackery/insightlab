@@ -1,10 +1,10 @@
-import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js';
-import {inspectSources} from './search-workflow.js';
-import {deduplicateSources} from '../../infrastructure/search/search.js';
-import {independentDocumentCount} from '../../domain/evidence/source-document.js';
-import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js';
-import {mapConcurrent} from './concurrency.js';
-import {digest} from '../../domain/evidence/source-document.js';
+import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js?v=8e1e00bb1d41da9f';
+import {inspectSources} from './search-workflow.js?v=8e1e00bb1d41da9f';
+import {deduplicateSources} from '../../infrastructure/search/search.js?v=8e1e00bb1d41da9f';
+import {independentDocumentCount} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
+import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js?v=8e1e00bb1d41da9f';
+import {mapConcurrent} from './concurrency.js?v=8e1e00bb1d41da9f';
+import {digest} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
 
 // Budget is persisted before each external request; retrying a task cannot reset its spend.
 export async function repairEvidence({input,plan,research,evidence,sources,search,review,snapshotSources,rebuild,persist}) {

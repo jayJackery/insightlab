@@ -1,6 +1,6 @@
-import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js';
-import {createBrowserRuntime} from './runtime.js';
-import {createBackup,importBackup} from './backup.js';
+import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=8e1e00bb1d41da9f';
+import {createBrowserRuntime} from './runtime.js?v=8e1e00bb1d41da9f';
+import {createBackup,importBackup} from './backup.js?v=8e1e00bb1d41da9f';
 const $=selector=>document.querySelector(selector);
 const toast=message=>{const node=$('#toast');node.textContent=message;node.classList.add('show');setTimeout(()=>node.classList.remove('show'),6000);};
 const download=(blob,name)=>{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);};
@@ -8,7 +8,7 @@ async function start(){
   if(location.protocol==='file:')throw Error('此版本用于GitHub Pages，请通过网站地址打开；暂不提供双击HTML运行。');
   document.documentElement.dataset.runtime='browser';
   const base=new URL('../../',import.meta.url),name='insightlab-pages-v1:'+location.origin+base.pathname;
-  const response=await fetch(new URL('build.json',base));if(!response.ok)throw Error('网站发布不完整，请重新上传完整发布目录。');
+  const response=await fetch(new URL('build.json',base),{cache:'no-store'});if(!response.ok)throw Error('网站发布不完整，请重新上传完整发布目录。');
   const build=await response.json();await openStorage(name);const workspace=await acquireWorkspace();
   const runtime=await createBrowserRuntime({build,workspace});
   const nativeFetch=globalThis.fetch.bind(globalThis);
@@ -44,6 +44,6 @@ async function start(){
   if(channel)channel.onmessage=sync;
   let wasBusy=false;setInterval(async()=>{await sync();const busy=runtime.busy();if(busy||wasBusy)channel?.postMessage('updated');wasBusy=busy;},2500);
   document.addEventListener('browser-storage-error',event=>{note.textContent=event.detail;bar.classList.add('is-error');toast(event.detail);});
-  app=await import('../../public/app.js');await sync();
+  app=await import('../../public/app.js?v=8e1e00bb1d41da9f');await sync();
 }
 start().catch(error=>{document.body.dataset.auth='locked';const root=$('#auth-root');root.replaceChildren();const card=document.createElement('main');card.className='access-card';const title=document.createElement('h1');title.textContent='网页工作区暂时无法打开';const detail=document.createElement('p');detail.textContent=error.message;const retry=document.createElement('button');retry.className='primary';retry.textContent='重新打开';retry.onclick=()=>location.reload();card.append(title,detail,retry);root.append(card);});

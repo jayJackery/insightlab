@@ -1,5 +1,5 @@
-import {jumpToReview} from './report-review.js';
-import {reportSections} from './report-sections.js';
+import {jumpToReview} from './report-review.js?v=8e1e00bb1d41da9f';
+import {reportSections} from './report-sections.js?v=8e1e00bb1d41da9f';
 const esc=value=>String(value ?? '').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const presets={main:['summary','findings','technology','comparison','applications','baseline','trends','risks','recommendations','sources'],core:['summary','findings','baseline','recommendations','sources'],technical:['summary','technology','comparison','recommendations','sources'],product:['summary','findings','comparison','applications','baseline','recommendations','sources']};
 export function openExportDialog({task,onExport}) {
