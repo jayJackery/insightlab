@@ -1,10 +1,10 @@
 {
   "app": "insightlab-browser",
-  "buildId": "a173ed178454b647",
+  "buildId": "64517c870ffa3b77",
   "workflowVersion": "rd-research/18",
   "requirementsRevision": "RD-2026-10-22-v15",
   "reportSchemaVersion": 5,
-  "createdAt": "2026-10-22T08:16:02.908Z",
+  "createdAt": "2026-10-22T08:25:49.669Z",
   "publicCatalogRetrievedAt": "2026-10-22T01:29:47.074Z",
   "containsUserData": false,
   "credentialStorage": "page-memory-only",
@@ -426,8 +426,8 @@
     },
     {
       "path": "public/model-diagnostics.js",
-      "size": 2904,
-      "sha256": "cba0c7a92cf163d8685b83a4621b9390b32e4207c5023003f89b393bb46db7f3"
+      "size": 3356,
+      "sha256": "5e27d394ac4911c19fd350a956920b1a1056bce326dab455044d60185ef5004e"
     },
     {
       "path": "public/depth-controls.js",
@@ -537,7 +537,7 @@
     {
       "path": "build.json",
       "size": 353,
-      "sha256": "9f5d2b643744975507cfe20d74d1b0bfd520ed6fbcf82ff006d1b65aecda1f84"
+      "sha256": "63f4f66b75663da0bd5f18c5d10322a6f805a9fdc71ef9b798ab4d093f5839c4"
     }
   ]
 }
