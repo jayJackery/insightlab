@@ -1,7 +1,7 @@
-import { planList } from "../../../public/plan-utils.js?v=69935587b51cd156";
-import {selectDocumentContext} from './source-document.js?v=69935587b51cd156';
-import {parseProductName,sameProduct} from './product-registry.js?v=69935587b51cd156';
-import {scopeObservations} from './comparison-scope.js?v=69935587b51cd156';
+import { planList } from "../../../public/plan-utils.js?v=7860f20d981283d9";
+import {selectDocumentContext} from './source-document.js?v=7860f20d981283d9';
+import {parseProductName,sameProduct} from './product-registry.js?v=7860f20d981283d9';
+import {scopeObservations} from './comparison-scope.js?v=7860f20d981283d9';
 
 const unknown=(value)=>!value || /^(?:unknown|未注明|未知)$/i.test(String(value));
 function comparableValue(metric) {

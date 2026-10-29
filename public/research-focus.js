@@ -1,4 +1,4 @@
-import {resolveReportDepth,focusForDelivery} from './report-depth.js?v=69935587b51cd156';
+import {resolveReportDepth,focusForDelivery} from './report-depth.js?v=7860f20d981283d9';
 const profiles={
   technical:{label:'技术原理与实现',minimumTopics:4,maximumTopics:6,queryShare:0.65,topicCharacters:650,minimumEngineeringDocuments:3},
   product:{label:'产品与竞品对比',minimumTopics:0,maximumTopics:2,queryShare:0.2,topicCharacters:350,minimumEngineeringDocuments:0},

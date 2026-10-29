@@ -1,6 +1,6 @@
-import {createHash} from '../../browser/shims/crypto.js?v=69935587b51cd156';
-import {mkdir,readFile,writeFile} from '../../browser/shims/fs.js?v=69935587b51cd156';
-import {join} from '../../browser/shims/path.js?v=69935587b51cd156';
+import {createHash} from '../../browser/shims/crypto.js?v=7860f20d981283d9';
+import {mkdir,readFile,writeFile} from '../../browser/shims/fs.js?v=7860f20d981283d9';
+import {join} from '../../browser/shims/path.js?v=7860f20d981283d9';
 
 // Public product pages only; never persist credentials, query strings or failed responses.
 export function createPublicPageCache(directory='public-page-cache',now=()=>Date.now()) {

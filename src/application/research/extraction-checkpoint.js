@@ -1,5 +1,5 @@
-import {createHash} from '../../browser/shims/crypto.js?v=69935587b51cd156';
-import {sourceContext} from '../../domain/evidence/report-content.js?v=69935587b51cd156';
+import {createHash} from '../../browser/shims/crypto.js?v=7860f20d981283d9';
+import {sourceContext} from '../../domain/evidence/report-content.js?v=7860f20d981283d9';
 
 // The signature follows model-visible inputs, not storage/build metadata.
 export function extractionInputSignature({inputText,plan,criteria,definitions,products,batch}) {

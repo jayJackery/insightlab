@@ -1,10 +1,10 @@
 {
   "app": "insightlab-browser",
-  "buildId": "69935587b51cd156",
+  "buildId": "7860f20d981283d9",
   "workflowVersion": "rd-research/19",
   "requirementsRevision": "RD-2026-10-22-v17",
   "reportSchemaVersion": 5,
-  "createdAt": "2026-10-29T02:25:32.724Z",
+  "createdAt": "2026-10-29T02:34:58.282Z",
   "publicCatalogRetrievedAt": "2026-10-22T01:29:47.074Z",
   "containsUserData": false,
   "credentialStorage": "page-memory-only"

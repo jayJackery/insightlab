@@ -1,9 +1,9 @@
-import { createHash } from "../browser/shims/crypto.js?v=69935587b51cd156";
-import { contentBalance } from "../domain/research/engineering-policy.js?v=69935587b51cd156";
-import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=69935587b51cd156';
-import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=69935587b51cd156';
-import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=69935587b51cd156';
-import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=69935587b51cd156';
+import { createHash } from "../browser/shims/crypto.js?v=7860f20d981283d9";
+import { contentBalance } from "../domain/research/engineering-policy.js?v=7860f20d981283d9";
+import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=7860f20d981283d9';
+import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=7860f20d981283d9';
+import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=7860f20d981283d9';
+import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=7860f20d981283d9';
 
 const groups = ["principle", "architecture", "implementation", "tradeoffs", "validation"];
 // A numbered list of explicit technical directions is part of the user's
@@ -62,7 +62,7 @@ export async function writeTechnicalRoutes({ inputText, plan, sources, evidence,
     let failure = '';
     for (let attempt=0;attempt<2;attempt++) {
     const value = await model([
-      { role: "system", content: "你撰写一个研发技术主题的完整工程详解。正文目标" + minimumCharacters + "至" + (minimumCharacters+300) + "个中文字，信息密度优先，不能重复句凑长度。必须讲清因果机理与能量/信号/热/力的路径、组成部件和接口、制造或控制实现步骤、设计参数的约束、故障模式和验证实验。原理和架构各2至3点，实现3至5个有顺序的步骤，权衡与验证各2至3点，每点" + (focus.mode==="product"?"20至50":"50至100") + "字。数值、器件型号和产品已采用的做法必须有给定来源；通用原理、专利方案与具体产品事实分别写，缺电路图或拆解时禁止猜元件、尺寸及拓扑。若提出工程推演，应明确待验证。每点附来源ID，可加粗关键术语。只返回JSON对象：heading,questionIds,lead,principle:[原理],architecture:[架构与接口],implementation:[步骤],tradeoffs:[收益代价条件],validation:[测什么如何测通过条件的来源及故障模式],implementationBasis:documented或engineering_proposal,knownLimits:[待验证边界],sourceIds:[给定来源ID]。证据不足写出准确缺口，不虚构补齐。" },
+      { role: "system", content: "你撰写一个研发技术主题的完整工程详解。正文目标" + minimumCharacters + "至" + (minimumCharacters+300) + "个中文字，信息密度优先，不能重复句凑长度。必须讲清因果机理与能量/信号/热/力的路径、组成部件和接口、制造或控制实现步骤、设计参数的约束、故障模式和验证实验。原理和架构各2至3点，实现3至5个有顺序的步骤，权衡与验证各2至3点，每点" + (focus.mode==="product"?"20至50":"50至100") + "字。实现步骤须简洁针对用户问题，写清具体检查对象、可执行动作及可记录或判断的结果，不堆叠泛泛注意事项；有准确型号证据时给出实际差异，证据不足则明确为待验证方法，不假称产品采用。外部接口或端口电流不能单独证明机内线束型号、线规或走向；不支持扩容不能证明PACK封闭或维修方式。数值、器件型号和产品已采用的做法必须有给定来源；通用原理、专利方案与具体产品事实分别写，缺电路图或拆解时禁止猜元件、尺寸及拓扑。若提出工程推演，应明确待验证。每点附来源ID，可加粗关键术语。只返回JSON对象：heading,questionIds,lead,principle:[原理],architecture:[架构与接口],implementation:[步骤],tradeoffs:[收益代价条件],validation:[测什么如何测通过条件的来源及故障模式],implementationBasis:documented或engineering_proposal,knownLimits:[待验证边界],sourceIds:[给定来源ID]。证据不足写出准确缺口，不虚构补齐。" },
       { role: "user", content: inputText + "\n只展开这个主题：" + JSON.stringify(topic) + "\n研究问题：" + JSON.stringify(plan.questions) + "\n结构化证据：" + JSON.stringify(evidence) + "\n来源和已核验摘录：" + JSON.stringify(relevant) + '\n另外必须返回designProblem（本主题解决的具体研发问题）、systemPath（用→描述部件、接口及能量/信号/热/力流，写明是参考原理路径还是产品已证实路径）、designDecisions:[{condition:场景和约束,benefit:收益及机理,cost:代价与故障风险,decision:条件式选型建议及来源}]至少2项、validationPlan:[{failureMode:故障模式,conditions:激励/工况/对照组,measurement:观测量及测法,criterion:通过判据或待项目定义,basis:判据的来源ID及适用范围，未知则明确待定义}]至少2项。tradeoffs和validation由这两张表生成，无需重复写。不要把通用测试条目当产品认证结论。无依据的数值、测试阈值、具体控制算法禁止编造。' + (failure?'\n上次结构问题，逐项修正：'+failure:'') },
     ].map((message,index)=>index===1?{...message,content:message.content+'\n分析侧重：'+focusDescription(focus)+'\n基准状态：'+JSON.stringify({baselineProduct:research.contract?.baselineProduct,requestedBaseline:research.contract?.requestedBaseline,status:research.contract?.baselineResolution})+'\n无已确认基准时comparisonImplication写该方案对目标场景的意义，不编相对自家差距。\n准确产品实体：'+JSON.stringify(products)+'\n官方基础型号别名（不合并地区/批次）：'+JSON.stringify(VERIFIED_PRODUCT_ALIASES)+'\n必须返回productMappings数组，每个给定准确产品一项：{productId:给定ID,adoptionStatus:documented/proposal/unknown,summary:该型号采用何种方案或本轮未找到什么,comparisonImplication:相对基准的差异与影响,sourceIds:[来源ID],evidence:[{sourceId,quote:逐字原文}]}。documented只可用已核验的该型号事实，并提供逐字摘录；参考设计与专利只能写proposal，未知写unknown，不能用同品牌别的型号代替。正文每个架构/实现要点明确厂商型号或标明通用参考，不能只在最后挂型号。产品侧重时每点20至50字、仅保留能解释产品差异的技术，避免技术章节挤占产品内容。\n严格边界：产品CTB宣传不证明电芯承载；拆解能分离不证明用户可维修；扩展口不证明热插拔或并联协议。三款同为LFP不证明安全寿命差异主要来自BMS/热管理。Wh/kg只能引用证据表内status=derived且附formula的确定性结果，不自行估算。减重机理需拆分质量预算，没有各项质量就写待测量，不编占比。验证阈值无原文或项目规范时写待定义。'+(reviewFeedback?'\n独立复核要求重写：'+reviewFeedback:'')}:message), { stage: "技术详解 " + (index+1) + " " + topic.heading, arrays: ["principle","architecture","implementation","designDecisions","validationPlan", "productMappings","sourceIds", "knownLimits"], maxTokens: 6500,reasoning:'low' });
     try { return normalizeEngineeringRoute(value,topic,sourceIds,{products,sources}); }

@@ -1,6 +1,6 @@
-import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=69935587b51cd156';
-import {createBrowserRuntime} from './runtime.js?v=69935587b51cd156';
-import {createBackup,importBackup} from './backup.js?v=69935587b51cd156';
+import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=7860f20d981283d9';
+import {createBrowserRuntime} from './runtime.js?v=7860f20d981283d9';
+import {createBackup,importBackup} from './backup.js?v=7860f20d981283d9';
 const $=selector=>document.querySelector(selector);
 const toast=message=>{const node=$('#toast');node.textContent=message;node.classList.add('show');setTimeout(()=>node.classList.remove('show'),6000);};
 const download=(blob,name)=>{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);};
@@ -46,6 +46,6 @@ async function start(){
   if(channel)channel.onmessage=sync;
   let wasBusy=false;setInterval(async()=>{await sync();const busy=runtime.busy();if(busy||wasBusy)channel?.postMessage('updated');wasBusy=busy;},2500);
   document.addEventListener('browser-storage-error',event=>{note.textContent=event.detail;bar.classList.add('is-error');toast(event.detail);});
-  app=await import('../../public/app.js?v=69935587b51cd156');await sync();
+  app=await import('../../public/app.js?v=7860f20d981283d9');await sync();
 }
 start().catch(error=>{document.body.dataset.auth='locked';const root=$('#auth-root');root.replaceChildren();const card=document.createElement('main');card.className='access-card';const title=document.createElement('h1');title.textContent='网页工作区暂时无法打开';const detail=document.createElement('p');detail.textContent=error.message;const retry=document.createElement('button');retry.className='primary';retry.textContent='重新打开';retry.onclick=()=>location.reload();card.append(title,detail,retry);root.append(card);});

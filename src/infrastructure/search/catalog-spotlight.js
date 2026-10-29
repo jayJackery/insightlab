@@ -1,4 +1,4 @@
-import {loadCatalog,CATALOG_URL} from '../../browser/catalog.js?v=69935587b51cd156';
+import {loadCatalog,CATALOG_URL} from '../../browser/catalog.js?v=7860f20d981283d9';
 
 const text=(value,limit=220)=>typeof value==='string'?(value.trim().length>limit?value.trim().slice(0,limit)+'…':value.trim()):'';
 function url(value,{image=false}={}){
