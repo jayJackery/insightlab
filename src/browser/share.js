@@ -1,5 +1,5 @@
-import {makeDocx} from '../reporting/docx-export.js?v=983914e21674fb3e';
-import {exportOptionsFromUrl} from '../../public/report-sections.js?v=983914e21674fb3e';
+import {makeDocx} from '../reporting/docx-export.js?v=6cfce723d0abd3f5';
+import {exportOptionsFromUrl} from '../../public/report-sections.js?v=6cfce723d0abd3f5';
 
 const maxBytes=4*1024*1024, ttlDays=30;
 const defaultService='https://insightlab-report-share.tech-insight-research.workers.dev';

@@ -1,4 +1,4 @@
-import {validateReportAnswers} from '../domain/research/report-validation.js?v=983914e21674fb3e';
+import {validateReportAnswers} from '../domain/research/report-validation.js?v=6cfce723d0abd3f5';
 
 const sections=['executiveSummary','scopeAndMethod','baselineImplications','productApplications','trends','opportunitiesAndRisks','recommendations','methodNotes'];
 function knownTarget(target,report) {

@@ -1,11 +1,11 @@
-import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=983914e21674fb3e';
-import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=983914e21674fb3e";
-import { deduplicateSources } from "../../infrastructure/search/search.js?v=983914e21674fb3e";
-import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=983914e21674fb3e";
-import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
-import {resolveResearchFocus} from '../../../public/research-focus.js?v=983914e21674fb3e';
-import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=983914e21674fb3e';
-import {createHash} from '../../browser/shims/crypto.js?v=983914e21674fb3e';
+import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=6cfce723d0abd3f5';
+import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=6cfce723d0abd3f5";
+import { deduplicateSources } from "../../infrastructure/search/search.js?v=6cfce723d0abd3f5";
+import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=6cfce723d0abd3f5";
+import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=6cfce723d0abd3f5';
+import {resolveResearchFocus} from '../../../public/research-focus.js?v=6cfce723d0abd3f5';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=6cfce723d0abd3f5';
+import {createHash} from '../../browser/shims/crypto.js?v=6cfce723d0abd3f5';
 
 const sourceTypes = new Set(["official", "standard", "paper", "patent", "media", "curated", "other"]);
 const primaryTypes = new Set(["official", "standard", "paper", "patent"]);

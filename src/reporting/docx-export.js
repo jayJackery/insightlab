@@ -1,18 +1,18 @@
 import {Buffer} from '../browser/shims/buffer.js';
-import { deflateRawSync } from "../browser/shims/zlib.js?v=983914e21674fb3e";
-import {metricPresentation} from '../domain/evidence/metric-presentation.js?v=983914e21674fb3e';
-import {metricDefinition} from '../domain/evidence/metric-schema.js?v=983914e21674fb3e';
-import {visibleComparisonRows} from '../../public/comparison-visibility.js?v=983914e21674fb3e';
-import {sameProduct} from '../domain/evidence/product-registry.js?v=983914e21674fb3e';
-import {metricLabels} from '../../public/metric-labels.js?v=983914e21674fb3e';
-import {reviewChecklist} from '../domain/evidence/review-checklist.js?v=983914e21674fb3e';
-import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js?v=983914e21674fb3e';
-import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js?v=983914e21674fb3e';
-import {resolveExportSelection} from '../../public/report-sections.js?v=983914e21674fb3e';
-import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js?v=983914e21674fb3e';
-import {presentationProductsForTask} from '../domain/evidence/product-registry.js?v=983914e21674fb3e';
-import {qualifyStructuredContent} from '../../public/product-labels.js?v=983914e21674fb3e';
-import {selectResearchFindings} from '../../public/finding-presentation.js?v=983914e21674fb3e';
+import { deflateRawSync } from "../browser/shims/zlib.js?v=6cfce723d0abd3f5";
+import {metricPresentation} from '../domain/evidence/metric-presentation.js?v=6cfce723d0abd3f5';
+import {metricDefinition} from '../domain/evidence/metric-schema.js?v=6cfce723d0abd3f5';
+import {visibleComparisonRows} from '../../public/comparison-visibility.js?v=6cfce723d0abd3f5';
+import {sameProduct} from '../domain/evidence/product-registry.js?v=6cfce723d0abd3f5';
+import {metricLabels} from '../../public/metric-labels.js?v=6cfce723d0abd3f5';
+import {reviewChecklist} from '../domain/evidence/review-checklist.js?v=6cfce723d0abd3f5';
+import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js?v=6cfce723d0abd3f5';
+import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js?v=6cfce723d0abd3f5';
+import {resolveExportSelection} from '../../public/report-sections.js?v=6cfce723d0abd3f5';
+import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js?v=6cfce723d0abd3f5';
+import {presentationProductsForTask} from '../domain/evidence/product-registry.js?v=6cfce723d0abd3f5';
+import {qualifyStructuredContent} from '../../public/product-labels.js?v=6cfce723d0abd3f5';
+import {selectResearchFindings} from '../../public/finding-presentation.js?v=6cfce723d0abd3f5';
 
 const xml = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
 function plain(value) {

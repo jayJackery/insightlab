@@ -1,7 +1,7 @@
-import {knownCatalogMetrics,catalogHas,redundantCatalogQuery} from './catalog-policy.js?v=983914e21674fb3e';
-import { planList, validateQueries } from "../../../public/plan-utils.js?v=983914e21674fb3e";
-import {resolveResearchFocus,focusDescription} from '../../../public/research-focus.js?v=983914e21674fb3e';
-import {parseProductName} from '../evidence/product-registry.js?v=983914e21674fb3e';
+import {knownCatalogMetrics,catalogHas,redundantCatalogQuery} from './catalog-policy.js?v=6cfce723d0abd3f5';
+import { planList, validateQueries } from "../../../public/plan-utils.js?v=6cfce723d0abd3f5";
+import {resolveResearchFocus,focusDescription} from '../../../public/research-focus.js?v=6cfce723d0abd3f5';
+import {parseProductName} from '../evidence/product-registry.js?v=6cfce723d0abd3f5';
 
 const engineeringTerms = /原理|架构|电路|拓扑|控制|接口|工艺|拆解|热路径|失效|验证|schematic|architecture|topology|teardown|thermal|application note|failure|control loop/i;
 const short = (text, n) => Array.from(text || "").slice(0, n).join("");

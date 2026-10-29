@@ -1,5 +1,5 @@
-import {digest} from './source-document.js?v=983914e21674fb3e';
-import {metricLabels} from '../../../public/metric-labels.js?v=983914e21674fb3e';
+import {digest} from './source-document.js?v=6cfce723d0abd3f5';
+import {metricLabels} from '../../../public/metric-labels.js?v=6cfce723d0abd3f5';
 const safeUrl=value=>{try{const u=new URL(value);return /^https?:$/.test(u.protocol)&&!u.username&&!u.password?u.href:'';}catch{return '';}};
 const text=value=>typeof value==='string'?value:'';
 function actionFor(subject,reason){
