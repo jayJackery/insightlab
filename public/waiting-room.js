@@ -88,7 +88,7 @@ function tick(){
 export function mountWaitingRoom(nextTask,{api:client,preserved}={}){
   if(!active(nextTask)){stopWaitingRoom();return;}
   const incoming=document.querySelector('.research-waiting');if(!incoming)return;
-  if(preserved?.dataset.waitTask===nextTask.id)incoming.replaceWith(preserved);
+  if(preserved?.dataset.waitTask===nextTask.id&&incoming!==preserved)incoming.replaceWith(preserved);
   const previous=root;root=preserved?.dataset.waitTask===nextTask.id?preserved:incoming;task=nextTask;api=client;online=true;lastPaint='';if(previous!==root)lastTick=Date.now();
   if(!root.querySelector('.wait-facts')){const facts=document.createElement('div');facts.className='wait-facts';facts.innerHTML='<div><strong data-wait-sources>0</strong><small>已收集来源</small></div><div><strong data-wait-queries>0 / 0</strong><small>检索查询</small></div><div><strong data-wait-round>初始检索</strong><small>补查轮次</small></div>';root.querySelector('.wait-now').before(facts);}
   if(!visits.has(task.id))visits.set(task.id,Date.now());

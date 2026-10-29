@@ -1,10 +1,10 @@
-import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js?v=e9968bcba1cb9548';
-import {inspectSources} from './search-workflow.js?v=e9968bcba1cb9548';
-import {deduplicateSources} from '../../infrastructure/search/search.js?v=e9968bcba1cb9548';
-import {independentDocumentCount} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js?v=e9968bcba1cb9548';
-import {mapConcurrent} from './concurrency.js?v=e9968bcba1cb9548';
-import {digest} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
+import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js?v=983914e21674fb3e';
+import {inspectSources} from './search-workflow.js?v=983914e21674fb3e';
+import {deduplicateSources} from '../../infrastructure/search/search.js?v=983914e21674fb3e';
+import {independentDocumentCount} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js?v=983914e21674fb3e';
+import {mapConcurrent} from './concurrency.js?v=983914e21674fb3e';
+import {digest} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
 
 // Budget is persisted before each external request; retrying a task cannot reset its spend.
 export async function repairEvidence({input,plan,research,evidence,sources,search,review,snapshotSources,rebuild,persist}) {
@@ -36,7 +36,7 @@ export async function repairEvidence({input,plan,research,evidence,sources,searc
     state.queriesUsed+=attempts.length;state.attempts.push(...attempts);research.queryRuns.push(...attempts);
     // Reserve the entire bounded round before any parallel request can start.
     await record();
-    const foundByQuery=await mapConcurrent(selected,3,async(gap,index)=>{
+    const foundByQuery=await mapConcurrent(selected,selected.length,async(gap,index)=>{
       const attempt=attempts[index];attempt.status='running';attempt.startedAt=new Date().toISOString();
       research.currentActivity='核验后补查 '+state.roundsUsed+'/'+limits.rounds+'：'+gap.query;
       research.searchProgress={...research.searchProgress,currentQuery:gap.query,currentQueries:attempts.filter(item=>item.status==='running').map(item=>item.query),totalQueries:research.queryRuns.length};

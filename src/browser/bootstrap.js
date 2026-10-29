@@ -1,7 +1,7 @@
-import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=e9968bcba1cb9548';
-import {createBrowserRuntime} from './runtime.js?v=e9968bcba1cb9548';
-import {createBackup,importBackup} from './backup.js?v=e9968bcba1cb9548';
-import {shareInfo,loadSharedReports,sharedRequest,installSharing} from './share.js?v=e9968bcba1cb9548';
+import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=983914e21674fb3e';
+import {createBrowserRuntime} from './runtime.js?v=983914e21674fb3e';
+import {createBackup,importBackup} from './backup.js?v=983914e21674fb3e';
+import {shareInfo,loadSharedReports,sharedRequest,installSharing} from './share.js?v=983914e21674fb3e';
 const $=selector=>document.querySelector(selector);
 const toast=message=>{const node=$('#toast');node.textContent=message;node.classList.add('show');setTimeout(()=>node.classList.remove('show'),6000);};
 const download=(blob,name)=>{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);};
@@ -16,7 +16,7 @@ async function start(){
     const request=sharedRequest(snapshot,fallback),nativeFetch=globalThis.fetch.bind(globalThis);
     globalThis.fetch=(input,options)=>typeof input==='string'&&/^\/api(?:\/|$)/.test(input)?request(input,options):nativeFetch(input,options);
     const note=document.createElement('section');note.className='browser-session-notice';note.textContent='只读分享 · 仅显示分享者选中的报告 · 可选择章节导出 Word';$('.topbar').after(note);
-    const app=await import('../../public/app.js?v=e9968bcba1cb9548');await app.openTask(snapshot.tasks[0].id);
+    const app=await import('../../public/app.js?v=983914e21674fb3e');await app.openTask(snapshot.tasks[0].id);
     $('#nav-history').textContent='已分享报告';$('#history-view .page-head h1').textContent='已分享报告';$('#history-view .page-head p').textContent='仅显示分享者选择的报告。';return;
   }
   const base=new URL('../../',import.meta.url),name='insightlab-pages-v1:'+location.origin+base.pathname;
@@ -33,7 +33,7 @@ async function start(){
   const restore=document.createElement('button');restore.type='button';restore.textContent='导入备份';restore.disabled=!workspace.writable;
   const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;
   const updateButton=document.createElement('button');updateButton.type='button';updateButton.textContent='加载更新（保留本页密钥）';
-  updateButton.addEventListener('click',async()=>{updateButton.disabled=true;try{const next=await runtime.loadUpdate(new URL('build.json',base).href);if(next){runtime=next;workspace=next.workspace;version.textContent='版本 '+next.runtime.buildId.slice(0,8);toast('研究引擎已更新，本页密钥和已保存进度保留。可从已保存阶段重试。');}else toast('当前已是最新版本。');}catch(error){toast(error.message);}finally{updateButton.disabled=false;}});
+  updateButton.addEventListener('click',async()=>{updateButton.disabled=true;try{const next=await runtime.loadUpdate(new URL('build.json',base).href);if(next){runtime=next;workspace=next.workspace;version.textContent='版本 '+next.runtime.buildId.slice(0,8);toast('研究引擎已更新并保留进度与密钥；新增界面需等任务结束后刷新页面，刷新后重新配置密钥。');}else toast('当前已是最新版本。');}catch(error){toast(error.message);}finally{updateButton.disabled=false;}});
   const version=document.createElement('small');version.textContent='版本 '+build.buildId.slice(0,8);bar.append(title,note,progress,backup,restore,updateButton,version,input);$('.topbar').after(bar);
   installSharing(()=>runtime);
   backup.addEventListener('click',()=>{try{download(createBackup(runtime),'InsightLab报告备份_'+new Date().toISOString().slice(0,10)+'.json');toast('已开始下载报告备份，不含密钥。');}catch(error){toast(error.message);}});
@@ -59,6 +59,6 @@ async function start(){
   if(channel)channel.onmessage=sync;
   let wasBusy=false;setInterval(async()=>{await sync();const busy=runtime.busy();if(busy||wasBusy)channel?.postMessage('updated');wasBusy=busy;},2500);
   document.addEventListener('browser-storage-error',event=>{note.textContent=event.detail;bar.classList.add('is-error');toast(event.detail);});
-  app=await import('../../public/app.js?v=e9968bcba1cb9548');await sync();
+  app=await import('../../public/app.js?v=983914e21674fb3e');await sync();
 }
 start().catch(error=>{document.body.dataset.auth='locked';const root=$('#auth-root');root.replaceChildren();const card=document.createElement('main');card.className='access-card';const title=document.createElement('h1');title.textContent='网页工作区暂时无法打开';const detail=document.createElement('p');detail.textContent=error.message;const retry=document.createElement('button');retry.className='primary';retry.textContent='重新打开';retry.onclick=()=>location.reload();card.append(title,detail,retry);root.append(card);});

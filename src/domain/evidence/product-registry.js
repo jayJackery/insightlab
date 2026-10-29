@@ -1,5 +1,5 @@
-import {digest} from './source-document.js?v=e9968bcba1cb9548';
-import {cleanProductLabel,catalogDisplayName} from '../../../public/product-identity.js?v=e9968bcba1cb9548';
+import {digest} from './source-document.js?v=983914e21674fb3e';
+import {cleanProductLabel,catalogDisplayName} from '../../../public/product-identity.js?v=983914e21674fb3e';
 
 const brands=[['jackery','电小二','华宝新能'],['ecoflow','正浩创新','正浩'],['anker','ankersolix','安克创新','安克'],['bluetti','德兰明海','铂陆帝'],['dji','大疆'],['eaton'],['zendure']];
 const compact=(value)=>String(value || '').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');

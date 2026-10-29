@@ -1,8 +1,8 @@
-import { verifiedQuotes } from './search-workflow.js?v=e9968bcba1cb9548';
-import { sourceContext } from '../../domain/evidence/report-content.js?v=e9968bcba1cb9548';
-import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js?v=e9968bcba1cb9548';
-import {digest} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=e9968bcba1cb9548';
+import { verifiedQuotes } from './search-workflow.js?v=983914e21674fb3e';
+import { sourceContext } from '../../domain/evidence/report-content.js?v=983914e21674fb3e';
+import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js?v=983914e21674fb3e';
+import {digest} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=983914e21674fb3e';
 
 // A full pack of n identical cells has nominal energy n × V × Ah regardless
 // of series/parallel arrangement. Only flag an explicit, unambiguous cell
@@ -75,9 +75,9 @@ export async function auditEvidence({ evidence, sources, plan, products=[], mode
     if(cached)decisions.set(fact.id,{...cached,id:fact.id});else pending.push(fact);
   }
   let completed=facts.length-pending.length;const reused=completed,active=new Set();
-  const save=async()=>{checkpoint.progress={completed,total:facts.length,reused,concurrency:STAGE_CONCURRENCY.factAudit,activeBatches:[...active]};await persist();};
-  await save();
   const batches=[];for(let offset=0;offset<pending.length;offset+=8)batches.push(pending.slice(offset,offset+8));
+  const save=async()=>{checkpoint.progress={completed,total:facts.length,reused,concurrency:batches.length,activeBatches:[...active]};await persist();};
+  await save();
   await mapConcurrent(batches,STAGE_CONCURRENCY.factAudit,async(batch,index)=>{
     active.add(index+1);await save();
     try {
@@ -113,4 +113,4 @@ export async function auditEvidence({ evidence, sources, plan, products=[], mode
   return evidence;
 }
 
-export {auditAnswers} from './report-review-batches.js?v=e9968bcba1cb9548';
+export {auditAnswers} from './report-review-batches.js?v=983914e21674fb3e';

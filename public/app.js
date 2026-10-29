@@ -1,22 +1,22 @@
-import {renderApiUsage} from './api-usage.js?v=e9968bcba1cb9548';
-import {selectResearchFindings} from './finding-presentation.js?v=e9968bcba1cb9548';
-import {visibleComparisonRows} from './comparison-visibility.js?v=e9968bcba1cb9548';
-import {metricLabels} from './metric-labels.js?v=e9968bcba1cb9548';
-import {renderReviewChecklist,setupReportReview} from './report-review.js?v=e9968bcba1cb9548';
-import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=e9968bcba1cb9548';
-import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=e9968bcba1cb9548";
+import {renderApiUsage} from './api-usage.js?v=983914e21674fb3e';
+import {selectResearchFindings} from './finding-presentation.js?v=983914e21674fb3e';
+import {visibleComparisonRows} from './comparison-visibility.js?v=983914e21674fb3e';
+import {metricLabels} from './metric-labels.js?v=983914e21674fb3e';
+import {renderReviewChecklist,setupReportReview} from './report-review.js?v=983914e21674fb3e';
+import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=983914e21674fb3e';
+import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=983914e21674fb3e";
 
-import {resolveResearchFocus,focusDescription} from './research-focus.js?v=e9968bcba1cb9548';
-import {openExportDialog} from './export-dialog.js?v=e9968bcba1cb9548';
-import {highlightSegments,topicProductReferences} from './product-highlights.js?v=e9968bcba1cb9548';
-import {setupAccess,openTaskSharing} from './access.js?v=e9968bcba1cb9548';
-import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=e9968bcba1cb9548';
-import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=e9968bcba1cb9548';
-import {renderCatalogStatus} from './catalog-status.js?v=e9968bcba1cb9548';
-import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=e9968bcba1cb9548';
-import {qualifyProductMentions} from './product-labels.js?v=e9968bcba1cb9548';
-import {setupDepthControls} from './depth-controls.js?v=e9968bcba1cb9548';
-import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=e9968bcba1cb9548';
+import {resolveResearchFocus,focusDescription} from './research-focus.js?v=983914e21674fb3e';
+import {openExportDialog} from './export-dialog.js?v=983914e21674fb3e';
+import {highlightSegments,topicProductReferences} from './product-highlights.js?v=983914e21674fb3e';
+import {setupAccess,openTaskSharing} from './access.js?v=983914e21674fb3e';
+import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=983914e21674fb3e';
+import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=983914e21674fb3e';
+import {renderCatalogStatus} from './catalog-status.js?v=983914e21674fb3e';
+import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=983914e21674fb3e';
+import {qualifyProductMentions} from './product-labels.js?v=983914e21674fb3e';
+import {setupDepthControls} from './depth-controls.js?v=983914e21674fb3e';
+import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=983914e21674fb3e';
 setupDepthControls();
 const $ = (selector) => document.querySelector(selector);
 const state = { tasks: [], current: null, poll: null };
@@ -469,10 +469,10 @@ function renderTechnicalCheckpoint(task) {
   const contents='<aside class="report-outline"><nav class="report-contents" aria-label="阶段章节目录"><span>已保存的技术章节</span><div>'+routes.map(route=>'<a href="#report-tech-route-'+(route.checkpointIndex+1)+'"><span>'+String(route.checkpointIndex+1).padStart(2,'0')+'</span>'+esc(route.heading.split(/[：:]/u)[0])+'</a>').join('')+'</div></nav></aside>';
   return '<div class="report-layout checkpoint-layout">'+contents+'<main class="report-main"><article class="report"><section class="quality-notice"><strong>技术章节阶段草稿 · 尚未完成报告验收</strong><p>已保存 '+routes.length+' 个技术主题。原始问题的整合答案和最终独立复核尚未完成，以下内容包含待验证的工程推演，请结合原文复核。</p></section>'+renderTechnology({technologyDeepDives:routes},task.research.plan,true,task.research?.presentationProducts || [],sourceIndex(task))+'</article></main><aside class="report-source-sidebar"><section class="source-library"><h2>本轮来源</h2><p>点击编号或标题核对原文</p><div class="source-grid">'+(task.research.sources || []).map(sourceCard).join('')+'</div></section></aside></div>';
 }
-function renderTask(task) {
-  // Polling replaces parts of the page. Preserve the reader's current chapter
-  // and viewport position across that update, without affecting navigation.
-  const keepReading=state.current===task.id && ['running','queued','planning'].includes(task.status) && window.scrollY>0;
+function renderTask(task,{background=false}={}) {
+  // Preserve the report and waiting-room DOM during polling. Replacing them on
+  // every update removes the browser's scroll anchor and resets reading state.
+  const keepReading=background&&state.current===task.id&&window.scrollY>0;
   const priorY=keepReading?window.scrollY:0;
   const anchors=keepReading?[...document.querySelectorAll('#task-content [id^="report-tech-route-"], #task-content .process-block, #task-content .progress details')]:[];
   const readerAnchor=anchors.filter(node=>node.id&&node.getBoundingClientRect().top<=120).at(-1);
@@ -489,19 +489,40 @@ function renderTask(task) {
   const draft = task.quality?.publishable === false;
   $("#task-actions").innerHTML = invalid ? '<button class="task-action strong" id="repair-plan">重新制定研究计划</button>' : task.status === "completed"
     ? '<button class="task-action" id="copy-link">复制本机链接</button>' + (draft ? '<button class="task-action" id="repair-plan">按新要求重新研究</button>' : '') + '<button class="task-action strong" id="export" data-draft="' + (draft?'1':'0') + '">' + (draft?'下载 Word 草稿':'下载 Word 报告') + '</button>'
-    : ['failed','needs_review'].includes(task.status) ? '<button class="task-action" id="repair-plan">重新制定研究计划</button><button class="task-action strong" id="retry">继续研究与核验</button>' + (task.report?'<button class="task-action" id="export" data-draft="1">下载 Word 草稿</button>':'') : "";
+    : ['failed','needs_review'].includes(task.status) ? '<button class="task-action" id="repair-plan">重新制定研究计划</button><button class="task-action strong" id="retry">继续研究与核验</button>' + (task.report?'<button class="task-action" id="export" data-draft="1">下载 Word 草稿</button>':'') : task.report&&['running','queued','planning'].includes(task.status)?'<button class="task-action" id="export" data-draft="1">下载 Word 草稿（复核中）</button>':'';
   if(task.permissions?.canEdit===false)$('#task-actions').innerHTML=task.report?'<button class="task-action strong" id="export" data-draft="'+(draft?'1':'0')+'">'+(draft?'下载 Word 草稿':'下载 Word 报告')+'</button>':'';
   if(task.permissions?.canShare)$('#task-actions').insertAdjacentHTML('beforeend','<button class="task-action" id="share-task">分享只读报告</button>');
+  if(task.report&&document.documentElement.dataset.runtime==='browser'&&document.body.dataset.shareMode!=='true')$('#task-actions').insertAdjacentHTML('beforeend','<button class="task-action" id="share-browser-report">分享报告</button>');
   const primary = task.status === "plan_ready" ? renderPlan(task) : task.report ? renderReport(task) : renderTechnicalCheckpoint(task);
   $("#task-view").classList.toggle("has-report", Boolean(task.report || task.research?.technicalCheckpoint?.routes?.length));
   const heading = task.report ? '' : '<h1 class="task-title">' + esc(task.title) + '</h1><p class="task-sub">' + esc(task.input.subject) + " · " + formatDate(task.createdAt) + " · " + status[0] + '</p>';
   const progress = task.report && ['completed','needs_review'].includes(task.status) && !invalid ? '<details class="completed-progress"><summary><span>' + (draft?'研究内容已保存 · 待验收':'<i>✓</i> 调研已完成') + ' <small>' + formatDate(task.createdAt) + ' · ' + (task.research?.sources?.length || 0) + ' 条公开来源</small></span><span>查看工作流进度 ＋</span></summary>' + renderProgress(task) + '</details>' : renderProgress(task);
-  $("#task-content").innerHTML = heading + renderTaskAction(task) + progress + primary;
+  const content=$('#task-content'),header=heading+renderTaskAction(task);
+  const primaryKey=JSON.stringify([task.status==='plan_ready'?'plan':task.report?'report':'checkpoint',task.report,task.evidence,task.research?.plan,task.research?.technicalCheckpoint?.routes,task.research?.sources?.map(source=>[source.id,source.document?.contentHash]),task.quality&&[task.quality.status,task.quality.publishable,task.quality.issues]]);
+  const oldProgress=content.querySelector('.progress-slot > .progress'),oldWaiting=oldProgress?.querySelector(':scope > .research-waiting');
+  const progressSlot=content.querySelector('.progress-slot'),primarySlot=content.querySelector('.primary-slot'),headerSlot=content.querySelector('.task-header-slot');
+  const running=['running','queued','planning'].includes(task.status);
+  const reusable=background&&content.dataset.renderTask===task.id&&running&&oldWaiting&&progressSlot&&primarySlot&&headerSlot;
+  let primaryChanged=true;
+  if(reusable){
+    const template=document.createElement('template');template.innerHTML=progress;
+    const fresh=template.content.querySelector('.progress'),freshWaiting=fresh?.querySelector(':scope > .research-waiting');
+    if(freshWaiting){
+      if(headerSlot.innerHTML!==header)headerSlot.innerHTML=header;
+      // Replace only siblings of the waiting room; it and the report remain
+      // connected while the counters change, preserving their scroll anchors.
+      for(const child of [...oldProgress.children])if(child!==oldWaiting)child.remove();
+      for(const child of [...fresh.children]){if(child===freshWaiting)continue;if(child.compareDocumentPosition(freshWaiting)&Node.DOCUMENT_POSITION_FOLLOWING)oldProgress.insertBefore(child,oldWaiting);else oldProgress.append(child);}
+      primaryChanged=primarySlot.dataset.snapshot!==primaryKey;
+      if(primaryChanged){primarySlot.innerHTML=primary;primarySlot.dataset.snapshot=primaryKey;}
+    }else{content.innerHTML='<div class="task-header-slot">'+header+'</div><div class="progress-slot">'+progress+'</div><div class="primary-slot">'+primary+'</div>';content.querySelector('.primary-slot').dataset.snapshot=primaryKey;}
+  }else{content.innerHTML='<div class="task-header-slot">'+header+'</div><div class="progress-slot">'+progress+'</div><div class="primary-slot">'+primary+'</div>';content.querySelector('.primary-slot').dataset.snapshot=primaryKey;}
+  content.dataset.renderTask=task.id;
   const incomingCheckpoint=$('#task-content .checkpoint-layout');
-  if(incomingCheckpoint){if(preservedCheckpoint)incomingCheckpoint.replaceWith(preservedCheckpoint);else incomingCheckpoint.dataset.snapshot=checkpointKey;}
+  if(incomingCheckpoint){if(preservedCheckpoint&&incomingCheckpoint!==preservedCheckpoint)incomingCheckpoint.replaceWith(preservedCheckpoint);else incomingCheckpoint.dataset.snapshot=checkpointKey;}
   updateTaskFeedback(task,{onOpenTask:async id=>{if(state.current!==id||!$('#task-view').classList.contains('active'))await openTask(id);if(state.current!==id)throw Error('任务已切换，请重新打开。');}});
   mountWaitingRoom(task,{api,preserved:preservedWaiting});
-  if(preservedFocus?.isConnected)preservedFocus.focus({preventScroll:true});
+  if(preservedFocus?.isConnected&&document.activeElement!==preservedFocus)preservedFocus.focus({preventScroll:true});
   document.querySelectorAll('#task-content .progress details').forEach(node=>{if(openDetails.includes(node.querySelector('summary')?.textContent))node.open=true;});
   if(task.permissions?.canEdit===false){$('#task-content').insertAdjacentHTML('afterbegin','<p class="sharing-readonly">同事分享的只读研究 · 可以阅读与导出，研究修改由创建者操作</p>');document.querySelectorAll('#task-content .followup,#task-content .plan-review,#task-content #retry').forEach(node=>node.remove());}
   highlightReportProducts(task);
@@ -509,7 +530,7 @@ function renderTask(task) {
   let size = "standard";
   try { if (localStorage.getItem("insight-reading-size") === "large") size = "large"; } catch {}
   applyReadingSize(size);
-  if(keepReading){
+  if(keepReading&&primaryChanged){
     const nextAnchor=anchorId&&document.getElementById(anchorId);
     const target=nextAnchor?window.scrollY+nextAnchor.getBoundingClientRect().top-anchorTop:priorY;
     if(Math.abs(window.scrollY-target)>1)window.scrollTo({top:target,behavior:'instant'});
@@ -525,7 +546,7 @@ function applyReadingSize(size) {
 function schedulePoll(id) {
   clearTimeout(state.poll);
   state.poll = setTimeout(async () => {
-    try { await refreshTasks(); const task = await api("/api/tasks/" + id); if (state.current === id) renderTask(task); }
+    try { await refreshTasks(); const task = await api("/api/tasks/" + id); if (state.current === id) renderTask(task,{background:true}); }
     catch (error) { if(state.current===id){setWaitingRoomConnection(false);setTaskFeedbackConnection(false);schedulePoll(id);} }
   }, 1800);
 }
@@ -556,6 +577,7 @@ $("#research-form").addEventListener("submit", async (event) => {
   finally { button.disabled = false; button.innerHTML = '生成研究计划 <b>↗</b>'; }
 });
 document.addEventListener("click", async (event) => {
+  if(event.target.closest('#share-browser-report')){document.querySelector('[data-share-entry]')?.click();return;}
   if(event.target.closest('#share-task')){await openTaskSharing(api,state.current);return;}
   const chapterLink = event.target.closest('.report-contents a, .dashboard-kpis a[href^="#report-"]');
   if (chapterLink) {
@@ -680,4 +702,4 @@ setupProductComparison();
 setupReportReview({api,onRevision:async id=>{await refreshTasks();await openTask(id);}});setupComparisonBrief();setupComparisonActions({api,getTask:()=>api('/api/tasks/'+state.current)});
 const access=setupAccess({api,onAuthenticated:initialize,onSignedOut:()=>{sessionEpoch++;clearTimeout(state.poll);stopWaitingRoom();clearTaskFeedback();state.outlineObserver?.disconnect();state.tasks=[];state.current=null;$('#task-content').replaceChildren();$('#task-actions').replaceChildren();renderSidebar();document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());setView('home');}});
 access.start().catch(error=>toast(error.message));
-import('./settings.js?v=e9968bcba1cb9548').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));
+import('./settings.js?v=983914e21674fb3e').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));

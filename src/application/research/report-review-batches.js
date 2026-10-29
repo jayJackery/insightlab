@@ -1,6 +1,6 @@
-import {digest} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {mapConcurrent} from './concurrency.js?v=e9968bcba1cb9548';
-import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=e9968bcba1cb9548';
+import {digest} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=983914e21674fb3e';
+import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=983914e21674fb3e';
 
 export async function auditAnswers({report,contract,evidence,model,modelIdentity='unknown',checkpoint={},persist=()=>{}}){
   const {technologyOverview,keyFindings,answerAudit,quality,generatedAt,...clean}=report;
@@ -26,7 +26,7 @@ export async function auditAnswers({report,contract,evidence,model,modelIdentity
   const active=new Set();
   const save=async()=>{checkpoint.progress={completed:jobs.filter(job=>checkpoint.batches[job.key]).length,total:jobs.length,active:[...active]};await persist(checkpoint.progress);};
   await save();
-  await mapConcurrent(jobs,2,async job=>{
+  await mapConcurrent(jobs,STAGE_CONCURRENCY.reportReview,async job=>{
     if(checkpoint.batches[job.key])return;
     active.add(job.key);await save();
     try{

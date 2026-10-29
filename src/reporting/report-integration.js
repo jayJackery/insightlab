@@ -1,7 +1,7 @@
-import {createHash} from '../browser/shims/crypto.js?v=e9968bcba1cb9548';
-import {mapConcurrent} from '../application/research/concurrency.js?v=e9968bcba1cb9548';
-import {reportPromptForFocus} from './report-prompt.js?v=e9968bcba1cb9548';
-import {validateReportAnswers} from '../domain/research/report-validation.js?v=e9968bcba1cb9548';
+import {createHash} from '../browser/shims/crypto.js?v=983914e21674fb3e';
+import {mapConcurrent} from '../application/research/concurrency.js?v=983914e21674fb3e';
+import {reportPromptForFocus} from './report-prompt.js?v=983914e21674fb3e';
+import {validateReportAnswers} from '../domain/research/report-validation.js?v=983914e21674fb3e';
 
 const sectionGroups=[['executiveSummary','scopeAndMethod','methodNotes'],['baselineImplications','productApplications'],['trends','opportunitiesAndRisks','recommendations']];
 const recoverable=new Set(['MODEL_TIMEOUT','MODEL_NETWORK','MODEL_STREAM_INCOMPLETE','MODEL_TRUNCATED','MODEL_JSON_INVALID','MODEL_SCHEMA_INVALID','MODEL_EMPTY']);
@@ -46,7 +46,7 @@ export async function integrateReportBatches({inputText,contract,plan,routes,evi
   const save=async()=>{state.progress={completed:jobs.filter(job=>state.batches[job.key]).length,total:jobs.length,reused:jobs.filter(job=>state.batches[job.key]?.reused).length,active:[...active]};research.currentActivity='报告整合 '+state.progress.completed+'/'+state.progress.total+' 段已保存'+(active.size?' · 正在处理 '+[...active].join('、'):'');await persist();};
   for(const job of jobs)if(state.batches[job.key]){try{validate(job,state.batches[job.key].value);state.batches[job.key].reused=true;}catch{delete state.batches[job.key];}}
   await save();
-  await mapConcurrent(jobs,2,async job=>{
+  await mapConcurrent(jobs,jobs.length,async job=>{
     if(state.batches[job.key])return;
     active.add(job.key);await save();
     try{

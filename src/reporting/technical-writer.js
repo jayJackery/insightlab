@@ -1,9 +1,9 @@
-import { createHash } from "../browser/shims/crypto.js?v=e9968bcba1cb9548";
-import { contentBalance } from "../domain/research/engineering-policy.js?v=e9968bcba1cb9548";
-import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=e9968bcba1cb9548';
-import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=e9968bcba1cb9548';
-import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=e9968bcba1cb9548';
-import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=e9968bcba1cb9548';
+import { createHash } from "../browser/shims/crypto.js?v=983914e21674fb3e";
+import { contentBalance } from "../domain/research/engineering-policy.js?v=983914e21674fb3e";
+import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=983914e21674fb3e';
+import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=983914e21674fb3e';
+import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=983914e21674fb3e';
+import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=983914e21674fb3e';
 
 const groups = ["principle", "architecture", "implementation", "tradeoffs", "validation"];
 // A numbered list of explicit technical directions is part of the user's
@@ -71,7 +71,7 @@ export async function writeTechnicalRoutes({ inputText, plan, sources, evidence,
     throw Error(failure+'；其他主题检查点已保留。');
   };
   const activeTopics=new Map();
-  const saveActivity=()=>{checkpoint.activeTopics=[...activeTopics].map(([index,heading])=>({index,heading}));checkpoint.concurrency=STAGE_CONCURRENCY.technicalWriting;research.currentActivity='技术详解 '+checkpoint.routes.filter(Boolean).length+'/'+checkpoint.outline.length+' 章已保存'+(activeTopics.size?' · 正在展开：'+[...activeTopics.values()].join(' / '):'');persist();};
+  const saveActivity=()=>{checkpoint.activeTopics=[...activeTopics].map(([index,heading])=>({index,heading}));checkpoint.concurrency=checkpoint.outline.length;research.currentActivity='技术详解 '+checkpoint.routes.filter(Boolean).length+'/'+checkpoint.outline.length+' 章已保存'+(activeTopics.size?' · 正在展开：'+[...activeTopics.values()].join(' / '):'');persist();};
   // Outline, evidence and product registry are frozen before independent writers start.
   await mapConcurrent(checkpoint.outline.map((topic,index)=>({topic,index})),STAGE_CONCURRENCY.technicalWriting,async({topic,index})=>{
     if(checkpoint.routes[index])return;
@@ -81,7 +81,7 @@ export async function writeTechnicalRoutes({ inputText, plan, sources, evidence,
   });
   return { routes: checkpoint.routes, async reviseTopics(audit) {
     const topics=(audit.technicalTopics || []).filter((topic)=>topic.status==='shallow').slice(0,2);
-    await mapConcurrent(topics,2,async(topic)=>{
+    await mapConcurrent(topics,topics.length,async(topic)=>{
       const index=topic.topicIndex;
       if(!checkpoint.outline[index])return;
       research.currentActivity='按独立复核深化技术主题 '+(index+1);persist();

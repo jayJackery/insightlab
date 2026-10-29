@@ -1,40 +1,40 @@
-import {qualifyStructuredContent} from '../../../public/product-labels.js?v=e9968bcba1cb9548';
-import {presentationProductsForTask} from '../../domain/evidence/product-registry.js?v=e9968bcba1cb9548';
-import {createHash} from '../../browser/shims/crypto.js?v=e9968bcba1cb9548';
-import {knownCatalogMetrics,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=e9968bcba1cb9548';
-import {normalizePlan,validateQueries} from '../../../public/plan-utils.js?v=e9968bcba1cb9548';
-import {executeSearchPlan,verifiedQuotes,inspectSources} from './search-workflow.js?v=e9968bcba1cb9548';
-import {normalizeCoverage,normalizeQuestionAnswers,sourceContext,mergeEvidence} from '../../domain/evidence/report-content.js?v=e9968bcba1cb9548';
-import {reportPromptForFocus} from '../../reporting/report-prompt.js?v=e9968bcba1cb9548';
-import {integrateReportBatches} from '../../reporting/report-integration.js?v=e9968bcba1cb9548';
-import {applyEngineeringPolicy} from '../../domain/research/engineering-policy.js?v=e9968bcba1cb9548';
-import {writeTechnicalRoutes} from '../../reporting/technical-writer.js?v=e9968bcba1cb9548';
-import {CATALOG_URL} from '../../browser/catalog.js?v=e9968bcba1cb9548';
-import {buildResearchContract,contractFingerprint,WORKFLOW_VERSION,REPORT_SCHEMA_VERSION} from '../../domain/research/research-contract.js?v=e9968bcba1cb9548';
-import {contentBalance} from '../../domain/research/engineering-policy.js?v=e9968bcba1cb9548';
-import {evaluatePublication} from '../../domain/research/publication-gate.js?v=e9968bcba1cb9548';
-import {auditEvidence,quarantineEnergyConflicts} from './evidence-audit.js?v=e9968bcba1cb9548';
-import {auditAnswers} from './report-review-batches.js?v=e9968bcba1cb9548';
-import {appendDerivedMetrics} from '../../domain/evidence/metric-calculations.js?v=e9968bcba1cb9548';
-import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=e9968bcba1cb9548';
-import {classifyEvidenceGaps} from '../../domain/evidence/gap-classification.js?v=e9968bcba1cb9548';
-import {bindEvidenceEntities,validateEvidenceBatch,METRIC_DEFINITIONS} from '../../domain/evidence/metric-schema.js?v=e9968bcba1cb9548';
-import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {sameProduct} from '../../domain/evidence/product-registry.js?v=e9968bcba1cb9548';
-import {repairEvidence} from './evidence-repair.js?v=e9968bcba1cb9548';
-import {validateReportAnswers,evidenceForWriting} from '../../domain/research/report-validation.js?v=e9968bcba1cb9548';
-import {resolveResearchFocus,focusDescription} from '../../../public/research-focus.js?v=e9968bcba1cb9548';
-import {catalogEvidence} from '../../domain/evidence/catalog-evidence.js?v=e9968bcba1cb9548';
-import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=e9968bcba1cb9548';
-import {reviseReportSections} from '../../reporting/report-revision.js?v=e9968bcba1cb9548';
-import {resolveReportDepth,focusedQueries,focusedCriteria} from '../../../public/report-depth.js?v=e9968bcba1cb9548';
-import {discoverBaseline} from './baseline-discovery.js?v=e9968bcba1cb9548';
-import {extractWithSplitRecovery} from './evidence-batch-recovery.js?v=e9968bcba1cb9548';
-import {extractionInputSignature,savedSearchDecision,reusableAuditedEvidence,equivalentResearchScope} from './extraction-checkpoint.js?v=e9968bcba1cb9548';
-import {isSourceReviewFormatError,recoverSingleSourceReview} from './source-review-recovery.js?v=e9968bcba1cb9548';
-import {PLAN_ARRAYS,validatePlanShape,checkCoverageCompatibility} from '../../infrastructure/ai/model-probe.js?v=e9968bcba1cb9548';
-import {researchInput} from '../../../public/baseline-context.js?v=e9968bcba1cb9548';
-import {comparisonInput} from '../../domain/research/competitor-selection.js?v=e9968bcba1cb9548';
+import {qualifyStructuredContent} from '../../../public/product-labels.js?v=983914e21674fb3e';
+import {presentationProductsForTask} from '../../domain/evidence/product-registry.js?v=983914e21674fb3e';
+import {createHash} from '../../browser/shims/crypto.js?v=983914e21674fb3e';
+import {knownCatalogMetrics,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=983914e21674fb3e';
+import {normalizePlan,validateQueries} from '../../../public/plan-utils.js?v=983914e21674fb3e';
+import {executeSearchPlan,verifiedQuotes,inspectSources} from './search-workflow.js?v=983914e21674fb3e';
+import {normalizeCoverage,normalizeQuestionAnswers,sourceContext,mergeEvidence} from '../../domain/evidence/report-content.js?v=983914e21674fb3e';
+import {reportPromptForFocus} from '../../reporting/report-prompt.js?v=983914e21674fb3e';
+import {integrateReportBatches} from '../../reporting/report-integration.js?v=983914e21674fb3e';
+import {applyEngineeringPolicy} from '../../domain/research/engineering-policy.js?v=983914e21674fb3e';
+import {writeTechnicalRoutes} from '../../reporting/technical-writer.js?v=983914e21674fb3e';
+import {CATALOG_URL} from '../../browser/catalog.js?v=983914e21674fb3e';
+import {buildResearchContract,contractFingerprint,WORKFLOW_VERSION,REPORT_SCHEMA_VERSION} from '../../domain/research/research-contract.js?v=983914e21674fb3e';
+import {contentBalance} from '../../domain/research/engineering-policy.js?v=983914e21674fb3e';
+import {evaluatePublication} from '../../domain/research/publication-gate.js?v=983914e21674fb3e';
+import {auditEvidence,quarantineEnergyConflicts} from './evidence-audit.js?v=983914e21674fb3e';
+import {auditAnswers} from './report-review-batches.js?v=983914e21674fb3e';
+import {appendDerivedMetrics} from '../../domain/evidence/metric-calculations.js?v=983914e21674fb3e';
+import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=983914e21674fb3e';
+import {classifyEvidenceGaps} from '../../domain/evidence/gap-classification.js?v=983914e21674fb3e';
+import {bindEvidenceEntities,validateEvidenceBatch,METRIC_DEFINITIONS} from '../../domain/evidence/metric-schema.js?v=983914e21674fb3e';
+import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {sameProduct} from '../../domain/evidence/product-registry.js?v=983914e21674fb3e';
+import {repairEvidence} from './evidence-repair.js?v=983914e21674fb3e';
+import {validateReportAnswers,evidenceForWriting} from '../../domain/research/report-validation.js?v=983914e21674fb3e';
+import {resolveResearchFocus,focusDescription} from '../../../public/research-focus.js?v=983914e21674fb3e';
+import {catalogEvidence} from '../../domain/evidence/catalog-evidence.js?v=983914e21674fb3e';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=983914e21674fb3e';
+import {reviseReportSections} from '../../reporting/report-revision.js?v=983914e21674fb3e';
+import {resolveReportDepth,focusedQueries,focusedCriteria} from '../../../public/report-depth.js?v=983914e21674fb3e';
+import {discoverBaseline} from './baseline-discovery.js?v=983914e21674fb3e';
+import {extractWithSplitRecovery} from './evidence-batch-recovery.js?v=983914e21674fb3e';
+import {extractionInputSignature,savedSearchDecision,reusableAuditedEvidence,equivalentResearchScope} from './extraction-checkpoint.js?v=983914e21674fb3e';
+import {isSourceReviewFormatError,recoverSingleSourceReview} from './source-review-recovery.js?v=983914e21674fb3e';
+import {PLAN_ARRAYS,validatePlanShape,checkCoverageCompatibility} from '../../infrastructure/ai/model-probe.js?v=983914e21674fb3e';
+import {researchInput} from '../../../public/baseline-context.js?v=983914e21674fb3e';
+import {comparisonInput} from '../../domain/research/competitor-selection.js?v=983914e21674fb3e';
 export function createResearchWorkflow({getTask,update,model,search,consultSpecs,recommendCompetitors,fetchOfficial,runtime,snapshotSources=async(sources)=>sources.map(enrichSource)}) {
 async function reviewSources(sources, input) {
   return model([
@@ -220,7 +220,7 @@ async function run(id) {
       jobs.sort((a,b)=>extractionSources.indexOf(a.batch[0])-extractionSources.indexOf(b.batch[0]));
       const completedSourceIds=new Set(jobs.filter(job=>job.cached).flatMap(job=>job.batch.map(source=>source.id)));
       const active=new Map();
-      const saveProgress=()=>{const completed=completedSourceIds.size;research.evidenceProgress={completed,total:extractionSources.length,concurrency:STAGE_CONCURRENCY.evidenceExtraction,activeBatches:[...active.values()],reusedSources:jobs.filter(job=>job.cached).reduce((total,job)=>total+job.batch.length,0)};research.currentActivity='证据整理 '+completed+'/'+extractionSources.length+' 条来源'+(active.size?' · 同时处理'+active.size+'批':'');update(id,{research});};
+      const saveProgress=()=>{const completed=completedSourceIds.size;research.evidenceProgress={completed,total:extractionSources.length,concurrency:jobs.filter(job=>!job.cached).length,activeBatches:[...active.values()],reusedSources:jobs.filter(job=>job.cached).reduce((total,job)=>total+job.batch.length,0)};research.currentActivity='证据整理 '+completed+'/'+extractionSources.length+' 条来源'+(active.size?' · 同时处理'+active.size+'批':'');update(id,{research});};
       saveProgress();
       const values=await mapConcurrent(jobs,STAGE_CONCURRENCY.evidenceExtraction,async({batch,cached,signature:batchSignature},index)=>{
         if(cached)return cached;
@@ -328,7 +328,7 @@ async function run(id) {
     // Preserve a readable draft even if the independent reviewer is unavailable.
     if(originalTask.report){research.priorDrafts ||= [];if(!research.priorDrafts.some(item=>item.generatedAt===originalTask.report.generatedAt&&item.contractSignature===originalTask.report.contractSignature))research.priorDrafts.push({generatedAt:originalTask.report.generatedAt,contractSignature:originalTask.report.contractSignature,report:originalTask.report,evidence:originalTask.evidence});}
     update(id,{research,evidence,report,status:'running',phaseIndex:4,phaseStatus:'running'});
-    const reviewReport=async(value)=>{research.answerReviewCheckpoint ||= {};return auditAnswers({report:value,contract,evidence,modelIdentity:model.identity?.()||'unavailable',checkpoint:research.answerReviewCheckpoint,persist:progress=>{research.currentActivity='独立复核 '+progress.completed+'/'+progress.total+' 段已保存';update(id,{research});},model:(messages,options)=>model(messages,{...options,taskId:id})});};
+    const reviewReport=async(value)=>{research.answerReviewCheckpoint ||= {};return auditAnswers({report:value,contract,evidence,modelIdentity:model.identity?.()||'unavailable',checkpoint:research.answerReviewCheckpoint,persist:progress=>{const names=(progress.active||[]).map(key=>key.startsWith('questions-')?'问题覆盖':key.startsWith('topics-')?'技术主题':key.startsWith('gaps-')?'证据缺口':key==='cross-section'?'全文一致性':'报告内容');research.currentActivity='独立复核 '+progress.completed+'/'+progress.total+' 段已保存'+(names.length?' · 正在核对：'+[...new Set(names)].join('、'):'');update(id,{research});},model:(messages,options)=>model(messages,{...options,taskId:id})});};
     try { report.answerAudit = await reviewReport(report); }
     catch (error) { report.answerAudit = {status:'needs_review',findings:[{severity:'blocking',message:error.message}]}; }
     if(report.answerAudit.status!=='passed' && contract.delivery?.route!=='answer' && !(research.contentRevision?.roundsUsed>=1)) {

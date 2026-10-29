@@ -1,7 +1,8 @@
-import { validateQueries } from "../../../public/plan-utils.js?v=e9968bcba1cb9548";
-import {enrichSource,canonicalSourceUrl} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {createRequestGate} from '../request-gate.js?v=e9968bcba1cb9548';
-const searchGate=createRequestGate(3);
+import { validateQueries } from "../../../public/plan-utils.js?v=983914e21674fb3e";
+import {enrichSource,canonicalSourceUrl} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {createRequestGate} from '../request-gate.js?v=983914e21674fb3e';
+import {STAGE_CONCURRENCY} from '../../application/research/concurrency.js?v=983914e21674fb3e';
+const searchGate=createRequestGate(STAGE_CONCURRENCY.search);
 
 const text = (value) => typeof value === "string" ? value.trim() : "";
 const finite = (value) => typeof value === "number" && Number.isFinite(value) ? value : null;

@@ -1,11 +1,11 @@
-import {reviewChecklist,editableReportTargets} from '../evidence/review-checklist.js?v=e9968bcba1cb9548';
-import {contentBalance} from './engineering-policy.js?v=e9968bcba1cb9548';
-import {evaluatePublication} from './publication-gate.js?v=e9968bcba1cb9548';
-import {metricPresentation} from '../evidence/metric-presentation.js?v=e9968bcba1cb9548';
-import {boundaryPresentation} from '../evidence/boundary-presentation.js?v=e9968bcba1cb9548';
-import {sourceDisplayTitle} from '../evidence/source-presentation.js?v=e9968bcba1cb9548';
-import {presentationProductsForTask,sameProduct} from '../evidence/product-registry.js?v=e9968bcba1cb9548';
-import {catalogDisplayName} from '../../../public/product-identity.js?v=e9968bcba1cb9548';
+import {reviewChecklist,editableReportTargets} from '../evidence/review-checklist.js?v=983914e21674fb3e';
+import {contentBalance} from './engineering-policy.js?v=983914e21674fb3e';
+import {evaluatePublication} from './publication-gate.js?v=983914e21674fb3e';
+import {metricPresentation} from '../evidence/metric-presentation.js?v=983914e21674fb3e';
+import {boundaryPresentation} from '../evidence/boundary-presentation.js?v=983914e21674fb3e';
+import {sourceDisplayTitle} from '../evidence/source-presentation.js?v=983914e21674fb3e';
+import {presentationProductsForTask,sameProduct} from '../evidence/product-registry.js?v=983914e21674fb3e';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=983914e21674fb3e';
 
 // One read model for SQLite and IndexedDB; presentation never changes stored facts.
 export function presentTask(raw) {
@@ -19,6 +19,7 @@ export function presentTask(raw) {
   if(research)research.presentationProducts=presentationProductsForTask({research,evidence}).map(product=>({...product,catalogRecords:(research.sources||[]).filter(source=>source.provider==='team_catalog'&&source.catalogRecord&&sameProduct(catalogDisplayName(source.catalogRecord),product.display)).map(source=>({sourceId:source.id,id:source.catalogProductId,regions:source.catalogRecord.regions||[],capacityWh:source.catalogRecord.metrics?.capacityWh,ratedPowerW:source.catalogRecord.metrics?.ratedPowerW??source.catalogRecord.metrics?.acPowerW,verifiedDate:source.catalogVerifiedDate}))}));
   if(report)report.contentBalance=contentBalance(report);
   task.quality=evaluatePublication({input,research:research||{},evidence:evidence||{},report});
+  if(report&&['running','queued','planning'].includes(task.status))task.quality={...task.quality,status:'needs_review',publishable:false,issues:[...(task.quality.issues||[]).filter(issue=>issue.code!=='REVIEW_IN_PROGRESS'),{code:'REVIEW_IN_PROGRESS',message:'研究仍在进行或复核中；当前内容仅为待核验草稿。'}]};
   if(report){task.reviewChecklist=reviewChecklist({...task});task.reviewTargets=editableReportTargets(report);}
   return task;
 }

@@ -1,4 +1,4 @@
-import { createHash } from '../../browser/shims/crypto.js?v=e9968bcba1cb9548';
+import { createHash } from '../../browser/shims/crypto.js?v=983914e21674fb3e';
 
 export const digest = (value) => createHash('sha256').update(value).digest('hex');
 export function canonicalSourceUrl(value) {

@@ -1,11 +1,11 @@
-import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=e9968bcba1cb9548';
-import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=e9968bcba1cb9548";
-import { deduplicateSources } from "../../infrastructure/search/search.js?v=e9968bcba1cb9548";
-import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=e9968bcba1cb9548";
-import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=e9968bcba1cb9548';
-import {resolveResearchFocus} from '../../../public/research-focus.js?v=e9968bcba1cb9548';
-import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=e9968bcba1cb9548';
-import {createHash} from '../../browser/shims/crypto.js?v=e9968bcba1cb9548';
+import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=983914e21674fb3e';
+import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=983914e21674fb3e";
+import { deduplicateSources } from "../../infrastructure/search/search.js?v=983914e21674fb3e";
+import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=983914e21674fb3e";
+import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=983914e21674fb3e';
+import {resolveResearchFocus} from '../../../public/research-focus.js?v=983914e21674fb3e';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=983914e21674fb3e';
+import {createHash} from '../../browser/shims/crypto.js?v=983914e21674fb3e';
 
 const sourceTypes = new Set(["official", "standard", "paper", "patent", "media", "curated", "other"]);
 const primaryTypes = new Set(["official", "standard", "paper", "patent"]);
@@ -87,7 +87,7 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
   const progress = (currentQuery = "", status = "searching") => onProgress({
     searchCheckpoint:checkpointValue(),
     queryRuns: queryRuns.map((item) => ({ ...item })),
-    searchProgress: { currentQuery, currentQueries:queryRuns.filter(item=>item.status==='running').map(item=>item.query), concurrency:STAGE_CONCURRENCY.search, completedQueries: queryRuns.filter((item) => item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: status === "searching" ? candidates.length : inspected.accepted.length, independentDocumentCount:independentDocumentCount(inspected.accepted),candidateSourceCount: candidates.length },
+    searchProgress: { currentQuery, currentQueries:queryRuns.filter(item=>item.status==='running').map(item=>item.query), concurrency:queryRuns.filter(item=>item.status==='running').length, completedQueries: queryRuns.filter((item) => item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: status === "searching" ? candidates.length : inspected.accepted.length, independentDocumentCount:independentDocumentCount(inspected.accepted),candidateSourceCount: candidates.length },
     searchQuality: { status, candidateCount: candidates.length, acceptedCount: inspected.accepted.length, rejectedCount: inspected.rejected.length, repairRounds },
     rejectedSources: inspected.rejected,
     coverageReview, specCatalog,

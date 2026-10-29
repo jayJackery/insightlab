@@ -1,4 +1,5 @@
-import {parseProductName,sameProduct} from '../../domain/evidence/product-registry.js?v=e9968bcba1cb9548';
+import {parseProductName,sameProduct} from '../../domain/evidence/product-registry.js?v=983914e21674fb3e';
+import {mapConcurrent} from './concurrency.js?v=983914e21674fb3e';
 const domains={jackery:['jackery.com','jackery.net'],ecoflow:['ecoflow.com'],anker:['ankersolix.com','anker.com'],bluetti:['bluettipower.com','bluettipower.eu','bluettipower.co.uk'],dji:['dji.com'],zendure:['zendure.com'],eaton:['eaton.com']};
 const compact=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 const numeric=(quote,unit)=>{
@@ -12,7 +13,8 @@ export async function discoverBaseline({input,previous,search,model,snapshotSour
   const state={signature,attempted:true,status:'searching',records:[],sources:[],queries:[],startedAt:new Date().toISOString()};
   if(!entity.exact||!domains[entity.brand]){state.status='unresolved';state.reason='请核对基准厂商与准确型号；未识别可靠官方域名，不猜容量和连续功率。';await persist(state);return state;}
   const queries=[entity.display.slice(0,75)+' battery capacity rated continuous AC output specifications',entity.display.slice(0,75)+' official user manual 容量 额定输出功率'];
-  for(const query of queries){state.queries.push({query,status:'running'});await persist(state);try{const found=await search(query,input);state.sources=[...state.sources,...found].filter((source,index,all)=>all.findIndex(item=>item.url===source.url)===index);state.queries.at(-1).status='completed';}catch(error){state.queries.at(-1).status='failed';state.queries.at(-1).error=error.message;}await persist(state);}
+  state.queries=queries.map(query=>({query,status:'pending'}));const results=new Array(queries.length);
+  await mapConcurrent(queries,queries.length,async(query,index)=>{const row=state.queries[index];row.status='running';await persist(state);try{results[index]=await search(query,input);row.status='completed';}catch(error){row.status='failed';row.error=error.message;}state.sources=results.flatMap(value=>value||[]).filter((source,i,all)=>all.findIndex(item=>item.url===source.url)===i);await persist(state);});
   state.sources=await snapshotSources(state.sources.filter(source=>{try{const url=new URL(source.url);return url.protocol==='https:'&&domains[entity.brand].some(domain=>url.hostname===domain||url.hostname.endsWith('.'+domain));}catch{return false;}}).slice(0,6));
   if(!state.sources.length){state.status='unresolved';state.reason='两次定向补查未取得可用官方规格。请核对基准型号或稍后重新制定计划，无需手填数值。';await persist(state);return state;}
   const validate=value=>{

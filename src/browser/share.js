@@ -1,5 +1,5 @@
-import {makeDocx} from '../reporting/docx-export.js?v=e9968bcba1cb9548';
-import {exportOptionsFromUrl} from '../../public/report-sections.js?v=e9968bcba1cb9548';
+import {makeDocx} from '../reporting/docx-export.js?v=983914e21674fb3e';
+import {exportOptionsFromUrl} from '../../public/report-sections.js?v=983914e21674fb3e';
 
 const maxBytes=4*1024*1024, ttlDays=30;
 const defaultService='https://insightlab-report-share.tech-insight-research.workers.dev';
@@ -9,9 +9,11 @@ const unb64=text=>Uint8Array.from(atob(text.replace(/-/g,'+').replace(/_/g,'/')+
 function endpoint(value){const u=new URL(value);if(u.protocol!=='https:'||!u.hostname.endsWith('.workers.dev')||u.username||u.password||u.port||u.pathname!=='/'||u.search||u.hash)throw Error('分享服务地址必须是 Cloudflare workers.dev HTTPS 根地址。');return u.origin;}
 const safeCopy=(value,redact)=>JSON.parse(redact(JSON.stringify(value,(key,item)=>/^(?:DEEPSEEK_API_KEY|OPENAI_API_KEY|TAVILY_API_KEY|api[_-]?key|authorization|password|token)$/i.test(key)?undefined:item)));
 function reportSnapshot(task,redact){
-  if(!task?.report||!['completed','needs_review','failed'].includes(task.status))throw Error('只能分享已有报告的任务。');
+  if(!task?.report||!['completed','needs_review','failed','running','queued','planning'].includes(task.status))throw Error('只能分享已有报告的任务。');
   const research=task.research||{};
-  return safeCopy({id:task.id,title:task.title,input:task.input,status:task.status,phaseIndex:task.phaseIndex,phaseStatus:task.phaseStatus,createdAt:task.createdAt,updatedAt:task.updatedAt,report:task.report,evidence:task.evidence,quality:task.quality,reviewChecklist:task.reviewChecklist,research:{plan:research.plan,sources:research.sources,presentationProducts:research.presentationProducts,productRegistry:research.productRegistry,searchRounds:research.searchRounds,queryRuns:research.queryRuns,searchQuality:research.searchQuality,searchProgress:research.searchProgress}},redact);
+  const inProgress=['running','queued','planning'].includes(task.status);
+  const quality=inProgress?{...(task.quality||{}),status:'needs_review',publishable:false,issues:[...(task.quality?.issues||[]),{code:'REVIEW_IN_PROGRESS',message:'分享时研究仍在进行，当前内容仅为待核验草稿。'}]}:task.quality;
+  return safeCopy({id:task.id,title:task.title,input:task.input,status:inProgress?'needs_review':task.status,phaseIndex:task.phaseIndex,phaseStatus:inProgress?'needs_review':task.phaseStatus,createdAt:task.createdAt,updatedAt:task.updatedAt,report:task.report,evidence:task.evidence,quality,reviewChecklist:task.reviewChecklist,research:{plan:research.plan,sources:research.sources,presentationProducts:research.presentationProducts,productRegistry:research.productRegistry,searchRounds:research.searchRounds,queryRuns:research.queryRuns,searchQuality:research.searchQuality,searchProgress:research.searchProgress}},redact);
 }
 export async function encryptSnapshot(tasks,redact){
   const plain=enc.encode(JSON.stringify({format:'insightlab-shared-reports',version:1,createdAt:new Date().toISOString(),tasks:tasks.map(task=>reportSnapshot(task,redact))}));
@@ -55,10 +57,10 @@ export function sharedRequest(snapshot,original){
   };
 }
 export function installSharing(getRuntime){
-  const button=document.createElement('button');button.type='button';button.textContent='分享报告';document.querySelector('.browser-session-notice').append(button);
+  const button=document.createElement('button');button.type='button';button.dataset.shareEntry='true';button.textContent='分享报告';document.querySelector('.browser-session-notice').append(button);
   button.onclick=()=>{
     const runtime=getRuntime();
-    const tasks=runtime.repository.listTasks().filter(t=>t.report&&['completed','needs_review','failed'].includes(t.status));
+    const tasks=runtime.repository.listTasks().filter(t=>t.report&&['completed','needs_review','failed','running','queued','planning'].includes(t.status));
     if(!tasks.length){alert('当前没有可分享的报告。');return;}
     const d=document.createElement('dialog');d.className='report-export-dialog';const form=document.createElement('form');
     const title=document.createElement('h2');title.textContent='选择要分享的报告';const note=document.createElement('p');note.textContent='持有链接的人可以查看、下载或转发所选报告。分享为30天的只读快照。';form.append(title,note);
