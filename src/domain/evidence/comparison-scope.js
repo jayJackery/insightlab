@@ -1,5 +1,5 @@
-import {normalizeRegion} from './metric-schema.js?v=0d401f7edfb044fc';
-import {sameProduct} from './product-registry.js?v=0d401f7edfb044fc';
+import {normalizeRegion} from './metric-schema.js?v=69935587b51cd156';
+import {sameProduct} from './product-registry.js?v=69935587b51cd156';
 
 export function comparisonScopeFromPlan(plan) {
   if(plan.comparisonScope?.region==='all')return {region:'all',configuration:'bare_unit',basis:'覆盖所有地区；同型号地区版本和来源条件分别保留'};

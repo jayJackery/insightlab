@@ -1,7 +1,7 @@
-import {createHash} from '../browser/shims/crypto.js?v=0d401f7edfb044fc';
-import {mapConcurrent} from '../application/research/concurrency.js?v=0d401f7edfb044fc';
-import {reportPromptForFocus} from './report-prompt.js?v=0d401f7edfb044fc';
-import {validateReportAnswers} from '../domain/research/report-validation.js?v=0d401f7edfb044fc';
+import {createHash} from '../browser/shims/crypto.js?v=69935587b51cd156';
+import {mapConcurrent} from '../application/research/concurrency.js?v=69935587b51cd156';
+import {reportPromptForFocus} from './report-prompt.js?v=69935587b51cd156';
+import {validateReportAnswers} from '../domain/research/report-validation.js?v=69935587b51cd156';
 
 const sectionGroups=[['executiveSummary','scopeAndMethod','methodNotes'],['baselineImplications','productApplications'],['trends','opportunitiesAndRisks','recommendations']];
 const recoverable=new Set(['MODEL_TIMEOUT','MODEL_NETWORK','MODEL_STREAM_INCOMPLETE','MODEL_TRUNCATED','MODEL_JSON_INVALID','MODEL_SCHEMA_INVALID','MODEL_EMPTY']);
@@ -25,7 +25,17 @@ export async function integrateReportBatches({inputText,contract,plan,routes,evi
       jobs.push({key,kind:'answers',field,questions:[question]});
     }
   }
-  for(const [index,fields] of sectionGroups.entries())jobs.push({key:'sections-'+index,kind:'sections',fields});
+  for(const [index,fields] of sectionGroups.entries()){
+    if(index!==2){jobs.push({key:'sections-'+index,kind:'sections',fields});continue;}
+    // The combined trends/risks/recommendations response has exceeded model
+    // limits in real runs. Preserve any successful older grouped checkpoint.
+    const old=state.batches['sections-2']?.value;
+    for(const field of fields){
+      const key='sections-2-'+field;
+      if(!state.batches[key]&&Array.isArray(old?.[field]))state.batches[key]={value:{[field]:old[field]},reused:true};
+      jobs.push({key,kind:'sections',fields:[field]});
+    }
+  }
   const validAnswer=(answer,question,field)=>answer?.questionId===question.id&&typeof answer.answer==='string'&&Boolean(answer.answer.trim())&&['证据支持','部分支持','证据不足'].includes(answer.status)&&Array.isArray(answer.citations)&&answer.citations.every(id=>valid.has(id))&&Array.isArray(answer.evidence)&&(field!=='userQuestionAnswers'||Array.isArray(answer.relatedQuestionIds)&&answer.relatedQuestionIds.length>0&&answer.relatedQuestionIds.every(id=>contract.questions.some(q=>q.id===id)));
   const validate=(job,value)=>{
     if(job.kind==='answers'){

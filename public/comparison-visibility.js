@@ -1,4 +1,4 @@
-import {metricLabels} from './metric-labels.js?v=0d401f7edfb044fc';
+import {metricLabels} from './metric-labels.js?v=69935587b51cd156';
 export function hasUsableComparisonValue(row){
  return (row.metricValues||[]).some(metric=>{
   if(!metricLabels([metric.metric]).length)return false;

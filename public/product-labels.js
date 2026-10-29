@@ -1,4 +1,4 @@
-import {cleanProductLabel} from './product-identity.js?v=0d401f7edfb044fc';
+import {cleanProductLabel} from './product-identity.js?v=69935587b51cd156';
 const brands={jackery:['Jackery','电小二','华宝新能'],ecoflow:['EcoFlow','正浩创新','正浩'],anker:['Anker SOLIX','Anker','安克创新','安克'],bluetti:['BLUETTI','铂陆帝','德兰明海'],dji:['DJI','大疆'],eaton:['Eaton'],zendure:['Zendure']};
 const key=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 export function productLabel(product){

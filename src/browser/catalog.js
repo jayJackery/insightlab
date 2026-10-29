@@ -1,6 +1,6 @@
-import {CATALOG_DATA_URL,parseCatalog,requestedProducts,matchProducts,catalogSources} from '../infrastructure/search/catalog-records.js?v=0d401f7edfb044fc';
-import {readVirtualFile,saveVirtualFile} from './storage.js?v=0d401f7edfb044fc';
-export * from '../infrastructure/search/catalog-records.js?v=0d401f7edfb044fc';
+import {CATALOG_DATA_URL,parseCatalog,requestedProducts,matchProducts,catalogSources} from '../infrastructure/search/catalog-records.js?v=69935587b51cd156';
+import {readVirtualFile,saveVirtualFile} from './storage.js?v=69935587b51cd156';
+export * from '../infrastructure/search/catalog-records.js?v=69935587b51cd156';
 let pending=null,memo=null,expires=0;
 export async function loadCatalog(){
   if(memo&&Date.now()<expires)return memo;

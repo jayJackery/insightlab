@@ -1,9 +1,9 @@
-import { createHash } from "../browser/shims/crypto.js?v=0d401f7edfb044fc";
-import { contentBalance } from "../domain/research/engineering-policy.js?v=0d401f7edfb044fc";
-import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=0d401f7edfb044fc';
-import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=0d401f7edfb044fc';
-import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=0d401f7edfb044fc';
-import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=0d401f7edfb044fc';
+import { createHash } from "../browser/shims/crypto.js?v=69935587b51cd156";
+import { contentBalance } from "../domain/research/engineering-policy.js?v=69935587b51cd156";
+import { normalizeEngineeringRoute } from '../domain/research/engineering-detail.js?v=69935587b51cd156';
+import {resolveResearchFocus,focusDescription} from '../../public/research-focus.js?v=69935587b51cd156';
+import {VERIFIED_PRODUCT_ALIASES} from '../domain/evidence/product-registry.js?v=69935587b51cd156';
+import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=69935587b51cd156';
 
 const groups = ["principle", "architecture", "implementation", "tradeoffs", "validation"];
 // A numbered list of explicit technical directions is part of the user's

@@ -1,6 +1,6 @@
-import {catalogEvidence} from '../evidence/catalog-evidence.js?v=0d401f7edfb044fc';
-import {buildProductRegistry,sameProduct} from '../evidence/product-registry.js?v=0d401f7edfb044fc';
-import {metricDefinition,normalizeRegion} from '../evidence/metric-schema.js?v=0d401f7edfb044fc';
+import {catalogEvidence} from '../evidence/catalog-evidence.js?v=69935587b51cd156';
+import {buildProductRegistry,sameProduct} from '../evidence/product-registry.js?v=69935587b51cd156';
+import {metricDefinition,normalizeRegion} from '../evidence/metric-schema.js?v=69935587b51cd156';
 export function knownCatalogMetrics(sources,input,plan={}){
  const region=normalizeRegion(plan.comparisonScope?.region||input.comparisonRegion||'unknown');
  return catalogEvidence(sources,buildProductRegistry(input,plan)).competitorRows.flatMap(row=>row.metricValues.filter(m=>m.status==='curated'&&(region==='unknown'||region==='all'||m.region===region)));

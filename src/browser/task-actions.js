@@ -1,8 +1,8 @@
-import {randomUUID} from './shims/crypto.js?v=0d401f7edfb044fc';
-import {normalizePlan,validateQueries} from '../../public/plan-utils.js?v=0d401f7edfb044fc';
-import {resolveResearchFocus} from '../../public/research-focus.js?v=0d401f7edfb044fc';
-import {comparisonInput} from '../domain/research/competitor-selection.js?v=0d401f7edfb044fc';
-import {createReviewRevision} from '../application/research/review-feedback.js?v=0d401f7edfb044fc';
+import {randomUUID} from './shims/crypto.js?v=69935587b51cd156';
+import {normalizePlan,validateQueries} from '../../public/plan-utils.js?v=69935587b51cd156';
+import {resolveResearchFocus} from '../../public/research-focus.js?v=69935587b51cd156';
+import {comparisonInput} from '../domain/research/competitor-selection.js?v=69935587b51cd156';
+import {createReviewRevision} from '../application/research/review-feedback.js?v=69935587b51cd156';
 const fields=['subject','scenario','questions','baselineProduct','competitors','timeRange','metrics','purpose','analysisFocus','reportLength','capacityTolerance','powerTolerance'];
 export function createTaskActions({repository,recommendCompetitors,enqueue,ready,writable}){
   const {createTask,update}=repository;

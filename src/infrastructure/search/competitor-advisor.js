@@ -1,5 +1,5 @@
-import {loadCatalog} from '../../browser/catalog.js?v=0d401f7edfb044fc';
-import {selectCompetitors,comparisonApplies} from '../../domain/research/competitor-selection.js?v=0d401f7edfb044fc';
+import {loadCatalog} from '../../browser/catalog.js?v=69935587b51cd156';
+import {selectCompetitors,comparisonApplies} from '../../domain/research/competitor-selection.js?v=69935587b51cd156';
 export function createCompetitorAdvisor(options={}){
   return async(input,selection={})=>{
     if(!comparisonApplies(input))return selectCompetitors([],input,selection);

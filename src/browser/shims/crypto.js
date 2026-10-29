@@ -1,4 +1,4 @@
-import hash from '../../../vendor/hash.js?v=0d401f7edfb044fc';
+import hash from '../../../vendor/hash.js?v=69935587b51cd156';
 export function createHash(algorithm){
   if(algorithm!=='sha256')throw Error('Unsupported digest');
   const value=hash.sha256();return {update(input){value.update(input);return this;},digest(format){return value.digest(format);}};
