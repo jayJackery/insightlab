@@ -1,5 +1,5 @@
-import {parseProductName} from '../evidence/product-registry.js?v=2c9b2e1b97170f03';
-import {catalogDisplayName} from '../../../public/product-identity.js?v=2c9b2e1b97170f03';
+import {parseProductName} from '../evidence/product-registry.js?v=0d401f7edfb044fc';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=0d401f7edfb044fc';
 
 const compact=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 const modelKey=value=>compact(value).replace(/第?二代|二代|2代/gu,'v2').replace(/第?三代|三代|3代/gu,'v3').replace(/g(?=\d)/g,'gen').replace(/explorer|探索者|便携式|便携|户外电源|储能电源|移动电源|电源/gu,'');

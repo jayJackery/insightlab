@@ -1,4 +1,4 @@
-import { readFile, writeFile, rename } from "../../browser/shims/fs.js?v=2c9b2e1b97170f03";
+import { readFile, writeFile, rename } from "../../browser/shims/fs.js?v=0d401f7edfb044fc";
 
 const secretFields = ["DEEPSEEK_API_KEY", "OPENAI_API_KEY", "TAVILY_API_KEY"];
 const fields = [...secretFields, "MODEL_PROVIDER", "OPENAI_BASE_URL", "OPENAI_MODEL", "SEARCH_PROVIDER"];

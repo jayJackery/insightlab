@@ -1,7 +1,7 @@
-import {createHash} from '../browser/shims/crypto.js?v=2c9b2e1b97170f03';
-import {mapConcurrent} from '../application/research/concurrency.js?v=2c9b2e1b97170f03';
-import {reportPromptForFocus} from './report-prompt.js?v=2c9b2e1b97170f03';
-import {validateReportAnswers} from '../domain/research/report-validation.js?v=2c9b2e1b97170f03';
+import {createHash} from '../browser/shims/crypto.js?v=0d401f7edfb044fc';
+import {mapConcurrent} from '../application/research/concurrency.js?v=0d401f7edfb044fc';
+import {reportPromptForFocus} from './report-prompt.js?v=0d401f7edfb044fc';
+import {validateReportAnswers} from '../domain/research/report-validation.js?v=0d401f7edfb044fc';
 
 const sectionGroups=[['executiveSummary','scopeAndMethod','methodNotes'],['baselineImplications','productApplications'],['trends','opportunitiesAndRisks','recommendations']];
 const recoverable=new Set(['MODEL_TIMEOUT','MODEL_NETWORK','MODEL_STREAM_INCOMPLETE','MODEL_TRUNCATED','MODEL_JSON_INVALID','MODEL_SCHEMA_INVALID','MODEL_EMPTY']);

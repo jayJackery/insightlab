@@ -1,6 +1,6 @@
-import {sameProduct} from './product-registry.js?v=2c9b2e1b97170f03';
-import {metricDefinition,normalizeRegion} from './metric-schema.js?v=2c9b2e1b97170f03';
-import {catalogDisplayName} from '../../../public/product-identity.js?v=2c9b2e1b97170f03';
+import {sameProduct} from './product-registry.js?v=0d401f7edfb044fc';
+import {metricDefinition,normalizeRegion} from './metric-schema.js?v=0d401f7edfb044fc';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=0d401f7edfb044fc';
 // Copy typed catalog fields directly; never ask a model to invent missing columns.
 export function catalogEvidence(sources,registry=[]){
   const rows=[];

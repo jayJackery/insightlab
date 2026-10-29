@@ -1,5 +1,5 @@
-import {randomUUID} from '../../browser/shims/crypto.js?v=2c9b2e1b97170f03';
-import {reviewChecklist,editableReportTargets} from '../../domain/evidence/review-checklist.js?v=2c9b2e1b97170f03';
+import {randomUUID} from '../../browser/shims/crypto.js?v=0d401f7edfb044fc';
+import {reviewChecklist,editableReportTargets} from '../../domain/evidence/review-checklist.js?v=0d401f7edfb044fc';
 // No model calls. User statements remain unverified and cannot pass publication.
 export function createReviewRevision(task,request,{repository,ownTask,userId}){
  if(!task.report||!['completed','needs_review','failed'].includes(task.status))throw Error('请等待研究结束后再提交复核结果。');

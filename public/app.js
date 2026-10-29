@@ -1,22 +1,22 @@
-import {renderApiUsage} from './api-usage.js?v=2c9b2e1b97170f03';
-import {selectResearchFindings} from './finding-presentation.js?v=2c9b2e1b97170f03';
-import {visibleComparisonRows} from './comparison-visibility.js?v=2c9b2e1b97170f03';
-import {metricLabels} from './metric-labels.js?v=2c9b2e1b97170f03';
-import {renderReviewChecklist,setupReportReview} from './report-review.js?v=2c9b2e1b97170f03';
-import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=2c9b2e1b97170f03';
-import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=2c9b2e1b97170f03";
+import {renderApiUsage} from './api-usage.js?v=0d401f7edfb044fc';
+import {selectResearchFindings} from './finding-presentation.js?v=0d401f7edfb044fc';
+import {visibleComparisonRows} from './comparison-visibility.js?v=0d401f7edfb044fc';
+import {metricLabels} from './metric-labels.js?v=0d401f7edfb044fc';
+import {renderReviewChecklist,setupReportReview} from './report-review.js?v=0d401f7edfb044fc';
+import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=0d401f7edfb044fc';
+import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=0d401f7edfb044fc";
 
-import {resolveResearchFocus,focusDescription} from './research-focus.js?v=2c9b2e1b97170f03';
-import {openExportDialog} from './export-dialog.js?v=2c9b2e1b97170f03';
-import {highlightSegments,topicProductReferences} from './product-highlights.js?v=2c9b2e1b97170f03';
-import {setupAccess,openTaskSharing} from './access.js?v=2c9b2e1b97170f03';
-import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=2c9b2e1b97170f03';
-import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=2c9b2e1b97170f03';
-import {renderCatalogStatus} from './catalog-status.js?v=2c9b2e1b97170f03';
-import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=2c9b2e1b97170f03';
-import {qualifyProductMentions} from './product-labels.js?v=2c9b2e1b97170f03';
-import {setupDepthControls} from './depth-controls.js?v=2c9b2e1b97170f03';
-import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=2c9b2e1b97170f03';
+import {resolveResearchFocus,focusDescription} from './research-focus.js?v=0d401f7edfb044fc';
+import {openExportDialog} from './export-dialog.js?v=0d401f7edfb044fc';
+import {highlightSegments,topicProductReferences} from './product-highlights.js?v=0d401f7edfb044fc';
+import {setupAccess,openTaskSharing} from './access.js?v=0d401f7edfb044fc';
+import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=0d401f7edfb044fc';
+import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=0d401f7edfb044fc';
+import {renderCatalogStatus} from './catalog-status.js?v=0d401f7edfb044fc';
+import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=0d401f7edfb044fc';
+import {qualifyProductMentions} from './product-labels.js?v=0d401f7edfb044fc';
+import {setupDepthControls} from './depth-controls.js?v=0d401f7edfb044fc';
+import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=0d401f7edfb044fc';
 setupDepthControls();
 const $ = (selector) => document.querySelector(selector);
 const state = { tasks: [], current: null, poll: null };
@@ -470,6 +470,13 @@ function renderTechnicalCheckpoint(task) {
   return '<div class="report-layout checkpoint-layout">'+contents+'<main class="report-main"><article class="report"><section class="quality-notice"><strong>技术章节阶段草稿 · 尚未完成报告验收</strong><p>已保存 '+routes.length+' 个技术主题。原始问题的整合答案和最终独立复核尚未完成，以下内容包含待验证的工程推演，请结合原文复核。</p></section>'+renderTechnology({technologyDeepDives:routes},task.research.plan,true,task.research?.presentationProducts || [],sourceIndex(task))+'</article></main><aside class="report-source-sidebar"><section class="source-library"><h2>本轮来源</h2><p>点击编号或标题核对原文</p><div class="source-grid">'+(task.research.sources || []).map(sourceCard).join('')+'</div></section></aside></div>';
 }
 function renderTask(task) {
+  // Polling replaces parts of the page. Preserve the reader's current chapter
+  // and viewport position across that update, without affecting navigation.
+  const keepReading=state.current===task.id && ['running','queued','planning'].includes(task.status) && window.scrollY>0;
+  const priorY=keepReading?window.scrollY:0;
+  const anchors=keepReading?[...document.querySelectorAll('#task-content [id^="report-tech-route-"], #task-content .process-block, #task-content .progress details')]:[];
+  const readerAnchor=anchors.filter(node=>node.id&&node.getBoundingClientRect().top<=120).at(-1);
+  const anchorId=readerAnchor?.id,anchorTop=readerAnchor?.getBoundingClientRect().top;
   const preservedWaiting=$('#task-content .research-waiting');
   const checkpointKey=JSON.stringify([task.id,task.research?.technicalCheckpoint?.routes,task.research?.sources?.map(source=>[source.id,source.document?.contentHash])]);
   const oldCheckpoint=$('#task-content .checkpoint-layout');
@@ -502,6 +509,11 @@ function renderTask(task) {
   let size = "standard";
   try { if (localStorage.getItem("insight-reading-size") === "large") size = "large"; } catch {}
   applyReadingSize(size);
+  if(keepReading){
+    const nextAnchor=anchorId&&document.getElementById(anchorId);
+    const target=nextAnchor?window.scrollY+nextAnchor.getBoundingClientRect().top-anchorTop:priorY;
+    if(Math.abs(window.scrollY-target)>1)window.scrollTo({top:target,behavior:'instant'});
+  }
   if (["running", "queued", "planning"].includes(task.status)) schedulePoll(task.id);
   else clearTimeout(state.poll);
 }
@@ -668,4 +680,4 @@ setupProductComparison();
 setupReportReview({api,onRevision:async id=>{await refreshTasks();await openTask(id);}});setupComparisonBrief();setupComparisonActions({api,getTask:()=>api('/api/tasks/'+state.current)});
 const access=setupAccess({api,onAuthenticated:initialize,onSignedOut:()=>{sessionEpoch++;clearTimeout(state.poll);stopWaitingRoom();clearTaskFeedback();state.outlineObserver?.disconnect();state.tasks=[];state.current=null;$('#task-content').replaceChildren();$('#task-actions').replaceChildren();renderSidebar();document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());setView('home');}});
 access.start().catch(error=>toast(error.message));
-import('./settings.js?v=2c9b2e1b97170f03').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));
+import('./settings.js?v=0d401f7edfb044fc').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));

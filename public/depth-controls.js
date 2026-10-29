@@ -1,4 +1,4 @@
-import {resolveReportDepth} from './report-depth.js?v=2c9b2e1b97170f03';
+import {resolveReportDepth} from './report-depth.js?v=0d401f7edfb044fc';
 export function setupDepthControls(){
   const form=document.querySelector('#reportLength')?.form,hint=document.querySelector('#delivery-hint');
   if(!form||!hint)return;

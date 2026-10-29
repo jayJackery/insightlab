@@ -1,6 +1,6 @@
-import {sameProduct} from './product-registry.js?v=2c9b2e1b97170f03';
-import {metricDefinition} from './metric-schema.js?v=2c9b2e1b97170f03';
-import {digest} from './source-document.js?v=2c9b2e1b97170f03';
+import {sameProduct} from './product-registry.js?v=0d401f7edfb044fc';
+import {metricDefinition} from './metric-schema.js?v=0d401f7edfb044fc';
+import {digest} from './source-document.js?v=0d401f7edfb044fc';
 
 export const EVIDENCE_REPAIR_LIMITS=Object.freeze({rounds:2,queriesPerRound:3,totalQueries:6,maxSources:60});
 export const queryKey=(query)=>String(query || '').normalize('NFKC').replace(/\s+/g,' ').trim().toLowerCase();

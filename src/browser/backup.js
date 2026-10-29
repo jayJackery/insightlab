@@ -1,5 +1,5 @@
-import {randomUUID} from './shims/crypto.js?v=2c9b2e1b97170f03';
-import {presentTask} from '../domain/research/task-presentation.js?v=2c9b2e1b97170f03';
+import {randomUUID} from './shims/crypto.js?v=0d401f7edfb044fc';
+import {presentTask} from '../domain/research/task-presentation.js?v=0d401f7edfb044fc';
 function noCredentials(value,depth=0){
   if(depth>100)throw Error('备份嵌套层级异常。');
   if(!value||typeof value!=='object')return;

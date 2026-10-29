@@ -1,7 +1,7 @@
-import {metricLabels} from './metric-labels.js?v=2c9b2e1b97170f03';
-import {cleanProductLabel} from './product-identity.js?v=2c9b2e1b97170f03';
-import {resolveReportDepth,REPORT_LENGTHS} from './report-depth.js?v=2c9b2e1b97170f03';
-import {researchInput} from './baseline-context.js?v=2c9b2e1b97170f03';
+import {metricLabels} from './metric-labels.js?v=0d401f7edfb044fc';
+import {cleanProductLabel} from './product-identity.js?v=0d401f7edfb044fc';
+import {resolveReportDepth,REPORT_LENGTHS} from './report-depth.js?v=0d401f7edfb044fc';
+import {researchInput} from './baseline-context.js?v=0d401f7edfb044fc';
 const fields = {
   queries: ["query", "searchQuery", "search_query", "searchTerms", "search_terms", "keywords", "keyword", "q", "text"],
   questions: ["question", "questionText", "question_text", "text", "description"],

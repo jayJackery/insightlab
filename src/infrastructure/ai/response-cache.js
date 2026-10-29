@@ -1,6 +1,6 @@
-import {readFile,writeFile,mkdir} from '../../browser/shims/fs.js?v=2c9b2e1b97170f03';
-import {join} from '../../browser/shims/path.js?v=2c9b2e1b97170f03';
-import {createHash} from '../../browser/shims/crypto.js?v=2c9b2e1b97170f03';
+import {readFile,writeFile,mkdir} from '../../browser/shims/fs.js?v=0d401f7edfb044fc';
+import {join} from '../../browser/shims/path.js?v=0d401f7edfb044fc';
+import {createHash} from '../../browser/shims/crypto.js?v=0d401f7edfb044fc';
 export const requestDigest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 // Same task, credentials scope, model, complete prompt, options and build only.
 // Values stay backend-side in data; no credentials or prompts are written in metadata.

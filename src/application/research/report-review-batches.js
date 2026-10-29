@@ -1,6 +1,6 @@
-import {digest} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
-import {mapConcurrent} from './concurrency.js?v=2c9b2e1b97170f03';
-import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=2c9b2e1b97170f03';
+import {digest} from '../../domain/evidence/source-document.js?v=0d401f7edfb044fc';
+import {mapConcurrent} from './concurrency.js?v=0d401f7edfb044fc';
+import {evidenceGaps} from '../../domain/evidence/evidence-gaps.js?v=0d401f7edfb044fc';
 
 export async function auditAnswers({report,contract,evidence,model,modelIdentity='unknown',checkpoint={},persist=()=>{}}){
   const {technologyOverview,keyFindings,answerAudit,quality,generatedAt,...clean}=report;

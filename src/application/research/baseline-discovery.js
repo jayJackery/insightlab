@@ -1,4 +1,4 @@
-import {parseProductName,sameProduct} from '../../domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {parseProductName,sameProduct} from '../../domain/evidence/product-registry.js?v=0d401f7edfb044fc';
 const domains={jackery:['jackery.com','jackery.net'],ecoflow:['ecoflow.com'],anker:['ankersolix.com','anker.com'],bluetti:['bluettipower.com','bluettipower.eu','bluettipower.co.uk'],dji:['dji.com'],zendure:['zendure.com'],eaton:['eaton.com']};
 const compact=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 const numeric=(quote,unit)=>{

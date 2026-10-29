@@ -1,6 +1,6 @@
-import {esc,safeHref} from './comparison-view.js?v=2c9b2e1b97170f03';
-import {catalogDisplayName,cleanProductLabel} from './product-identity.js?v=2c9b2e1b97170f03';
-import {sameProduct} from '../src/domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {esc,safeHref} from './comparison-view.js?v=0d401f7edfb044fc';
+import {catalogDisplayName,cleanProductLabel} from './product-identity.js?v=0d401f7edfb044fc';
+import {sameProduct} from '../src/domain/evidence/product-registry.js?v=0d401f7edfb044fc';
 const names=value=>String(value||'').split(/[、，,；;\n]/u).map(cleanProductLabel).filter(Boolean);
 const compact=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 const category=product=>/扩容|电池包/.test(product.category)?'扩容电池':/逆变器|控制器/.test(product.category)?'逆变器 / 控制器':/便携|户外/.test(product.category)?'便携储能':'家庭储能';

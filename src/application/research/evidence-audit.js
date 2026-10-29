@@ -1,8 +1,8 @@
-import { verifiedQuotes } from './search-workflow.js?v=2c9b2e1b97170f03';
-import { sourceContext } from '../../domain/evidence/report-content.js?v=2c9b2e1b97170f03';
-import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
-import {digest} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
-import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=2c9b2e1b97170f03';
+import { verifiedQuotes } from './search-workflow.js?v=0d401f7edfb044fc';
+import { sourceContext } from '../../domain/evidence/report-content.js?v=0d401f7edfb044fc';
+import {sameProduct,tableProductIssues,VERIFIED_PRODUCT_ALIASES} from '../../domain/evidence/product-registry.js?v=0d401f7edfb044fc';
+import {digest} from '../../domain/evidence/source-document.js?v=0d401f7edfb044fc';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=0d401f7edfb044fc';
 
 // A full pack of n identical cells has nominal energy n × V × Ah regardless
 // of series/parallel arrangement. Only flag an explicit, unambiguous cell
@@ -113,4 +113,4 @@ export async function auditEvidence({ evidence, sources, plan, products=[], mode
   return evidence;
 }
 
-export {auditAnswers} from './report-review-batches.js?v=2c9b2e1b97170f03';
+export {auditAnswers} from './report-review-batches.js?v=0d401f7edfb044fc';
