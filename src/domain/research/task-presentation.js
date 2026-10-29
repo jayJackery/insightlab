@@ -1,11 +1,11 @@
-import {reviewChecklist,editableReportTargets} from '../evidence/review-checklist.js?v=7860f20d981283d9';
-import {contentBalance} from './engineering-policy.js?v=7860f20d981283d9';
-import {evaluatePublication} from './publication-gate.js?v=7860f20d981283d9';
-import {metricPresentation} from '../evidence/metric-presentation.js?v=7860f20d981283d9';
-import {boundaryPresentation} from '../evidence/boundary-presentation.js?v=7860f20d981283d9';
-import {sourceDisplayTitle} from '../evidence/source-presentation.js?v=7860f20d981283d9';
-import {presentationProductsForTask,sameProduct} from '../evidence/product-registry.js?v=7860f20d981283d9';
-import {catalogDisplayName} from '../../../public/product-identity.js?v=7860f20d981283d9';
+import {reviewChecklist,editableReportTargets} from '../evidence/review-checklist.js?v=e9968bcba1cb9548';
+import {contentBalance} from './engineering-policy.js?v=e9968bcba1cb9548';
+import {evaluatePublication} from './publication-gate.js?v=e9968bcba1cb9548';
+import {metricPresentation} from '../evidence/metric-presentation.js?v=e9968bcba1cb9548';
+import {boundaryPresentation} from '../evidence/boundary-presentation.js?v=e9968bcba1cb9548';
+import {sourceDisplayTitle} from '../evidence/source-presentation.js?v=e9968bcba1cb9548';
+import {presentationProductsForTask,sameProduct} from '../evidence/product-registry.js?v=e9968bcba1cb9548';
+import {catalogDisplayName} from '../../../public/product-identity.js?v=e9968bcba1cb9548';
 
 // One read model for SQLite and IndexedDB; presentation never changes stored facts.
 export function presentTask(raw) {

@@ -1,10 +1,10 @@
-import { createHash } from '../../browser/shims/crypto.js?v=7860f20d981283d9';
-import {resolveResearchFocus} from '../../../public/research-focus.js?v=7860f20d981283d9';
-import {buildProductRegistry} from '../evidence/product-registry.js?v=7860f20d981283d9';
-import {EVIDENCE_REPAIR_LIMITS} from '../evidence/evidence-gaps.js?v=7860f20d981283d9';
-import {comparisonScopeFromPlan} from '../evidence/comparison-scope.js?v=7860f20d981283d9';
-import {resolveReportDepth} from '../../../public/report-depth.js?v=7860f20d981283d9';
-import {researchInput} from '../../../public/baseline-context.js?v=7860f20d981283d9';
+import { createHash } from '../../browser/shims/crypto.js?v=e9968bcba1cb9548';
+import {resolveResearchFocus} from '../../../public/research-focus.js?v=e9968bcba1cb9548';
+import {buildProductRegistry} from '../evidence/product-registry.js?v=e9968bcba1cb9548';
+import {EVIDENCE_REPAIR_LIMITS} from '../evidence/evidence-gaps.js?v=e9968bcba1cb9548';
+import {comparisonScopeFromPlan} from '../evidence/comparison-scope.js?v=e9968bcba1cb9548';
+import {resolveReportDepth} from '../../../public/report-depth.js?v=e9968bcba1cb9548';
+import {researchInput} from '../../../public/baseline-context.js?v=e9968bcba1cb9548';
 
 export const WORKFLOW_VERSION = 'rd-research/19';
 export const CONTRACT_VERSION = 4;

@@ -1,11 +1,11 @@
-import { modelConfiguration } from '../settings/service-settings.js?v=7860f20d981283d9';
-import { parseModelResponse, decodeModelHttpBody, ModelOutputError } from './model-json.js?v=7860f20d981283d9';
-import {randomUUID} from '../../browser/shims/crypto.js?v=7860f20d981283d9';
-import {createResponseCache,requestDigest} from './response-cache.js?v=7860f20d981283d9';
-import {createRequestGate} from '../request-gate.js?v=7860f20d981283d9';
-import {modelRequestPolicy} from './model-request.js?v=7860f20d981283d9';
-import {normalizeModelTransportError} from './model-transport-error.js?v=7860f20d981283d9';
-import {STAGE_CONCURRENCY} from '../../application/research/concurrency.js?v=7860f20d981283d9';
+import { modelConfiguration } from '../settings/service-settings.js?v=e9968bcba1cb9548';
+import { parseModelResponse, decodeModelHttpBody, ModelOutputError } from './model-json.js?v=e9968bcba1cb9548';
+import {randomUUID} from '../../browser/shims/crypto.js?v=e9968bcba1cb9548';
+import {createResponseCache,requestDigest} from './response-cache.js?v=e9968bcba1cb9548';
+import {createRequestGate} from '../request-gate.js?v=e9968bcba1cb9548';
+import {modelRequestPolicy} from './model-request.js?v=e9968bcba1cb9548';
+import {normalizeModelTransportError} from './model-transport-error.js?v=e9968bcba1cb9548';
+import {STAGE_CONCURRENCY} from '../../application/research/concurrency.js?v=e9968bcba1cb9548';
 export function createModelClient({services,getTask,update,beforeRequest=()=>{},getContext=()=>({}),cacheDirectory,cacheVersion='uncached'}) {
 const cache=createResponseCache(cacheDirectory);
 const gate=createRequestGate(STAGE_CONCURRENCY.modelRequests);

@@ -1,5 +1,5 @@
-import {cleanProductLabel,catalogDisplayName} from './product-identity.js?v=7860f20d981283d9';
-import {productLabel} from './product-labels.js?v=7860f20d981283d9';
+import {cleanProductLabel,catalogDisplayName} from './product-identity.js?v=e9968bcba1cb9548';
+import {productLabel} from './product-labels.js?v=e9968bcba1cb9548';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const contexts=new Map();let initialized=false,photos=null,photoRequest=null;
 const identity=value=>cleanProductLabel(value).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');

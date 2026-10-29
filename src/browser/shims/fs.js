@@ -1,4 +1,4 @@
-import {readVirtualFile,saveVirtualFile,removeVirtualFile} from '../storage.js?v=7860f20d981283d9';
+import {readVirtualFile,saveVirtualFile,removeVirtualFile} from '../storage.js?v=e9968bcba1cb9548';
 export async function readFile(path){return readVirtualFile(path);}
 export async function writeFile(path,value,options){saveVirtualFile(path,value,options);}
 export async function mkdir(){}

@@ -1,2 +1,2 @@
-import pako from '../../../vendor/pako.js?v=7860f20d981283d9';
+import pako from '../../../vendor/pako.js?v=e9968bcba1cb9548';
 export const deflateRawSync=bytes=>pako.deflateRaw(bytes);

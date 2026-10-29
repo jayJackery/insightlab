@@ -1,18 +1,18 @@
 {
   "app": "insightlab-browser",
-  "buildId": "7860f20d981283d9",
+  "buildId": "e9968bcba1cb9548",
   "workflowVersion": "rd-research/19",
   "requirementsRevision": "RD-2026-10-22-v17",
   "reportSchemaVersion": 5,
-  "createdAt": "2026-10-29T02:34:58.282Z",
+  "createdAt": "2026-10-29T03:23:12.387Z",
   "publicCatalogRetrievedAt": "2026-10-22T01:29:47.074Z",
   "containsUserData": false,
   "credentialStorage": "page-memory-only",
   "files": [
     {
       "path": "src/browser/bootstrap.js",
-      "size": 6905,
-      "sha256": "2dd7c4abff2b2b2c8b4f8988b77d4443a51687913008e5fe1822d86b74165456"
+      "size": 8451,
+      "sha256": "e17ed6d9c7677322f38e74fec89dc988d2e4b338f340b70ae40dd7cf1668f292"
     },
     {
       "path": "src/browser/storage.js",
@@ -22,12 +22,12 @@
     {
       "path": "src/browser/runtime.js",
       "size": 14208,
-      "sha256": "c1e689e1ff139346b794f56d6ca45fdb98758577de2d6a02b8e6bbd9b70f8d8b"
+      "sha256": "98625f39211f2cc2dba86735f0323e5f7092cc3af3742487215fb6772a5cac89"
     },
     {
       "path": "src/browser/shims/crypto.js",
       "size": 365,
-      "sha256": "8e5fd97343ca99e5783932a87774e96f0f3cda43c183ab6b7428eda4f24ca276"
+      "sha256": "2439356f9673feb8ab0ce7b5d877ef054febdedcf5530582bd130b910cc91ce3"
     },
     {
       "path": "vendor/hash.js",
@@ -37,17 +37,17 @@
     {
       "path": "src/infrastructure/settings/service-settings.js",
       "size": 4228,
-      "sha256": "2fc70cf690579714f7ebf06a7ed1a63470b4a6f305810612a15eb50d390dc140"
+      "sha256": "a356ab07d0ef1210494f53a513dec08a7b9aca546b2a96b72806df84ee4efc74"
     },
     {
       "path": "src/browser/shims/fs.js",
       "size": 455,
-      "sha256": "2854893f2aa4ca8b571010c4fc795cde12a9920247bcc30a450648f4e960edf7"
+      "sha256": "567acd206f1632e48f570d580bdf8f6b940a063756b7841469745b7282875445"
     },
     {
       "path": "src/infrastructure/ai/model-client.js",
       "size": 8115,
-      "sha256": "d360e75ab08fd335dd6071aaad639da4d3cc07eaf90f16d53f52667992a796c7"
+      "sha256": "758c77289371a1c51f9f2704f99ff0d54a5632ad4db24425f3d960ebb744cdb6"
     },
     {
       "path": "src/infrastructure/ai/model-json.js",
@@ -57,7 +57,7 @@
     {
       "path": "src/infrastructure/ai/response-cache.js",
       "size": 1191,
-      "sha256": "ceb4b97f0447c04cca7aa0e17d93a44f81eee02b7a20bdd9bb869434441dff64"
+      "sha256": "4ec15e8cfe48b2795ba5a38ad97672eec4e377aef47399ed3f37a081ce385bf3"
     },
     {
       "path": "src/browser/shims/path.js",
@@ -92,22 +92,22 @@
     {
       "path": "src/infrastructure/persistence/source-store.js",
       "size": 1127,
-      "sha256": "44dc796f09e2d206fabad550d2cb93207647bb052b6e032f4776ce8630b4eea7"
+      "sha256": "8680e279935b1dc0732569da61668387e407a8f9c4adee8a907d565867b319ef"
     },
     {
       "path": "src/domain/evidence/source-document.js",
       "size": 7448,
-      "sha256": "2370f4ed9cd43e8b8e57dc870c991b0a19561abc23ffc641546c3ac1d2d7762e"
+      "sha256": "564c869eb5a56c12957a711c0a0414e28172f4f151c96484f15a5653d5a65867"
     },
     {
       "path": "src/application/research/workflow.js",
       "size": 47868,
-      "sha256": "112405cfb80743e0ecfed3fab28eb2a33f5cfa44a70510c31541be847e58f390"
+      "sha256": "aa2bc53b8ff273ad32bf19f53b8095ae9af93c14631204a7ef72c534caa58af3"
     },
     {
       "path": "public/product-labels.js",
       "size": 4358,
-      "sha256": "9b13037b3aafbb236bbb31da82c59cc3c214563ad92d9b55e57ad4a3a1f3217f"
+      "sha256": "a0277cc852bafa45978b4cbc932f218985fa3eaad738989809d7329fb3c775bd"
     },
     {
       "path": "public/product-identity.js",
@@ -117,27 +117,27 @@
     {
       "path": "src/domain/evidence/product-registry.js",
       "size": 8273,
-      "sha256": "635eabf5f25080acef072b33921f05851b1b4f75178e2e4f9331bcf39694d454"
+      "sha256": "e1e5d01740538009cbe54b4f86bb0a901887549414a2a5a8a50988349b7ca3ab"
     },
     {
       "path": "src/domain/research/catalog-policy.js",
       "size": 2353,
-      "sha256": "dad1598ad936d4e988f6acfd584e3a3c12069b212aedeb938c3752dddd1fedb1"
+      "sha256": "82b96ed9c9a4a23dd5429d37cf80cb4100185fc347bb112e9addbef230a82d4e"
     },
     {
       "path": "src/domain/evidence/catalog-evidence.js",
       "size": 4161,
-      "sha256": "012e028a4ce62fdee7c5a222aa2d3fc2a766a67a822a5167d2b2fbf144e353fb"
+      "sha256": "042db0880a382246da5420a8915b4a533b26dbeb9aa3249173bd2b59164a665d"
     },
     {
       "path": "src/domain/evidence/metric-schema.js",
       "size": 6716,
-      "sha256": "0047ea2730953d8bd4148fdeaf6c9bf386067afa5781dcf8173ac8d3ce65b113"
+      "sha256": "9b9ec229985da96ca4d171849733e87923d44292cec68fff30146705c3cf70fa"
     },
     {
       "path": "public/plan-utils.js",
       "size": 5588,
-      "sha256": "72e24c8290fb7e6f2378d82001df57f86425b5bc1196495b002c32d4383c25be"
+      "sha256": "49ac8dc89eaa4b2aafda52babb54b8d2fa663dc9131b37c82d40f3e8e40ed543"
     },
     {
       "path": "public/metric-labels.js",
@@ -157,42 +157,42 @@
     {
       "path": "src/application/research/search-workflow.js",
       "size": 17960,
-      "sha256": "f9852f33d860516f3d621a193db79fd9efa22f5ba452d55ab3528fa5f0d800f2"
+      "sha256": "cb52257c9a1ca58bca23704c6b19f5d3472822d82e0a407086984e13578436ad"
     },
     {
       "path": "src/infrastructure/search/search.js",
       "size": 5024,
-      "sha256": "02950fd0090157be8443be2f07a8307736215bf0a77477704c9d78f6795853c7"
+      "sha256": "69104ae214eda9473f828f5f502a5314a869f46a50b4068c78030ecba8eb6b78"
     },
     {
       "path": "src/domain/research/engineering-policy.js",
       "size": 6367,
-      "sha256": "859bc458eaef5937e32cb8cbb35c0ac8088a01d2ca922ec12437c68b1866c0a3"
+      "sha256": "455d429f6229d928ceb052319eadddb984741627fc8fca62b1be10037a13921a"
     },
     {
       "path": "public/research-focus.js",
       "size": 3929,
-      "sha256": "310873d09a3ac0eb672988722aa61fa16f1fb3685bbb83552926d5c19470b3f4"
+      "sha256": "554a6e193706ab36becd27729b80599f820b22273baf3419e98eb65902e561d0"
     },
     {
       "path": "src/domain/evidence/report-content.js",
       "size": 11981,
-      "sha256": "3c371c7a0e7e3de2adfd92343d593a6988e8fef66754530ba457586ce5d7a8b1"
+      "sha256": "82f64af17dd0e160be6d4893314aa9c451c48e92705ef120232962dea0e2ca61"
     },
     {
       "path": "src/domain/evidence/comparison-scope.js",
       "size": 1291,
-      "sha256": "40026bafe20f2064c63b4861c4f45fc71c848a734e58cfef911d1a6150d23278"
+      "sha256": "f9dadf705cdd2df269abed808f8c98b55a481d8a1d3495d649b852dbb9fc0ffe"
     },
     {
       "path": "src/reporting/report-prompt.js",
       "size": 7533,
-      "sha256": "d0c7c30acacc9f2bd3a449173551e91808ff119986a2f8811b021125257d2176"
+      "sha256": "d858f6c2d67d4c71cc4e18f08a16a20e2c410c2260c060f2e98bf92431c11af8"
     },
     {
       "path": "src/reporting/report-integration.js",
       "size": 6245,
-      "sha256": "be42037a0b30826db3bc7aab33ea534a0882da3f0560fabdd191a26d0bea15ed"
+      "sha256": "9c96ed6c685c254b3f11f52f8ec89b574fc91877a40c6bcd7b4a05f94d50de54"
     },
     {
       "path": "src/domain/research/report-validation.js",
@@ -202,7 +202,7 @@
     {
       "path": "src/reporting/technical-writer.js",
       "size": 13214,
-      "sha256": "100da66af7029f0a286286247f70ef07353e5f55a10e93620b3e0b7b03dc2b52"
+      "sha256": "93779b1e10634efd68c0b2117f2b4fa191474b3bdf4172b48d1caa5896b63efc"
     },
     {
       "path": "src/domain/research/engineering-detail.js",
@@ -212,37 +212,37 @@
     {
       "path": "src/browser/catalog.js",
       "size": 2749,
-      "sha256": "11e373c3929f7f65770208821ebc63c420fa5df0f3fcc6750f8117ef2fe0a339"
+      "sha256": "e7523d6c2ba0d58c02e9e48af7a5a8efa0fd0bc9e4fa51b2e47368ecee59e3d1"
     },
     {
       "path": "src/infrastructure/search/catalog-records.js",
       "size": 3786,
-      "sha256": "11dd26940d38cfcf48eb69d8958292df869d8f12904ff12907f36a816dba8862"
+      "sha256": "6472c48cd01fd93a222a8e92694ac36831cec65b0f97b2e11a6d684989e3b298"
     },
     {
       "path": "src/domain/research/research-contract.js",
       "size": 3228,
-      "sha256": "201755a4088c406fcd599c177b39e577b88ffeee810c261b469db0cbb089f926"
+      "sha256": "a5684c87bf38f1149897888397f99982cd36ce5a2939fca2b0181a83c8824dbd"
     },
     {
       "path": "src/domain/evidence/evidence-gaps.js",
       "size": 3093,
-      "sha256": "05ce85eaa886d00b6c193796ae2233d8f568739cd41de95ce5fdf7704878b382"
+      "sha256": "b4baf967ef4b6707c71f3a44150a856fde34b5eb423077bace6d24a7c9347d01"
     },
     {
       "path": "src/domain/research/publication-gate.js",
       "size": 8674,
-      "sha256": "2a932ccd56ccbf94b2eec73d4844b27ce3f65499937b8e30e40404b3787ff938"
+      "sha256": "c70b0855fcf2ec5d66159736cf4ef609cec57b62d35240428bc685a58496b709"
     },
     {
       "path": "src/application/research/evidence-audit.js",
       "size": 11505,
-      "sha256": "d4a220e1b66d19b54fac8bce6453b0308d47fb93798e4db3f9b213d24aaaf0d2"
+      "sha256": "9571df5b3e681a92eabe12ce9ce7200221af3346c5a56a649234b20397feeed2"
     },
     {
       "path": "src/application/research/report-review-batches.js",
       "size": 6847,
-      "sha256": "7f16144321e4fe24c71e7de2bddbbe27e2b588afe65b94e9b1cf26b353c34f12"
+      "sha256": "e141ba7ddc013fd5f0c278d15d0c6b547c775bbfcd805768798bb8fabd7806d9"
     },
     {
       "path": "src/domain/evidence/metric-calculations.js",
@@ -257,17 +257,17 @@
     {
       "path": "src/application/research/evidence-repair.js",
       "size": 7786,
-      "sha256": "110a97cfac01aaa5233c7f66b54a69e532602d492c3e702e154700b3633153f4"
+      "sha256": "59e654b86d5ecbfaf4240fee3dee145ee19e59f7da4c7df095f316174ac834e2"
     },
     {
       "path": "src/reporting/report-revision.js",
       "size": 4255,
-      "sha256": "9668b21ecda37f9a654acde4d3a7ab5217afff39aa91033e1f4c8b5f27a1bacf"
+      "sha256": "74a9657d422aac7abacda56eb2cf76d2204025e80e422eec04dd4061e61f8475"
     },
     {
       "path": "src/application/research/baseline-discovery.js",
       "size": 5541,
-      "sha256": "22753bb7ddd4a477b5be94fe0fc62d4ef0a0d5b59e45a0087cecd3d210e290cd"
+      "sha256": "788ab6e4b6138bd28a991c8de2c587186237ef8ab6a1eb1d90fa2d62996eafec"
     },
     {
       "path": "src/application/research/evidence-batch-recovery.js",
@@ -277,7 +277,7 @@
     {
       "path": "src/application/research/extraction-checkpoint.js",
       "size": 2902,
-      "sha256": "cfa95bc0b910217cf3bdf19a385a7cdba34470daf4628db48d60bdf424b148f9"
+      "sha256": "f43cfc02cbecc75f3f9e57aa6de20b977e1a3a807ac8292df5a614e2ce956ccd"
     },
     {
       "path": "src/application/research/source-review-recovery.js",
@@ -287,7 +287,7 @@
     {
       "path": "src/domain/research/competitor-selection.js",
       "size": 9962,
-      "sha256": "59f232c0a2f3e4501ddf471b9a0025b96086725dc87f6b1ad80fbd2956fa7acd"
+      "sha256": "ad0fde7ba80f5948dd59bfc26bedaa51b70fe884ee709401a6b7c4fcaffd527e"
     },
     {
       "path": "public/comparison-defaults.js",
@@ -297,32 +297,32 @@
     {
       "path": "src/domain/research/product-candidates.js",
       "size": 2626,
-      "sha256": "45bd830ed9bf287a46e2b8d0f8006d877701f86b58cf4d9c230693a95d5dffa7"
+      "sha256": "a6a372005e731960097a2c38b3bcbc30924c3a6266a6ef718de23e6b222a8484"
     },
     {
       "path": "src/infrastructure/search/competitor-advisor.js",
       "size": 1089,
-      "sha256": "2806acce391986a49fc7932b8504bc0c6c5a9f1e928156a0e27a47cd46085df4"
+      "sha256": "a9bf0bfad0777271e82593de1d075e17881f6cb217cda3904af4e83539b11fe8"
     },
     {
       "path": "src/infrastructure/search/catalog-spotlight.js",
       "size": 2854,
-      "sha256": "2ca85e1ac65fe2b22c7bb5c34105253c213aff8158bef224e0d5866ff9990b0e"
+      "sha256": "dda828a1b2216885f417475f6c57fda5437218cb752606f38497de1a6dab551c"
     },
     {
       "path": "src/browser/repository.js",
       "size": 2125,
-      "sha256": "6c72e7b0f3ea19acaff31a7466ba6b05082e6270612e65f3bd39053e92fee3af"
+      "sha256": "d62372542c4268cf1c9881c58d969e2a21eeec090085ec0c4f72a7f61c18405e"
     },
     {
       "path": "src/domain/research/task-presentation.js",
       "size": 2285,
-      "sha256": "7577a1c3817b688972977d901532f57716fdc663ebdce2eab975e626fcaf34f1"
+      "sha256": "ff4ed2066d832f23db0d9cd4bf2575d29f8bd7f99343fd5c373855ea9fed2da7"
     },
     {
       "path": "src/domain/evidence/review-checklist.js",
       "size": 13380,
-      "sha256": "8cdae2cc962101f9e637777cde53f0b97ced179067ca8c94ca3533a076cb8d64"
+      "sha256": "8e7a1fbeb7b255d0537295cba66d61919d844fb382db2e4166f40838af8b5f48"
     },
     {
       "path": "src/domain/evidence/metric-presentation.js",
@@ -347,22 +347,22 @@
     {
       "path": "src/browser/task-actions.js",
       "size": 5110,
-      "sha256": "a196a8ed484005bc3494705fe45f26478d2ed56f080438b42439eb866e251b81"
+      "sha256": "39cfc612f543152e58b528bf1fe48a344839cd5f6b900a5fdb98aff6169da103"
     },
     {
       "path": "src/application/research/review-feedback.js",
       "size": 3303,
-      "sha256": "b7bfc56d13f43de78b83d5534101afe4f37ac2834ad4973b3b9741ec5fb81d3b"
+      "sha256": "5d967019575232691c8ad4f096cb7f71e334d2fc3c2375066d3287608b7e9eac"
     },
     {
       "path": "src/reporting/docx-export.js",
       "size": 23214,
-      "sha256": "56c211630ba661fae16be703c14af8dcf0ef4223b93e6d4a9a01cfb568fe8985"
+      "sha256": "e13868a5ddad0d8d18eff29c9200793217ab53ef035b17c2892136ad1f664f7c"
     },
     {
       "path": "src/browser/shims/zlib.js",
       "size": 122,
-      "sha256": "77590e4a22abf921f4670f9707883b78f1ff6e06aa5b863f1874ccb0a1e3b45b"
+      "sha256": "67dbf1a3304f374e07c777a2f9b6ef287ea6a80dd55cd800f466a3400caf6163"
     },
     {
       "path": "vendor/pako.js",
@@ -372,7 +372,7 @@
     {
       "path": "public/comparison-visibility.js",
       "size": 758,
-      "sha256": "9d9a7add4c3cf8bd53a395c6f779fe67c807f12545d6dbe8981f8569d2321cdc"
+      "sha256": "cee38be3b0bb2c3121a75cca6f9458d9d4ee0279db1bba876b59978aa0230655"
     },
     {
       "path": "public/report-sections.js",
@@ -402,17 +402,22 @@
     {
       "path": "src/infrastructure/search/public-page-cache.js",
       "size": 1611,
-      "sha256": "1143baeaf34d66cdad26a7423ef94a87ce0ac03e60b5dd9b48c3578971756434"
+      "sha256": "363d0fe6116d089b63653ae20e727894abc1053a126f081bd16f6872d11770bc"
     },
     {
       "path": "src/browser/backup.js",
       "size": 3582,
-      "sha256": "11683db33a3e1c11028fd9d7166cbf0833e0a5d7a5ed3083d1d90edd20e13c59"
+      "sha256": "d00db45898ec737c9fb57bdf8b3a146fb9253da422cca3d200995798f0077889"
+    },
+    {
+      "path": "src/browser/share.js",
+      "size": 9014,
+      "sha256": "e4b3347c3852563ea16b067915c310f51a74a639497e3430865e90f9cb03b7f9"
     },
     {
       "path": "public/app.js",
       "size": 77964,
-      "sha256": "6f373c6aaf3542eb96fabe7d480f3b232bcfa182c5344960ada52d8695ff222b"
+      "sha256": "514ca14a2bd01554541d00a6ae5a3c2be4cbb420f4f80f9617c8c7b4cca91f47"
     },
     {
       "path": "public/api-usage.js",
@@ -427,12 +432,12 @@
     {
       "path": "public/product-comparison.js",
       "size": 15177,
-      "sha256": "a5bfdb22d909f285cc64c6ae871158be57a1c7bdfd91a85940eb79aa679ce96f"
+      "sha256": "0c9a8774881ad781851a20f86822ea8a262374a1d6580d17632ad306e0e03189"
     },
     {
       "path": "public/export-dialog.js",
       "size": 5524,
-      "sha256": "9c12ce7f9c13824df066ccd996f4856501ac746867043736f33267f9723e2f12"
+      "sha256": "9b46a169e9d6b6877b41797fae241b4f34d939e376dbb2fe2458e20f9ac3f662"
     },
     {
       "path": "public/access.js",
@@ -447,12 +452,12 @@
     {
       "path": "public/comparison-controls.js",
       "size": 136,
-      "sha256": "f9398516dd9e942b6f18dbbb8f441ef6490d082831ce7d12741c9a9a0104b8fb"
+      "sha256": "c9858f1163e27fb3aed5e67013b97b17cbfc5d612d0f39b11ffce063082e5a39"
     },
     {
       "path": "public/competitor-controls.js",
       "size": 15962,
-      "sha256": "01255c0f555072011ea7743ebd449ec1d7dc300a47994c002e53849bfc4e11f2"
+      "sha256": "4ec4209a07393db3ed32c30ed3a11e0208a7f9ed4b38ee04a91ee1d5cfa032fc"
     },
     {
       "path": "public/comparison-view.js",
@@ -462,7 +467,7 @@
     {
       "path": "public/catalog-picker.js",
       "size": 8938,
-      "sha256": "156eb8b1773bd09de947032ec8b9f5bd99e462836b5a6e88a1a7f946fdd2f0a3"
+      "sha256": "95ca7ab5967590289d4820836a4860c7019481e3cd3c8ba5aa4a0587e8c2a868"
     },
     {
       "path": "public/catalog-status.js",
@@ -472,7 +477,7 @@
     {
       "path": "public/task-feedback.js",
       "size": 9919,
-      "sha256": "4314acfaa0f9283b405408dedaec527ec52b111541b378d03ecd62d63b4e42f2"
+      "sha256": "dd3b7b7d1d03b19c52b1dda8754aa23669dbb176331058a9c5f74bf5310d32e0"
     },
     {
       "path": "public/model-diagnostics.js",
@@ -482,7 +487,7 @@
     {
       "path": "public/depth-controls.js",
       "size": 879,
-      "sha256": "8d1153c4b84bdb6bfa7422b3c543a9c6eb10dc0640c03b9fa904002efb81b194"
+      "sha256": "386e8cc38cf0c4ba6fc32b81b629357531caf3075fe4953ca151cae89f967012"
     },
     {
       "path": "public/settings.js",
@@ -502,12 +507,12 @@
     {
       "path": "index.html",
       "size": 14490,
-      "sha256": "add6676b131f2655e0fdfa29e2269b78197d1f3d86fe5364c8e3c4e69532116c"
+      "sha256": "a4d7660670bd3904fb931e96e885dca80f9ca7ffa6262067b02378ff7e49ab19"
     },
     {
       "path": "src/browser/browser.css",
-      "size": 894,
-      "sha256": "57a372558b29b8524cf3218318c9ba9177239efb9539e64ec7af8c48531e6852"
+      "size": 1216,
+      "sha256": "8391fc71c7c43f78048664481cbf05093223cacf2cff6a9efaa6dbe84f5fe621"
     },
     {
       "path": "public/styles.css",
@@ -587,7 +592,7 @@
     {
       "path": "build.json",
       "size": 353,
-      "sha256": "5b017eccb76cebd0ae89b63d0313e8c645293e30a95361300ac32c12f97d1861"
+      "sha256": "baaf21e3a70a45ef534799e64c9f5f3b47c9aef577ef90e70551d2391df1a75e"
     }
   ]
 }
