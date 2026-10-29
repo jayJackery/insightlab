@@ -1,21 +1,22 @@
-import {renderApiUsage} from './api-usage.js?v=8e1e00bb1d41da9f';
-import {visibleComparisonRows} from './comparison-visibility.js?v=8e1e00bb1d41da9f';
-import {metricLabels} from './metric-labels.js?v=8e1e00bb1d41da9f';
-import {renderReviewChecklist,setupReportReview} from './report-review.js?v=8e1e00bb1d41da9f';
-import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=8e1e00bb1d41da9f';
-import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=8e1e00bb1d41da9f";
+import {renderApiUsage} from './api-usage.js?v=2c9b2e1b97170f03';
+import {selectResearchFindings} from './finding-presentation.js?v=2c9b2e1b97170f03';
+import {visibleComparisonRows} from './comparison-visibility.js?v=2c9b2e1b97170f03';
+import {metricLabels} from './metric-labels.js?v=2c9b2e1b97170f03';
+import {renderReviewChecklist,setupReportReview} from './report-review.js?v=2c9b2e1b97170f03';
+import {renderProductComparison,setupProductComparison} from './product-comparison.js?v=2c9b2e1b97170f03';
+import { normalizePlan, validateQueries, hasInvalidQueries } from "./plan-utils.js?v=2c9b2e1b97170f03";
 
-import {resolveResearchFocus,focusDescription} from './research-focus.js?v=8e1e00bb1d41da9f';
-import {openExportDialog} from './export-dialog.js?v=8e1e00bb1d41da9f';
-import {highlightSegments,topicProductReferences} from './product-highlights.js?v=8e1e00bb1d41da9f';
-import {setupAccess,openTaskSharing} from './access.js?v=8e1e00bb1d41da9f';
-import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=8e1e00bb1d41da9f';
-import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=8e1e00bb1d41da9f';
-import {renderCatalogStatus} from './catalog-status.js?v=8e1e00bb1d41da9f';
-import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=8e1e00bb1d41da9f';
-import {qualifyProductMentions} from './product-labels.js?v=8e1e00bb1d41da9f';
-import {setupDepthControls} from './depth-controls.js?v=8e1e00bb1d41da9f';
-import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=8e1e00bb1d41da9f';
+import {resolveResearchFocus,focusDescription} from './research-focus.js?v=2c9b2e1b97170f03';
+import {openExportDialog} from './export-dialog.js?v=2c9b2e1b97170f03';
+import {highlightSegments,topicProductReferences} from './product-highlights.js?v=2c9b2e1b97170f03';
+import {setupAccess,openTaskSharing} from './access.js?v=2c9b2e1b97170f03';
+import {renderWaitingRoom,mountWaitingRoom,setWaitingRoomConnection,setWaitingRoomVisible,stopWaitingRoom} from './waiting-room.js?v=2c9b2e1b97170f03';
+import {setupComparisonBrief,renderComparisonControls,readComparisonControls,setupComparisonActions} from './comparison-controls.js?v=2c9b2e1b97170f03';
+import {renderCatalogStatus} from './catalog-status.js?v=2c9b2e1b97170f03';
+import {renderTaskAction,updateTaskFeedback,setTaskFeedbackConnection,clearTaskFeedback} from './task-feedback.js?v=2c9b2e1b97170f03';
+import {qualifyProductMentions} from './product-labels.js?v=2c9b2e1b97170f03';
+import {setupDepthControls} from './depth-controls.js?v=2c9b2e1b97170f03';
+import {modelFailureHelp,renderModelDiagnostics} from './model-diagnostics.js?v=2c9b2e1b97170f03';
 setupDepthControls();
 const $ = (selector) => document.querySelector(selector);
 const state = { tasks: [], current: null, poll: null };
@@ -109,7 +110,7 @@ function renderProgress(task) {
   const sourceCount = Number(live.sourceCount ?? research.sources?.length ?? 0);
   const round = Number(research.supplementalRound || 0);
   const autoRound = Number(research.searchQuality?.repairRounds || 0);
-  const currentQuery = task.phaseIndex >= 2 && task.status === 'running' ? (task.phaseIndex===4?(research.contentRevision?.status==='running'?'按独立复核修订报告（第1/1轮）':'整合报告并进行独立复核'):task.phaseIndex===2&&research.evidenceProgress?.completed<research.evidenceProgress?.total?'证据整理：'+research.evidenceProgress.completed+'/'+research.evidenceProgress.total+' 条来源':research.currentActivity || '正在整理证据与技术分析') : task.status==='needs_review'?'本轮已结束，草稿有待核验':live.currentQuery || (task.status === "completed" ? "本轮检索已完成" : task.status === "failed" ? "本阶段已停止，请查看失败原因" : "等待检索开始");
+  const currentQuery = task.phaseIndex >= 2 && task.status === 'running' ? (task.phaseIndex===4?(research.currentActivity|| (research.contentRevision?.status==='running'?'按独立复核修订报告（第1/1轮）':'整合报告并进行独立复核')):task.phaseIndex===2&&research.evidenceProgress?.completed<research.evidenceProgress?.total?'证据整理：'+research.evidenceProgress.completed+'/'+research.evidenceProgress.total+' 条来源':research.currentActivity || '正在整理证据与技术分析') : task.status==='needs_review'?'本轮已结束，草稿有待核验':live.currentQuery || (task.status === "completed" ? "本轮检索已完成" : task.status === "failed" ? "本阶段已停止，请查看失败原因" : "等待检索开始");
   const queryView = '<div class="progress-insights"><div class="progress-stat"><small>当前检索问题</small><strong class="query-current">' + esc(currentQuery) + '</strong></div><div class="progress-stat"><small>已检索来源</small><strong>' + sourceCount + ' <em>条</em></strong></div><div class="progress-stat"><small>补查轮次</small><strong>' + (autoRound ? "自动补查 " + autoRound + " 轮" : round ? "第 " + round + " 轮" : "初始检索") + '</strong></div><div class="progress-stat"><small>搜索查询</small><strong>' + completed + ' <em>/ ' + total + '</em></strong></div></div>';
   const queries = runs.length ? '<details class="query-log"><summary>查看检索问题与状态</summary><ol>' + runs.map((item) => '<li><span class="query-status ' + esc(item.status || "pending") + '">' + ({ completed: "已完成", failed: "失败", running: "进行中", pending: "待检索" }[item.status] || "待检索") + "</span><span>" + esc(item.query) + (item.error ? ' <small>' + esc(item.error) + "</small>" : "") + "</span></li>").join("") + "</ol></details>" : "";
   return '<section class="progress"><div class="progress-title">研究工作流 · ' + title + '</div>'+renderWaitingRoom(task)+'<div class="phase-row">' + steps + "</div>" + queryView + queries + renderCatalogStatus(task) + renderSearchQuality(task) + error + renderModelDiagnostics(task) + '<div class="progress-note">' + note + "</div></section>";
@@ -394,10 +395,10 @@ function renderReport(task) {
   const evidence = task.evidence || {};
   const sources = task.research?.sources || [];
   const sourceMap = sourceIndex(task);
-  const findings = (report.questionAnswers?.length ? report.keyFindings || [] : (report.keyFindings || []).slice(0, 5)).map((item, index) => {
+  const findings = selectResearchFindings(report).map((item, index) => {
     const refs = [...new Set(item.citations || [])].map((id) => sourceMap.get(id)).filter(Boolean);
     const proof = quoteCards(item.evidence, sourceMap) || refs.map(sourceExcerpt).join("");
-    return '<details class="finding finding-expand"><summary><span class="finding-number">' + String(index + 1).padStart(2, "0") + '</span><div><span class="finding-type">' + esc(safeNote(item.kind) || "研究发现") + '</span>' + (item.question ? '<h4 class="finding-question">' + esc(item.question) + '</h4>' : '') + '<p>' + reportText(safeNote(item.text)) + '</p>' + (item.implication ? '<p class="finding-implication"><strong>工程意义：</strong>' + reportText(item.implication) + '</p>' : '') + citations(item.citations) + '</div><span class="finding-open">展开证据</span></summary><div class="finding-proof">' + (proof || '<p class="proof-empty">没有保存证据摘录；可先点击来源编号打开原文复核。</p>') + '<div class="evidence-links">' + refs.map((source) => '<a href="' + esc(source.url) + '" target="_blank" rel="noopener noreferrer">' + esc(source.id + " · " + (source.siteName || source.title)) + ' ↗</a>').join("") + '</div></div></details>';
+    return '<details class="finding finding-expand"><summary><span class="finding-number">' + String(index + 1).padStart(2, "0") + '</span><div><span class="finding-type">' + esc(safeNote(item.kind) || "研究发现") + '</span>' + (item.question ? '<h4 class="finding-question">' + esc(item.question) + '</h4>' : '') + '<p>' + reportText(safeNote(item.text)) + '</p></div><span class="finding-open">展开证据</span></summary><div class="finding-proof">' + (proof || '<p class="proof-empty">没有保存证据摘录；可先点击来源编号打开原文复核。</p>') + '<div class="evidence-links">' + refs.map((source) => '<a href="' + esc(source.url) + '" target="_blank" rel="noopener noreferrer">' + esc(source.id + " · " + (source.siteName || source.title)) + ' ↗</a>').join("") + '</div></div></details>';
   }).join("");
   const claims = (evidence.claims || []).map((claim, index) => {
     const exact = quoteCards(claim.evidence, sourceMap);
@@ -435,7 +436,7 @@ function renderReport(task) {
   if (summaryLead.length > 320 && summarySentences.length > 1) summaryLead = summarySentences[0];
   const summaryRest = summaryLead.length < summaryText.length ? summaryText.slice(summaryLead.length) : "";
   const summary = '<section class="executive-summary" id="report-summary"><span>核心结论</span>' + proseParagraphs(summaryLead) + (summaryRest ? '<details><summary>展开完整摘要</summary>' + proseParagraphs(summaryRest) + '</details>' : '') + '</section>';
-  const keyFindings = '<section class="report-section" id="report-findings"><div class="section-heading"><div><h3>关键发现</h3><small>' + (report.questionAnswers?.length ? '逐条回应研究问题；点击“展开证据”核对摘录与原文' : '历史报告：先展示五项已保存发现，完整记录见证据核验；重新调研后按问题给出答案') + '</small></div></div><div class="finding-list">' + (findings || '<div class="no-data">没有可展示的结构化发现，请查看后续分析章节。</div>') + "</div></section>";
+  const keyFindings = '<section class="report-section" id="report-findings"><div class="section-heading"><div><h3>关键发现</h3><small>' + (report.questionAnswers?.length ? '展示已保存的研究结论；草稿内容仍须核验。未回答问题与研究约束保留在研究过程及资料边界。' : '历史报告：展示已保存的发现，完整记录见证据核验。') + '</small></div></div><div class="finding-list">' + (findings || '<div class="no-data">目前没有可展示的关键发现，请查看研究过程和后续分析章节。</div>') + "</div></section>";
   const sectionDefinitions = [
     
     ["applications", "产品与应用", report.productApplications], ["baseline", "对自家产品的启示", report.baselineImplications],
@@ -667,4 +668,4 @@ setupProductComparison();
 setupReportReview({api,onRevision:async id=>{await refreshTasks();await openTask(id);}});setupComparisonBrief();setupComparisonActions({api,getTask:()=>api('/api/tasks/'+state.current)});
 const access=setupAccess({api,onAuthenticated:initialize,onSignedOut:()=>{sessionEpoch++;clearTimeout(state.poll);stopWaitingRoom();clearTaskFeedback();state.outlineObserver?.disconnect();state.tasks=[];state.current=null;$('#task-content').replaceChildren();$('#task-actions').replaceChildren();renderSidebar();document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());setView('home');}});
 access.start().catch(error=>toast(error.message));
-import('./settings.js?v=8e1e00bb1d41da9f').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));
+import('./settings.js?v=2c9b2e1b97170f03').then(({ setupServiceSettings }) => setupServiceSettings({ api, onConfig: updateServiceStatus })).catch(() => toast('服务配置窗口加载失败，请刷新页面。'));

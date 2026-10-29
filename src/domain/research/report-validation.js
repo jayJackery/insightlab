@@ -23,7 +23,9 @@ export function unapprovedDerivedValues(report,evidence) {
 
 export function evidenceForWriting(evidence) {
   const value=structuredClone(evidence);
-  value.excludedFacts=(value.claims || []).filter((claim)=>claim.type==='公开事实'&&claim.verification?.status!=='supported').map((claim)=>({claim:claim.claim,reason:claim.verification?.reason || '未核验'}));
+  // Never feed rejected assertions back to the author: a prohibition alongside
+  // the full text still lets a model accidentally repeat the rejected claim.
+  value.excludedFactCount=(value.claims || []).filter((claim)=>claim.type==='公开事实'&&claim.verification?.status!=='supported').length;
   value.claims=(value.claims || []).filter((claim)=>claim.type!=='公开事实'||claim.verification?.status==='supported');
   for(const row of value.competitorRows || [])row.metricValues=(row.metricValues || []).map((metric)=>{
     // Raw observations remain in persisted evidence; they are not approved report facts.

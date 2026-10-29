@@ -1,24 +1,28 @@
-import {randomUUID} from './shims/crypto.js?v=8e1e00bb1d41da9f';
-import {createServiceSettings,modelConfiguration} from '../infrastructure/settings/service-settings.js?v=8e1e00bb1d41da9f';
-import {createModelClient} from '../infrastructure/ai/model-client.js?v=8e1e00bb1d41da9f';
-import {checkModelCompatibility} from '../infrastructure/ai/model-probe.js?v=8e1e00bb1d41da9f';
-import {createSourceStore} from '../infrastructure/persistence/source-store.js?v=8e1e00bb1d41da9f';
-import {createResearchWorkflow} from '../application/research/workflow.js?v=8e1e00bb1d41da9f';
-import {createCompetitorAdvisor} from '../infrastructure/search/competitor-advisor.js?v=8e1e00bb1d41da9f';
-import {createCatalogSpotlight} from '../infrastructure/search/catalog-spotlight.js?v=8e1e00bb1d41da9f';
-import {searchWeb} from '../infrastructure/search/search.js?v=8e1e00bb1d41da9f';
-import {lookupSpecifications} from './catalog.js?v=8e1e00bb1d41da9f';
-import {WORKFLOW_VERSION,REPORT_SCHEMA_VERSION,REQUIREMENTS_REVISION} from '../domain/research/research-contract.js?v=8e1e00bb1d41da9f';
-import {createBrowserRepository} from './repository.js?v=8e1e00bb1d41da9f';
-import {createTaskActions} from './task-actions.js?v=8e1e00bb1d41da9f';
-import {makeDocx} from '../reporting/docx-export.js?v=8e1e00bb1d41da9f';
-import {exportOptionsFromUrl} from '../../public/report-sections.js?v=8e1e00bb1d41da9f';
-import {hasInvalidQueries} from '../../public/plan-utils.js?v=8e1e00bb1d41da9f';
-import {reloadTasks} from './storage.js?v=8e1e00bb1d41da9f';
+import {randomUUID} from './shims/crypto.js?v=2c9b2e1b97170f03';
+import {createServiceSettings,modelConfiguration} from '../infrastructure/settings/service-settings.js?v=2c9b2e1b97170f03';
+import {createModelClient} from '../infrastructure/ai/model-client.js?v=2c9b2e1b97170f03';
+import {checkModelCompatibility} from '../infrastructure/ai/model-probe.js?v=2c9b2e1b97170f03';
+import {createSourceStore} from '../infrastructure/persistence/source-store.js?v=2c9b2e1b97170f03';
+import {createResearchWorkflow} from '../application/research/workflow.js?v=2c9b2e1b97170f03';
+import {createCompetitorAdvisor} from '../infrastructure/search/competitor-advisor.js?v=2c9b2e1b97170f03';
+import {createCatalogSpotlight} from '../infrastructure/search/catalog-spotlight.js?v=2c9b2e1b97170f03';
+import {searchWeb} from '../infrastructure/search/search.js?v=2c9b2e1b97170f03';
+import {lookupSpecifications} from './catalog.js?v=2c9b2e1b97170f03';
+import {WORKFLOW_VERSION,REPORT_SCHEMA_VERSION,REQUIREMENTS_REVISION} from '../domain/research/research-contract.js?v=2c9b2e1b97170f03';
+import {createBrowserRepository} from './repository.js?v=2c9b2e1b97170f03';
+import {createTaskActions} from './task-actions.js?v=2c9b2e1b97170f03';
+import {makeDocx} from '../reporting/docx-export.js?v=2c9b2e1b97170f03';
+import {exportOptionsFromUrl} from '../../public/report-sections.js?v=2c9b2e1b97170f03';
+import {hasInvalidQueries} from '../../public/plan-utils.js?v=2c9b2e1b97170f03';
+import {reloadTasks,openStorage,acquireWorkspace,storageName} from './storage.js?v=2c9b2e1b97170f03';
+import {installResearchDiagnostics} from './research-diagnostics.js?v=2c9b2e1b97170f03';
+import {createPublicPageCache} from '../infrastructure/search/public-page-cache.js?v=2c9b2e1b97170f03';
+import {mapConcurrent,STAGE_CONCURRENCY} from '../application/research/concurrency.js?v=2c9b2e1b97170f03';
 
-export async function createBrowserRuntime({build,workspace}){
+export async function createBrowserRuntime({build,workspace,sessionServices,databaseName}){
+  if(!workspace){await openStorage(databaseName);workspace=await acquireWorkspace();}
   const repository=createBrowserRepository(),{getTask,update}=repository;
-  const services=await createServiceSettings(undefined,{MODEL_PROVIDER:'deepseek',SEARCH_PROVIDER:'deepseek',OPENAI_BASE_URL:'https://api.deepseek.com',OPENAI_MODEL:'deepseek-flash'});
+  const services=sessionServices||await createServiceSettings(undefined,{MODEL_PROVIDER:'deepseek',SEARCH_PROVIDER:'deepseek',OPENAI_BASE_URL:'https://api.deepseek.com',OPENAI_MODEL:'deepseek-flash'});
   const publicConfig=()=>{const value=services.publicConfig();return {...value,storageMode:'session',keys:Object.fromEntries(Object.entries(value.keys).map(([key,state])=>[key,{...state,source:state.configured?'session':'none'}]))};};
   const runtime={workflowVersion:WORKFLOW_VERSION,reportSchemaVersion:REPORT_SCHEMA_VERSION,requirementsRevision:REQUIREMENTS_REVISION,buildId:build.buildId,startedAt:new Date().toISOString(),pid:1,executionMode:'browser'};
   let currentJob=null,draining=false;const jobs=[];
@@ -34,25 +38,48 @@ export async function createBrowserRuntime({build,workspace}){
   const recommendCompetitors=createCompetitorAdvisor(),spotlight=createCatalogSpotlight();
   const search=async(query,input)=>{try{return await snapshotSources(await searchWeb(query,input,{env:services.env(),beforeRequest}));}catch(error){throw Error(services.redact(error.name==='TypeError'?'浏览器无法连接搜索服务，请检查网络、接口跨域支持或公司访问策略。':error.message));}};
   // Explicit plan.verifyCatalog only. Fetch API reads public pages without browser CORS restrictions on each vendor.
+  const pageCache=createPublicPageCache('public-page-cache');
   const fetchOfficial=async(records,{onProgress=()=>{}}={})=>{
     const sources=[],checks=[];
-    for(const record of records.slice(0,8)){
-      const url=record.officialUrl;if(!url)continue;
+    await mapConcurrent(records.slice(0,8),STAGE_CONCURRENCY.search,async record=>{
+      const url=record.officialUrl;if(!url)return;
       const check={product:record.catalogRecord?.name,url,status:'running'};checks.push(check);await onProgress(checks);
       try{
-        await beforeRequest();const env=services.env();if(!env.DEEPSEEK_API_KEY)throw Error('显式原文抓取需要本页DeepSeek密钥。');
+        const page=await pageCache.get(url,async()=>{await beforeRequest();const env=services.env();if(!env.DEEPSEEK_API_KEY)throw Error('显式原文抓取需要本页DeepSeek密钥。');
         const response=await fetch('https://api.deepseek.com/v1/tools/fetch',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+env.DEEPSEEK_API_KEY},body:JSON.stringify({url}),signal:AbortSignal.timeout(60000),credentials:'omit'});
         const value=await response.json();if(!response.ok)throw Error('网页抓取返回HTTP '+response.status);
-        const page=value.result||value,content=page.content;if(typeof content!=='string'||content.length<100)throw Error('未返回可用原文');
-        sources.push({title:page.title||record.title,url,content:content.slice(0,1500000),snippet:content.slice(0,500),provider:'deepseek_fetch',contentKind:'page_content',sourceType:'official',queries:['用户确认的官网补查'],retrievedAt:new Date().toISOString()});check.status='completed';
+        const page=value.result||value,content=page.content;if(typeof content!=='string'||content.length<100)throw Error('未返回可用原文');return {title:page.title,content:content.slice(0,1500000)};});
+        sources.push({title:page.title||record.title,url,content:page.content,snippet:page.content.slice(0,500),provider:'deepseek_fetch',contentKind:'page_content',sourceType:'official',queries:['用户确认的官网补查'],retrievedAt:page.fetchedAt});check.status=page.cacheHit?'cached':'completed';check.fetchedAt=page.fetchedAt;
       }catch(error){check.status='failed';check.error=services.redact(error.message);}await onProgress(checks);
-    }
+    });
     return {sources:await snapshotSources(sources),checks};
   };
   const workflow=createResearchWorkflow({getTask,update,model,search,consultSpecs:lookupSpecifications,recommendCompetitors,fetchOfficial,runtime,snapshotSources});
   async function drain(){if(draining)return;draining=true;try{while(jobs.length){currentJob=jobs.shift();try{await repository.flush();await workflow[currentJob.kind==='plan'?'preparePlan':'run'](currentJob.id);await repository.flush();}catch(error){update(currentJob.id,{status:'failed',phaseStatus:'failed',error:services.redact(error.message)});}}}finally{currentJob=null;draining=false;for(const resolve of idleWaiters.splice(0))resolve();}}
   const enqueue=(id,kind)=>{ready();if(currentJob?.id===id||jobs.some(job=>job.id===id))throw Error('此任务已在执行或排队。');jobs.push({id,kind});queueMicrotask(drain);};
   const actions=createTaskActions({repository,recommendCompetitors,enqueue,ready,writable});
+  // Explicit user-triggered probe; keeps credentials and reasoning text private.
+  const notice=document.querySelector('.browser-session-notice');
+  if(notice){
+    let button=document.getElementById('thinking-mode-probe');
+    if(!button){button=document.createElement('button');button.id='thinking-mode-probe';button.type='button';button.textContent='检测分阶段思考';notice.append(button);}
+    button.onclick=async()=>{
+      button.disabled=true;
+      let output=document.getElementById('thinking-mode-probe-result');
+      if(!output){output=document.createElement('p');output.id='thinking-mode-probe-result';output.setAttribute('role','status');notice.after(output);}
+      try{
+        ready();if(currentJob||jobs.length||draining)throw Error('请等研究结束后再检测。');
+        const results=[];
+        for(const review of [false,true]){
+          output.textContent=review?'正在检测结论复核模式…':'正在检测资料处理模式…';
+          let diagnostic=null;const started=Date.now();
+          await model([{role:'system',content:'只返回JSON对象 {"result":"ok"}。'},{role:'user',content:'请按要求回复。'}],{stage:review?'思考模式检测：复核':'思考模式检测：资料',thinkingPhase:review?'review':'normal',maxTokens:512,maxAttempts:1,timeoutMs:60000,validate:value=>{if(value.result!=='ok')throw Error('检测响应字段不符合要求');},onDiagnostic:value=>{diagnostic=value;}});
+          results.push((review?'复核：请求开启':'资料：请求关闭')+'，JSON通过，'+((Date.now()-started)/1000).toFixed(1)+'秒，推理token '+(diagnostic?.reasoningTokens??'未报告')+'，推理字符 '+(diagnostic?.reasoningCharacters??'未报告'));
+        }
+        output.textContent=results.join('；')+'。如服务未报告推理数据，无法据此确认模式是否生效。';
+      }catch(error){output.textContent='检测未完成：'+services.redact(error.message||'请求失败');}finally{button.disabled=false;}
+    };
+  }
   const json=value=>new Response(JSON.stringify(value),{headers:{'content-type':'application/json;charset=utf-8'}});
   async function request(path,options={}){
     try{
@@ -94,5 +121,19 @@ export async function createBrowserRuntime({build,workspace}){
       throw Error('该功能在纯前端版不可用。');
     }catch(error){return new Response(JSON.stringify({error:services.redact(error.message||'操作失败')}),{status:400,headers:{'content-type':'application/json;charset=utf-8'}});}
   }
-  return {request,repository,runtime,workspace,mutate,busy:()=>Boolean(currentJob||jobs.length),redact:services.redact};
+  async function loadUpdate(buildUrl){
+    if(currentJob||jobs.length||draining||workspace.ownsLock)throw Error('请等当前操作结束后再加载更新，阶段记录会保留。');
+    const ownBase=new URL('../../',import.meta.url),url=new URL(buildUrl);
+    if(url.origin!==ownBase.origin||url.pathname!==new URL('build.json',ownBase).pathname)throw Error('仅允许加载本网站更新。');
+    const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw Error('暂时无法取得更新，请稍后重试。');
+    const nextBuild=await response.json();
+    if(nextBuild.app!=='insightlab-browser'||!/^([a-f0-9]{16})$/.test(nextBuild.buildId))throw Error('更新信息无效。');
+    if(nextBuild.buildId===build.buildId)return null;
+    await repository.flush();
+    const moduleUrl=new URL('src/browser/runtime.js',ownBase);moduleUrl.searchParams.set('v',nextBuild.buildId);
+    const next=await import(moduleUrl.href);
+    return next.createBrowserRuntime({build:nextBuild,sessionServices:services,databaseName:storageName});
+  }
+  installResearchDiagnostics(repository,build.buildId,services.redact);
+  return {loadUpdate,reload:reloadTasks,request,repository,runtime,workspace,mutate,busy:()=>Boolean(currentJob||jobs.length),redact:services.redact};
 }

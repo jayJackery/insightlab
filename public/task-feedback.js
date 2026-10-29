@@ -1,5 +1,5 @@
-import {stageModel} from './waiting-room.js?v=8e1e00bb1d41da9f';
-import {modelFailureHelp} from './model-diagnostics.js?v=8e1e00bb1d41da9f';
+import {stageModel} from './waiting-room.js?v=2c9b2e1b97170f03';
+import {modelFailureHelp} from './model-diagnostics.js?v=2c9b2e1b97170f03';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const active=task=>['running','planning','queued'].includes(task?.status);
 const states=new Map();

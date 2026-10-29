@@ -1,6 +1,6 @@
-import {mkdir,writeFile,access} from '../../browser/shims/fs.js?v=8e1e00bb1d41da9f';
-import {join} from '../../browser/shims/path.js?v=8e1e00bb1d41da9f';
-import {enrichSource} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
+import {mkdir,writeFile,access} from '../../browser/shims/fs.js?v=2c9b2e1b97170f03';
+import {join} from '../../browser/shims/path.js?v=2c9b2e1b97170f03';
+import {enrichSource} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
 
 export function createSourceStore(directory) {
   return async (sources) => {

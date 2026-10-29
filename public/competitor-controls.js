@@ -1,8 +1,8 @@
-import {COMPARISON_DEFAULTS} from './comparison-defaults.js?v=8e1e00bb1d41da9f';
-import {cleanProductLabel} from './product-identity.js?v=8e1e00bb1d41da9f';
-import {sameProduct} from '../src/domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
-import {esc,safeHref,selectionOverview,selectionTable} from './comparison-view.js?v=8e1e00bb1d41da9f';
-import {setupCatalogPicker} from './catalog-picker.js?v=8e1e00bb1d41da9f';
+import {COMPARISON_DEFAULTS} from './comparison-defaults.js?v=2c9b2e1b97170f03';
+import {cleanProductLabel} from './product-identity.js?v=2c9b2e1b97170f03';
+import {sameProduct} from '../src/domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {esc,safeHref,selectionOverview,selectionTable} from './comparison-view.js?v=2c9b2e1b97170f03';
+import {setupCatalogPicker} from './catalog-picker.js?v=2c9b2e1b97170f03';
 const names=value=>String(value||'').split(/[、，,；;\n]/u).map(cleanProductLabel).filter(Boolean);
 const compact=value=>String(value||'').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
 function fields(prefix,values={}){

@@ -1,5 +1,5 @@
-import {cleanProductLabel,catalogDisplayName} from './product-identity.js?v=8e1e00bb1d41da9f';
-import {productLabel} from './product-labels.js?v=8e1e00bb1d41da9f';
+import {cleanProductLabel,catalogDisplayName} from './product-identity.js?v=2c9b2e1b97170f03';
+import {productLabel} from './product-labels.js?v=2c9b2e1b97170f03';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const contexts=new Map();let initialized=false,photos=null,photoRequest=null;
 const identity=value=>cleanProductLabel(value).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
@@ -8,11 +8,25 @@ function loadPhotos(){if(photoRequest)return;photoRequest=fetch('/api/catalog/sp
 const safeHref=value=>{try{const url=new URL(value);return /^https?:$/.test(url.protocol)&&!url.username&&!url.password?url.href:'';}catch{return '';}};
 const valueText=item=>{const raw=String(item?.value??'').trim(),unit=String(item?.unit||'').trim();return raw+(unit&&!raw.toLowerCase().includes(unit.toLowerCase())?' '+unit:'');};
 function state(item){return item?.presentation?.state||(item?.verification?.status==='needs_review'?'needs_review':item?.status)||'not_found';}
-function summary(item){
+export function summary(item){
   if(!item)return {value:'—',note:'本轮未找到',state:'not_found'};
   const status=state(item);
   if(['curated','disclosed','derived'].includes(status))return {value:(item.presentation?.label?item.presentation.label.replace(/\s*·\s*规格库收录$/u,'').replace(/^计算值\s*·\s*/u,''):valueText(item))||'—',note:{curated:'规格库整理',derived:'计算值',disclosed:'来源披露'}[status],state:status};
-  return {value:status==='needs_review'?'待核验':['not_comparable','conflict'].includes(status)?'口径待统一':'—',note:['not_comparable','conflict'].includes(status)?'记录值及原因可查看':status==='needs_review'?'已保存资料，需核验':'本轮未找到',state:status};
+  if(['not_comparable','conflict'].includes(status)){
+    const recorded=[...(item.catalogObservations||[]),...(item.scopeVariants||[]),...(item.observations||[])].filter(record=>record&&record.value!=null&&String(record.value).trim()&&record.sourceIds?.length);
+    const simple=record=>/^\s*\d+(?:\.\d+)?\s*(?:[a-zA-Z%]+)?\s*$/u.test(String(record.value));
+    const curated=recorded.find(record=>record.status==='curated'&&simple(record));
+    if(curated)return {value:valueText(curated),note:'规格库整理 · 待核实',state:status};
+    const sameProduct=record=>record.product&&item.product&&identity(record.product)===identity(item.product);
+    const observed=recorded.find(record=>sameProduct(record)&&simple(record));
+    if(observed)return {value:valueText(observed),note:'来源记录 · 待核实',state:status};
+    return {value:'—',note:'本轮未找到可展示的数值',state:status};
+  }
+  if(status==='needs_review'){
+    const value=valueText(item);
+    if(item.sourceIds?.length&&/^\s*\d+(?:\.\d+)?\s*(?:[a-zA-Z%]+)?\s*$/u.test(value))return {value,note:'来源记录 · 待核实',state:status};
+  }
+  return {value:'—',note:status==='needs_review'?'待核实 · 未找到可展示数值':'本轮未找到',state:status};
 }
 const group=metric=>/容量|功率|能量密度|效率/.test(metric)?'核心规格':/电芯|寿命|BMS|循环|安全/.test(metric)?'电池与安全':/充电|输入|太阳能/.test(metric)?'充电与输入':/三防|防护|重量|尺寸|噪声|结构/.test(metric)?'结构与环境适应':'扩展与使用成本';
 function displayProduct(row,task){const product=(task.research?.presentationProducts||[]).find(product=>product.id===row.productId)||{display:row.competitor};return productLabel(product);}

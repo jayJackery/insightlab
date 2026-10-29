@@ -57,3 +57,8 @@
 
 /* Polling may reattach this node; only real product changes animate in JS. */
 .spotlight-card{animation:none!important}.showcase-content{min-height:370px}
+
+/* Stable carousel viewport: changing products must not move the reader below it. */
+.showcase-content{flex:0 0 410px;block-size:410px;min-block-size:410px;max-block-size:410px;overflow:auto;overflow-anchor:none;scrollbar-gutter:stable}
+.showcase-content>.spotlight-card{flex:none;min-height:100%;align-self:flex-start}
+@media(max-width:650px){.showcase-content{flex-basis:540px;block-size:540px;min-block-size:540px;max-block-size:540px}}

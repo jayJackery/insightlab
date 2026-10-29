@@ -1,15 +1,15 @@
-import { createHash } from '../../browser/shims/crypto.js?v=8e1e00bb1d41da9f';
-import {resolveResearchFocus} from '../../../public/research-focus.js?v=8e1e00bb1d41da9f';
-import {buildProductRegistry} from '../evidence/product-registry.js?v=8e1e00bb1d41da9f';
-import {EVIDENCE_REPAIR_LIMITS} from '../evidence/evidence-gaps.js?v=8e1e00bb1d41da9f';
-import {comparisonScopeFromPlan} from '../evidence/comparison-scope.js?v=8e1e00bb1d41da9f';
-import {resolveReportDepth} from '../../../public/report-depth.js?v=8e1e00bb1d41da9f';
-import {researchInput} from '../../../public/baseline-context.js?v=8e1e00bb1d41da9f';
+import { createHash } from '../../browser/shims/crypto.js?v=2c9b2e1b97170f03';
+import {resolveResearchFocus} from '../../../public/research-focus.js?v=2c9b2e1b97170f03';
+import {buildProductRegistry} from '../evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {EVIDENCE_REPAIR_LIMITS} from '../evidence/evidence-gaps.js?v=2c9b2e1b97170f03';
+import {comparisonScopeFromPlan} from '../evidence/comparison-scope.js?v=2c9b2e1b97170f03';
+import {resolveReportDepth} from '../../../public/report-depth.js?v=2c9b2e1b97170f03';
+import {researchInput} from '../../../public/baseline-context.js?v=2c9b2e1b97170f03';
 
-export const WORKFLOW_VERSION = 'rd-research/18';
+export const WORKFLOW_VERSION = 'rd-research/19';
 export const CONTRACT_VERSION = 4;
 export const REPORT_SCHEMA_VERSION = 5;
-export const REQUIREMENTS_REVISION = 'RD-2026-10-22-v15';
+export const REQUIREMENTS_REVISION = 'RD-2026-10-22-v17';
 
 // Dates and policy are data, not assumptions left for the writing model.
 export function buildResearchContract(input, plan, now = new Date()) {

@@ -1,7 +1,7 @@
-import {presentTask} from '../domain/research/task-presentation.js?v=8e1e00bb1d41da9f';
-import {assertPublication} from '../domain/research/publication-gate.js?v=8e1e00bb1d41da9f';
-import {mergeResearchState} from '../infrastructure/persistence/research-state.js?v=8e1e00bb1d41da9f';
-import {taskRecords,saveTask,flushStorage} from './storage.js?v=8e1e00bb1d41da9f';
+import {presentTask} from '../domain/research/task-presentation.js?v=2c9b2e1b97170f03';
+import {assertPublication} from '../domain/research/publication-gate.js?v=2c9b2e1b97170f03';
+import {mergeResearchState} from '../infrastructure/persistence/research-state.js?v=2c9b2e1b97170f03';
+import {taskRecords,saveTask,flushStorage} from './storage.js?v=2c9b2e1b97170f03';
 export function createBrowserRepository(){
   const rows=taskRecords();
   const getTask=id=>rows.has(id)?{...presentTask(rows.get(id)),permissions:{canEdit:true,canShare:false,shared:false}}:null;

@@ -1,10 +1,10 @@
-import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js?v=8e1e00bb1d41da9f';
-import {inspectSources} from './search-workflow.js?v=8e1e00bb1d41da9f';
-import {deduplicateSources} from '../../infrastructure/search/search.js?v=8e1e00bb1d41da9f';
-import {independentDocumentCount} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
-import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js?v=8e1e00bb1d41da9f';
-import {mapConcurrent} from './concurrency.js?v=8e1e00bb1d41da9f';
-import {digest} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
+import {knownCatalogMetrics,redundantCatalogQuery} from '../../domain/research/catalog-policy.js?v=2c9b2e1b97170f03';
+import {inspectSources} from './search-workflow.js?v=2c9b2e1b97170f03';
+import {deduplicateSources} from '../../infrastructure/search/search.js?v=2c9b2e1b97170f03';
+import {independentDocumentCount} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
+import {EVIDENCE_REPAIR_LIMITS,evidenceGaps,queryKey} from '../../domain/evidence/evidence-gaps.js?v=2c9b2e1b97170f03';
+import {mapConcurrent} from './concurrency.js?v=2c9b2e1b97170f03';
+import {digest} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
 
 // Budget is persisted before each external request; retrying a task cannot reset its spend.
 export async function repairEvidence({input,plan,research,evidence,sources,search,review,snapshotSources,rebuild,persist}) {
@@ -57,6 +57,7 @@ export async function repairEvidence({input,plan,research,evidence,sources,searc
       }
       return [];
     });
+    const previousGapIds=new Set(state.gaps.map(gap=>gap.id));
     const beforeFingerprint=digest(JSON.stringify(current.map(source=>[source.id,source.url,source.content,source.relevance,source.sourceType,source.contentKind,source.catalogRecord])));
     const inspected=await inspectSources(deduplicateSources(foundByQuery.flat()),input,review);
     const oldIds=new Set(current.map(source=>source.id)),previous=new Map(current.map(source=>[source.id,source.document?.contentHash]));
@@ -73,10 +74,13 @@ export async function repairEvidence({input,plan,research,evidence,sources,searc
     await record();
     if(changed)evidence=await rebuild(current);
     state.gaps=evidenceGaps(evidence,input);
+    const remainingIds=new Set(state.gaps.map(gap=>gap.id));
+    const resolvedGap=[...previousGapIds].some(id=>!remainingIds.has(id));
     state.events.push({round:state.roundsUsed,remainingGapIds:state.gaps.map((gap)=>gap.id),checkedAt:new Date().toISOString()});
     round.status='completed';round.completedAt=new Date().toISOString();round.sourceCount=current.length;
     research.searchQuality={...research.searchQuality,acceptedCount:current.length,independentDocumentCount:independentDocumentCount(current),evidenceRepairRounds:state.roundsUsed};
     await record();
+    if(state.roundsUsed>1&&round.addedCount+round.updatedCount===0&&!resolvedGap){state.stopReason='low_yield';state.events.push({round:state.roundsUsed,reason:'low_yield',remainingGapIds:state.gaps.map(gap=>gap.id)});break;}
   }
   state.stopReason ||= !state.gaps.length?'resolved':current.length>=limits.maxSources?'source_limit':state.roundsUsed>=limits.rounds||state.queriesUsed>=limits.totalQueries?'budget_exhausted':'no_new_queries';
   research.currentActivity=state.gaps.length?'核验补查已结束，仍有'+state.gaps.length+'项缺口':'证据核验与补查已完成';

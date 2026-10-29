@@ -18,17 +18,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
-      - name: Prepare static site from release package
-        run: |
-          test -f InsightLab-GitHub-Pages.zip
-          mkdir -p dist
-          unzip -q InsightLab-GitHub-Pages.zip -d dist
-          test -f dist/index.html
-          test -f dist/build.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist
+          path: .
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

@@ -1,6 +1,6 @@
-import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=8e1e00bb1d41da9f';
-import {createBrowserRuntime} from './runtime.js?v=8e1e00bb1d41da9f';
-import {createBackup,importBackup} from './backup.js?v=8e1e00bb1d41da9f';
+import {openStorage,acquireWorkspace,reloadTasks,flushStorage} from './storage.js?v=2c9b2e1b97170f03';
+import {createBrowserRuntime} from './runtime.js?v=2c9b2e1b97170f03';
+import {createBackup,importBackup} from './backup.js?v=2c9b2e1b97170f03';
 const $=selector=>document.querySelector(selector);
 const toast=message=>{const node=$('#toast');node.textContent=message;node.classList.add('show');setTimeout(()=>node.classList.remove('show'),6000);};
 const download=(blob,name)=>{const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);};
@@ -9,8 +9,8 @@ async function start(){
   document.documentElement.dataset.runtime='browser';
   const base=new URL('../../',import.meta.url),name='insightlab-pages-v1:'+location.origin+base.pathname;
   const response=await fetch(new URL('build.json',base),{cache:'no-store'});if(!response.ok)throw Error('网站发布不完整，请重新上传完整发布目录。');
-  const build=await response.json();await openStorage(name);const workspace=await acquireWorkspace();
-  const runtime=await createBrowserRuntime({build,workspace});
+  const build=await response.json();await openStorage(name);let workspace=await acquireWorkspace();
+  let runtime=await createBrowserRuntime({build,workspace});
   const nativeFetch=globalThis.fetch.bind(globalThis);
   globalThis.fetch=(input,options)=>typeof input==='string'&&/^\/api(?:\/|$)/.test(input)?runtime.request(input,options):nativeFetch(input,options);
   const bar=document.createElement('section');bar.className='browser-session-notice';bar.setAttribute('aria-label','网页工作区说明');
@@ -20,7 +20,9 @@ async function start(){
   const progress=document.createElement('button');progress.type='button';progress.textContent='在本页查看进度';progress.hidden=true;
   const restore=document.createElement('button');restore.type='button';restore.textContent='导入备份';restore.disabled=!workspace.writable;
   const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;
-  const version=document.createElement('small');version.textContent='版本 '+build.buildId.slice(0,8);bar.append(title,note,progress,backup,restore,version,input);$('.topbar').after(bar);
+  const updateButton=document.createElement('button');updateButton.type='button';updateButton.textContent='加载更新（保留本页密钥）';
+  updateButton.addEventListener('click',async()=>{updateButton.disabled=true;try{const next=await runtime.loadUpdate(new URL('build.json',base).href);if(next){runtime=next;workspace=next.workspace;version.textContent='版本 '+next.runtime.buildId.slice(0,8);toast('研究引擎已更新，本页密钥和已保存进度保留。可从已保存阶段重试。');}else toast('当前已是最新版本。');}catch(error){toast(error.message);}finally{updateButton.disabled=false;}});
+  const version=document.createElement('small');version.textContent='版本 '+build.buildId.slice(0,8);bar.append(title,note,progress,backup,restore,updateButton,version,input);$('.topbar').after(bar);
   backup.addEventListener('click',()=>{try{download(createBackup(runtime),'InsightLab报告备份_'+new Date().toISOString().slice(0,10)+'.json');toast('已开始下载报告备份，不含密钥。');}catch(error){toast(error.message);}});
   restore.addEventListener('click',()=>input.click());input.addEventListener('change',async()=>{if(!input.files[0])return;try{const count=await runtime.mutate(()=>importBackup(input.files[0],runtime));toast('已导入'+count+'条独立记录，原报告保留。');$('#nav-history').click();}catch(error){toast(error.message);}finally{input.value='';}});
   $('.privacy').textContent='报告与检查点仅保存在当前浏览器，不上传GitHub；研究资料会发送给你选择的模型和搜索服务。清除网站数据前请备份。';
@@ -34,7 +36,7 @@ async function start(){
   const sync=async()=>{
     if(syncing)return;syncing=true;
     try{
-      await flushStorage();if(!workspace.ownsLock)await reloadTasks();
+      await runtime.repository.flush();if(!workspace.ownsLock)await runtime.reload();
       const active=runtime.repository.activeTask();
       externalTask=!runtime.busy()?active:null;progress.hidden=!externalTask;
       if(!bar.classList.contains('is-error'))note.textContent=!workspace.writable?workspace.reason:externalTask?'另一页面正在'+(phases[externalTask.phaseIndex]||'研究')+'：'+externalTask.title+'。可直接在本页查看，结束后即可开始新研究。':'密钥仅本页有效 · 报告保存在当前浏览器 · 研究期间请保持执行页面打开';
@@ -44,6 +46,6 @@ async function start(){
   if(channel)channel.onmessage=sync;
   let wasBusy=false;setInterval(async()=>{await sync();const busy=runtime.busy();if(busy||wasBusy)channel?.postMessage('updated');wasBusy=busy;},2500);
   document.addEventListener('browser-storage-error',event=>{note.textContent=event.detail;bar.classList.add('is-error');toast(event.detail);});
-  app=await import('../../public/app.js?v=8e1e00bb1d41da9f');await sync();
+  app=await import('../../public/app.js?v=2c9b2e1b97170f03');await sync();
 }
 start().catch(error=>{document.body.dataset.auth='locked';const root=$('#auth-root');root.replaceChildren();const card=document.createElement('main');card.className='access-card';const title=document.createElement('h1');title.textContent='网页工作区暂时无法打开';const detail=document.createElement('p');detail.textContent=error.message;const retry=document.createElement('button');retry.className='primary';retry.textContent='重新打开';retry.onclick=()=>location.reload();card.append(title,detail,retry);root.append(card);});

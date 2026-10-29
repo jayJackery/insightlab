@@ -7,7 +7,9 @@ export function resolveReportDepth(input={}){
   const comparison=/竞品|对比|相比|差距|横比|选型|比较/iu.test(text)||Boolean(input.competitors?.trim());
   const simple=questions.length<=2&&text.length<220&&!broad&&!comparison&&!/技术.{0,15}[%％]/u.test(text);
   const level=requested==='auto'?(simple?'concise':broad&&questions.length>=2||text.length>450?'rich':'medium'):requested;
-  const route=level==='concise'&&simple?'answer':'research';
+  // An explicit concise choice is a request for a focused answer, even when
+  // the subject is broad or comparative. Keep auto-detection conservative.
+  const route=level==='concise'&&(simple||requested==='concise')?'answer':'research';
   const profiles={
     concise:{queryLimit:route==='answer'?2:3,maxSources:route==='answer'?6:10,searchRounds:1,queriesPerFollowup:1,repairRounds:1,repairQueries:1,reportTokens:route==='answer'?2800:4500,topicCharacters:300,minimumDocuments:1,characters:'约200–600字，按原问题直接回答'},
     medium:{queryLimit:5,maxSources:16,searchRounds:1,queriesPerFollowup:2,repairRounds:1,repairQueries:2,reportTokens:6500,topicCharacters:450,minimumDocuments:2,characters:'约1200–2500字，突出关键分析'},

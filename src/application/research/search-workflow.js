@@ -1,11 +1,11 @@
-import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=8e1e00bb1d41da9f';
-import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=8e1e00bb1d41da9f";
-import { deduplicateSources } from "../../infrastructure/search/search.js?v=8e1e00bb1d41da9f";
-import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=8e1e00bb1d41da9f";
-import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=8e1e00bb1d41da9f';
-import {resolveResearchFocus} from '../../../public/research-focus.js?v=8e1e00bb1d41da9f';
-import {mapConcurrent} from './concurrency.js?v=8e1e00bb1d41da9f';
-import {createHash} from '../../browser/shims/crypto.js?v=8e1e00bb1d41da9f';
+import {knownCatalogMetrics,redundantCatalogQuery,excludeKnownSpecGaps} from '../../domain/research/catalog-policy.js?v=2c9b2e1b97170f03';
+import { fallbackQueries, validateQueries } from "../../../public/plan-utils.js?v=2c9b2e1b97170f03";
+import { deduplicateSources } from "../../infrastructure/search/search.js?v=2c9b2e1b97170f03";
+import { engineeringQueries } from "../../domain/research/engineering-policy.js?v=2c9b2e1b97170f03";
+import {enrichSource,independentDocumentCount} from '../../domain/evidence/source-document.js?v=2c9b2e1b97170f03';
+import {resolveResearchFocus} from '../../../public/research-focus.js?v=2c9b2e1b97170f03';
+import {mapConcurrent,STAGE_CONCURRENCY} from './concurrency.js?v=2c9b2e1b97170f03';
+import {createHash} from '../../browser/shims/crypto.js?v=2c9b2e1b97170f03';
 
 const sourceTypes = new Set(["official", "standard", "paper", "patent", "media", "curated", "other"]);
 const primaryTypes = new Set(["official", "standard", "paper", "patent"]);
@@ -51,11 +51,13 @@ export async function inspectSources(candidates, input, review) {
   if (!toReview.length) return { accepted: catalog, rejected };
   const decisions = new Map();
   // Bound review context so later product queries do not get dropped by a token limit.
-  for (let offset = 0; offset < toReview.length; offset += 6) {
-    const reviewed = await review(toReview.slice(offset, offset + 6), input,{completed:offset,total:toReview.length});
+  const batches=[];for (let offset = 0; offset < toReview.length; offset += 6) batches.push({sources:toReview.slice(offset,offset+6),offset});
+  const reviews=await mapConcurrent(batches,STAGE_CONCURRENCY.sourceReview,async batch=>{
+    const reviewed = await review(batch.sources, input,{completed:batch.offset,total:toReview.length});
     if (!Array.isArray(reviewed?.decisions)) throw new Error("来源相关性审查未返回有效结果，已停止撰写报告。请重试资料检索阶段。");
-    for (const item of reviewed.decisions) if (item && typeof item.id === "string") decisions.set(item.id, item);
-  }
+    return reviewed;
+  });
+  for(const reviewed of reviews)for (const item of reviewed.decisions) if (item && typeof item.id === "string") decisions.set(item.id, item);
   const accepted = [...catalog];
   for (const source of toReview) {
     const decision = decisions.get(source.candidateId);
@@ -85,7 +87,7 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
   const progress = (currentQuery = "", status = "searching") => onProgress({
     searchCheckpoint:checkpointValue(),
     queryRuns: queryRuns.map((item) => ({ ...item })),
-    searchProgress: { currentQuery, currentQueries:queryRuns.filter(item=>item.status==='running').map(item=>item.query), concurrency:3, completedQueries: queryRuns.filter((item) => item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: status === "searching" ? candidates.length : inspected.accepted.length, independentDocumentCount:independentDocumentCount(inspected.accepted),candidateSourceCount: candidates.length },
+    searchProgress: { currentQuery, currentQueries:queryRuns.filter(item=>item.status==='running').map(item=>item.query), concurrency:STAGE_CONCURRENCY.search, completedQueries: queryRuns.filter((item) => item.status==='completed').length, totalQueries: queryRuns.length, sourceCount: status === "searching" ? candidates.length : inspected.accepted.length, independentDocumentCount:independentDocumentCount(inspected.accepted),candidateSourceCount: candidates.length },
     searchQuality: { status, candidateCount: candidates.length, acceptedCount: inspected.accepted.length, rejectedCount: inspected.rejected.length, repairRounds },
     rejectedSources: inspected.rejected,
     coverageReview, specCatalog,
@@ -96,7 +98,7 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
     const batch = queries.map((query) => ({ query, status: "pending", kind, round: repairRounds }));
     queryRuns.push(...batch);
     const beforeBatch=candidates.slice(),resultsByQuery=new Array(batch.length);
-    await mapConcurrent(batch,3,async(item,index)=>{
+    await mapConcurrent(batch,STAGE_CONCURRENCY.search,async(item,index)=>{
       const key=JSON.stringify([kind,repairRounds,item.query]),saved=completedQueries[key];
       if(saved&&Array.isArray(saved.results)){resultsByQuery[index]=saved.results;candidates=deduplicateSources([...beforeBatch,...resultsByQuery.flat()]).slice(0,132);Object.assign(item,{status:'completed',reused:true,resultCount:saved.results.length,completedAt:saved.completedAt});await progress('复用已保存检索：'+item.query);return;}
       if(redundantCatalogQuery(item.query,knownCatalogMetrics(beforeBatch,input,plan))){item.status="completed";item.skipped=true;item.reason="准确型号/地区的请求字段已在规格库收录，直接复用，不重复官网检索";item.resultCount=0;await progress(item.reason);return;}
@@ -155,8 +157,16 @@ export async function executeSearchPlan({ input, plan, search, review, assessCov
     const used = new Set(queryRuns.map((item) => item.query.toLowerCase()));
     const repairQueries = [...(coverageReview?.followupQueries || []), ...(focus.minimumTopics?engineeringQueries(input,plan):[]), ...(delivery?.route==='answer'?[]:fallbackQueries(input))].filter((query) => !used.has(query.toLowerCase())).filter((query, index, all) => all.indexOf(query) === index).slice(0, delivery?.queriesPerFollowup||4);
     if (!repairQueries.length) break;
+    const beforeUrls=new Set(inspected.accepted.map(source=>source.url));
+    const beforeAnswered=new Set((coverageReview?.questions||[]).filter(q=>q.status==='answered').map(q=>q.questionId));
     repairRounds = round; await runBatch(repairQueries, coverageReview?.technicalGaps?.length ? "technical_followup" : "automatic_followup");
     await checkCoverage();
+    const newSources=inspected.accepted.filter(source=>!beforeUrls.has(source.url)).length;
+    const improved=(coverageReview?.questions||[]).some(q=>q.status==='answered'&&!beforeAnswered.has(q.questionId));
+    // One new source may be decisive even if the model has not yet promoted a
+    // question to answered. Keep searching when any unresolved question has one.
+    const unresolved=(coverageReview?.questions||[]).some(q=>q.status!=='answered');
+    if(round>1&&newSources<2&&!improved&&(!unresolved||newSources===0)){warnings.push('补查收益较低，已结束进一步补查；剩余问题和证据缺口继续保留并参与验收。');break;}
   }
   const sources = selectEvidenceSources(inspected.accepted, queryRuns.map((run) => run.query),maxSources,focus.queryShare).map((source, i) => ({ ...enrichSource(source),id: "S" + (i + 1), retrievedAt: source.retrievedAt || now() }));
   const directCount = sources.filter((source) => source.relevance === "direct").length;

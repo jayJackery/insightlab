@@ -1,17 +1,18 @@
 import {Buffer} from '../browser/shims/buffer.js';
-import { deflateRawSync } from "../browser/shims/zlib.js?v=8e1e00bb1d41da9f";
-import {metricPresentation} from '../domain/evidence/metric-presentation.js?v=8e1e00bb1d41da9f';
-import {metricDefinition} from '../domain/evidence/metric-schema.js?v=8e1e00bb1d41da9f';
-import {visibleComparisonRows} from '../../public/comparison-visibility.js?v=8e1e00bb1d41da9f';
-import {sameProduct} from '../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
-import {metricLabels} from '../../public/metric-labels.js?v=8e1e00bb1d41da9f';
-import {reviewChecklist} from '../domain/evidence/review-checklist.js?v=8e1e00bb1d41da9f';
-import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js?v=8e1e00bb1d41da9f';
-import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js?v=8e1e00bb1d41da9f';
-import {resolveExportSelection} from '../../public/report-sections.js?v=8e1e00bb1d41da9f';
-import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js?v=8e1e00bb1d41da9f';
-import {presentationProductsForTask} from '../domain/evidence/product-registry.js?v=8e1e00bb1d41da9f';
-import {qualifyStructuredContent} from '../../public/product-labels.js?v=8e1e00bb1d41da9f';
+import { deflateRawSync } from "../browser/shims/zlib.js?v=2c9b2e1b97170f03";
+import {metricPresentation} from '../domain/evidence/metric-presentation.js?v=2c9b2e1b97170f03';
+import {metricDefinition} from '../domain/evidence/metric-schema.js?v=2c9b2e1b97170f03';
+import {visibleComparisonRows} from '../../public/comparison-visibility.js?v=2c9b2e1b97170f03';
+import {sameProduct} from '../domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {metricLabels} from '../../public/metric-labels.js?v=2c9b2e1b97170f03';
+import {reviewChecklist} from '../domain/evidence/review-checklist.js?v=2c9b2e1b97170f03';
+import {boundaryPresentation} from '../domain/evidence/boundary-presentation.js?v=2c9b2e1b97170f03';
+import {sourceDisplayTitle} from '../domain/evidence/source-presentation.js?v=2c9b2e1b97170f03';
+import {resolveExportSelection} from '../../public/report-sections.js?v=2c9b2e1b97170f03';
+import {highlightSegments,topicProductReferences} from '../../public/product-highlights.js?v=2c9b2e1b97170f03';
+import {presentationProductsForTask} from '../domain/evidence/product-registry.js?v=2c9b2e1b97170f03';
+import {qualifyStructuredContent} from '../../public/product-labels.js?v=2c9b2e1b97170f03';
+import {selectResearchFindings} from '../../public/finding-presentation.js?v=2c9b2e1b97170f03';
 
 const xml = (value) => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
 function plain(value) {
@@ -114,10 +115,9 @@ export function makeDocx(task,options={}) {
   if(selected.has('summary')){heading("核心结论"); blocks(report.executiveSummary);}
   if(selected.has('findings')) {
   heading("关键问题与结论");
-  for (const [i, item] of (report.userQuestionAnswers?.length?report.userQuestionAnswers:report.questionAnswers?.length?report.questionAnswers:report.keyFindings || []).entries()) {
+  for (const [i, item] of selectResearchFindings(report).entries()) {
     heading(item.question || "研究发现 " + (i + 1), 2);
     paragraph("【" + (item.kind || item.status || "研究发现") + "】" + (item.text || item.answer || ""));
-    if (item.implication) paragraph("工程意义：" + item.implication);
     refs(item.citations);
   }
   }
@@ -166,7 +166,7 @@ export function makeDocx(task,options={}) {
   if(report.manualRevisions?.length){heading('用户复核修订记录');paragraph('以下内容由用户提交，尚未独立核验。');for(const revision of report.manualRevisions){heading(revision.subject,2);paragraph(revision.note);paragraph('复核记录：'+revision.quote);paragraph('[复核资料原文]('+revision.sourceUrl.replace(/\)/g,'%29')+')');}}
   if(selected.has('limits')){const checklist=task.reviewChecklist||reviewChecklist(task);if(checklist.length){heading('应用前复核清单');for(const item of checklist){heading(item.subject,2);paragraph('涉及结论：'+item.statement);paragraph('待确认：'+item.reason);paragraph('复核动作：'+item.action);for(const source of item.sources)paragraph('['+source.title.replace(/[\[\]]/g,'')+']('+source.url.replace(/\)/g,'%29')+')');}}}
   if(selected.has('review')&&task.quality&&!task.quality.publishable){heading('附录 核验状态');bullets((task.quality.issues || []).map((issue)=>issue.message));}
-  if(selected.has('questions')&&report.userQuestionAnswers?.length) {heading('附录 扩展研究问题与答案');for(const answer of report.questionAnswers || []){heading(answer.question,2);paragraph(answer.text || answer.answer);refs(answer.citations);}}
+  if(selected.has('questions')&&report.userQuestionAnswers?.length) {heading('附录 原始输入与约束');for(const answer of report.userQuestionAnswers || []){heading(answer.question,2);paragraph(answer.text || answer.answer);refs(answer.citations);}}
   const boundaries=boundaryPresentation(evidence,task.research || {},report);
   if(selected.has('methods')&&(boundaries.current.length||boundaries.raw.conflicts.length||boundaries.raw.gaps.length)) {
     heading('附录 资料边界与待核实');

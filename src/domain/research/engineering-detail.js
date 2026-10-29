@@ -26,7 +26,18 @@ export function engineeringIssues(route, validIds,products=[]) {
 export function normalizeEngineeringRoute(value, topic, sourceIds,{products=[],sources=[]}={}) {
   const route = {...value, heading:topic.heading, questionIds:topic.questionIds,
     sourceIds:[...new Set((value.sourceIds || []).filter((id)=>sourceIds.has(id)))]};
+  const completionGaps=[];
+  if(!nonempty(route.designProblem)){
+    route.designProblem='本轮资料未能可靠归纳该主题对应的具体设计问题；请把“'+topic.heading+'”作为待澄清问题，不视为已证实结论。';
+    completionGaps.push('具体设计问题未能从证据中可靠归纳');
+  }
+  if(!nonempty(route.systemPath)){
+    route.systemPath='本轮资料未证实该产品的系统路径；不推断其部件、接口或能量/信号/热/力流，须以准确型号的原理图、拆解或实测补证。';
+    completionGaps.push('产品级系统路径缺少证据，未作推断');
+  }
+  route.completionGaps=[...new Set([...(route.completionGaps||[]),...completionGaps])];
   for (const key of ['principle','architecture','implementation','knownLimits']) route[key]=(Array.isArray(value[key])?value[key]:[]).filter(nonempty);
+  route.knownLimits=[...new Set([...route.knownLimits,...completionGaps.map(gap=>'待复核：'+gap)])];
   // The readable lists and structured tables are projections of the same decisions.
   route.tradeoffs=(value.designDecisions || []).map((item)=>'适用：'+item.condition+'；收益：'+item.benefit+'；代价：'+item.cost+'；选择：'+item.decision);
   route.validation=(value.validationPlan || []).map((item)=>'失效：'+item.failureMode+'；条件：'+item.conditions+'；测量：'+item.measurement+'；判据：'+item.criterion+'；依据：'+item.basis);

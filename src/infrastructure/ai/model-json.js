@@ -33,7 +33,7 @@ export function decodeModelHttpBody(body,contentType,httpStatus){
       if(typeof choice.finish_reason==='string')finishReason=choice.finish_reason;
     }
   }
-  const complete=doneSeen||Boolean(finishReason);
+  const complete=doneSeen&&Boolean(finishReason);
   if(events||providerError||content||reasoningCharacters||toolCalls)return {result:{choices:[{message:{content,...(reasoningCharacters?{reasoning:'[omitted]'}:{}),...(toolCalls?{tool_calls:[]}:{})},finish_reason:finishReason||'not_provided'}],...(usage?{usage}:{}),...(providerError?{error:providerError}:{})},diagnostic:{...base,responseShape:'server_sent_sse',sseEvents:events,sseComplete:complete,sseReasoningCharacters:reasoningCharacters}};
   return {result:null,diagnostic:{...base,responseShape:'malformed_sse',sseEvents:events,sseComplete:false}};
 }
@@ -53,7 +53,7 @@ export function parseModelResponse(result,transport={}) {
     throw new ModelOutputError('MODEL_PROTOCOL_INVALID',reason+'请检查基础地址、模型路由与服务商请求记录；本次未重复发送相同请求。',diagnostic);
   }
   if(!choice||!message)throw new ModelOutputError('MODEL_RESPONSE_INVALID','模型响应缺少choices.message，不能作为有效回答；请检查兼容接口与模型的响应格式。',diagnostic);
-  if(diagnostic.httpBodyKind==='event_stream'&&diagnostic.sseComplete===false)throw new ModelOutputError('MODEL_PROTOCOL_INVALID','模型网关返回的流式事件未正常结束，本次答案不完整，未用于研究。请检查服务商请求记录后再重试。',diagnostic);
+  if(diagnostic.httpBodyKind==='event_stream'&&diagnostic.sseComplete===false)throw new ModelOutputError('MODEL_STREAM_INCOMPLETE','模型网关返回的流式事件未正常结束，本次答案不完整，未用于研究。',diagnostic);
   if (choice?.finish_reason === "length") throw new ModelOutputError("MODEL_TRUNCATED", "模型输出达到长度上限而被截断，未发布不完整内容。", diagnostic);
   if (message?.refusal || choice?.finish_reason === "content_filter") throw new ModelOutputError("MODEL_REFUSED", "模型服务未提供本阶段内容。", diagnostic);
   if(diagnostic.toolCalls&&!content.trim())throw new ModelOutputError('MODEL_PROTOCOL_INVALID','接口只返回了工具调用，没有最终文本答案；请使用支持文本回答的模型或兼容路由。',diagnostic);

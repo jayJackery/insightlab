@@ -1,9 +1,9 @@
-import {digest} from './source-document.js?v=8e1e00bb1d41da9f';
-import {cleanProductLabel,catalogDisplayName} from '../../../public/product-identity.js?v=8e1e00bb1d41da9f';
+import {digest} from './source-document.js?v=2c9b2e1b97170f03';
+import {cleanProductLabel,catalogDisplayName} from '../../../public/product-identity.js?v=2c9b2e1b97170f03';
 
 const brands=[['jackery','电小二','华宝新能'],['ecoflow','正浩创新','正浩'],['anker','ankersolix','安克创新','安克'],['bluetti','德兰明海','铂陆帝'],['dji','大疆'],['eaton'],['zendure']];
 const compact=(value)=>String(value || '').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
-export const VERIFIED_PRODUCT_ALIASES=[{brand:'anker',model:'f2000',aliases:['F2000','PowerHouse 767','767','A1780'],sourceUrls:['https://service.anker.com/article-description/Anker-SOLIX-F2000-Portable-Power-Station-PowerHouse-767-USER-MANUAL','https://www.ankersolix.com/f2000'],boundary:'仅基础型号对应；美国2400W和欧洲2300W等地区版本仍分开。拆解样机不代表所有批次，能拆开不等于厂商允许用户维修。'}];
+export const VERIFIED_PRODUCT_ALIASES=[{brand:'anker',model:'f2000',aliases:['F2000','PowerHouse 767','767','A1780'],sourceUrls:['https://service.anker.com/article-description/Anker-SOLIX-F2000-Portable-Power-Station-PowerHouse-767-USER-MANUAL','https://www.ankersolix.com/f2000'],boundary:'仅基础型号对应；美国2400W和欧洲2300W等地区版本仍分开。拆解样机不代表所有批次，能拆开不等于厂商允许用户维修。'},{brand:'ecoflow',model:'delta3classic',aliases:['DELTA 3 Classic','EF-DL3-C'],sourceUrls:['https://manuals.ecoflow.com/cn/product/delta-3-classic?lang=zh_CN'],boundary:'官方手册中的基础型号别名；地区和功率版本仍须单独核对，不合并DELTA 3或Plus。'}];
 export function parseProductName(value) {
   const display=cleanProductLabel(value);
   let model=compact(display), brand=null;
@@ -23,6 +23,8 @@ export function parseProductName(value) {
   // Manufacturer-hosted Explorer 2000 v2 US manual names JE-2000D explicitly.
   // https://r.jackery.net/productGuide/Jackery%20Explorer%202000%20v2%20User%20Manual.pdf
   if(brand==='jackery' && ['explorer2000v2je2000d','je2000d'].includes(model))model='explorer2000v2';
+  // Official Classic manual names EF-DL3-C; it does not identify DELTA 3/Plus.
+  if((!brand||brand==='ecoflow')&&['efdl3c','delta3classicefdl3c','efdl3cdelta3classic'].includes(model)){brand='ecoflow';model='delta3classic';}
   return {display,brand,model,exact:Boolean(model && /\d/.test(model) && !/同容量|系列|等|示例|候选型号|或|\bor\b/i.test(display))};
 }
 export function sameProduct(left,right) {
